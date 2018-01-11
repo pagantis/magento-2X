@@ -1,13 +1,13 @@
-# Magento 1X Module <img src="https://pagamastarde.com/img/icons/logo.svg" width="100" align="right">
+# Magento 2X Module <img src="https://pagamastarde.com/img/icons/logo.svg" width="100" align="right">
 
-[![Build Status](https://travis-ci.org/PagaMasTarde/magento-1X.svg?branch=master)](https://travis-ci.org/PagaMasTarde/magento-1X)
-[![Latest Stable Version](https://poser.pugx.org/pagamastarde/magento-1x/v/stable)](https://packagist.org/packages/pagamastarde/magento-1x)
-[![composer.lock](https://poser.pugx.org/pagamastarde/magento-1x/composerlock)](https://packagist.org/packages/pagamastarde/magento-1x)
+[![Build Status](https://travis-ci.org/PagaMasTarde/magento-2X.svg?branch=master)](https://travis-ci.org/PagaMasTarde/magento-2X)
+[![Latest Stable Version](https://poser.pugx.org/pagamastarde/magento-2x/v/stable)](https://packagist.org/packages/pagamastarde/magento-2x)
+[![composer.lock](https://poser.pugx.org/pagamastarde/magento-2x/composerlock)](https://packagist.org/packages/pagamastarde/magento-2x)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/4f04d66a-b31f-436d-a15e-bf27fa8164a1/mini.png)](https://insight.sensiolabs.com/projects/4f04d66a-b31f-436d-a15e-bf27fa8164a1)
 
 ## Instrucciones de Instalación
 1. Crea tu cuenta en pagamastarde.com si aún no la tienes [desde aquí](https://bo.pagamastarde.com/users/sign_up)
-2. Descarga el módulo de [aquí](https://github.com/pagamastarde/magento-1X/releases/latest)
+2. Descarga el módulo de [aquí](https://github.com/pagamastarde/magento-2X/releases/latest)
 3. Instala el módulo en tu magento
 4. Configuralo con la información de tu cuenta que encontrarás en [el panel de gestión de Paga+Tarde](https://bo.pagamastarde.com/shop). Ten en cuenta que para hacer cobros reales deberás activar tu cuenta de Paga+Tarde.
 
