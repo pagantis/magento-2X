@@ -6,7 +6,7 @@ echo 'Npm install + grunt'
 npm install
 grunt default
 echo 'Build docker images'
-docker-composer down
+docker-compose down
 docker-compose up -d
 sleep 10
 
