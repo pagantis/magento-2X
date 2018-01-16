@@ -3,7 +3,7 @@ sudo: required
 services:
 - docker
 php:
-- '7.0'
+- '7.1'
 env:
   matrix:
   - DOCKER_COMPOSE_VERSION=1.14.0

@@ -6,6 +6,6 @@
 
 \Magento\Framework\Component\ComponentRegistrar::register(
     \Magento\Framework\Component\ComponentRegistrar::MODULE,
-    'Magento_SamplePaymentGateway',
+    'DigitalOrigin_Pmt',
     __DIR__
 );
