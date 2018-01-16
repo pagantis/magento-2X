@@ -1,4 +1,5 @@
 <?php
+
 namespace Test\Basic;
 
 use Facebook\WebDriver\WebDriverExpectedCondition;
@@ -24,7 +25,7 @@ class BasicTest extends Magento2Test
 
     /**
      * testMagentoOpen
-     */
+    */
     public function testMagentoOpen()
     {
         $this->webDriver->get(self::MAGENTO_URL);
@@ -36,6 +37,7 @@ class BasicTest extends Magento2Test
         $this->assertContains(self::TITLE, $this->webDriver->getTitle());
         $this->quit();
     }
+
     /**
      * testBackofficeOpen
      */
