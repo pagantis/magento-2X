@@ -23,4 +23,4 @@ docker-compose exec --user=magento2 magento20 mkdir -p /var/www/magento2/app/cod
 docker-compose exec --user=magento2 magento20 php /var/www/magento2/bin/magento sampledata:deploy && \
 docker-compose exec --user=magento2 magento20 php /var/www/magento2/bin/magento setup:upgrade && \
 docker-compose exec --user=magento2 magento20 php /var/www/magento2/bin/magento setup:di:compile && \
-docker-compose exec --user=magento2 magento20 php /var/www/magento2/bin/magento cache:flush && \
+docker-compose exec --user=magento2 magento20 php /var/www/magento2/bin/magento cache:flush

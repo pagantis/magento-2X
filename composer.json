@@ -1,7 +1,7 @@
 {
   "name": "pagamastarde/magento-2x",
   "description": "Paga+Tarde Magento 2 module",
-  "type": "module",
+  "type": "magento2-module",
   "keywords": [
     "api",
     "rest",

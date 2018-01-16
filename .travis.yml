@@ -24,5 +24,12 @@ before_install:
 before_script:
   - phpenv config-rm xdebug.ini
 script:
+  - echo 'Composer install'
+  - composer install
+  - echo 'Npm install + grunt'
+  - npm install
+  - grunt default
+  - echo 'Build docker images'
   - "./docker-init.sh"
+  - composer install
   - vendor/bin/phpunit
