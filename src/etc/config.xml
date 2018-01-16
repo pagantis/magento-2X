@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <payment>
+            <DigitalOrigin_Pmt>
+                <active>0</active>
+                <model>Paylater\Model\Pmt</model>
+                <payment_action>authorize</payment_action>
+                <title>Paga+Tarde</title>
+                <payment_button>#paylater-payment-method</payment_button>
+                <allowspecific>0</allowspecific>
+            </DigitalOrigin_Pmt>
+        </payment>
+    </default>
+</config>

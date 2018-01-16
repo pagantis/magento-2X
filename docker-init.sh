@@ -17,11 +17,10 @@ docker-compose exec --user=magento2 magento20 /home/magento2/scripts/m2init mage
 docker-compose exec --user=magento2 magento20 mkdir -p /var/www/magento2/app/code/DigitalOrigin && \
 
 #docker-compose exec --user=magento2 magento20 ln -s /DigitalOrigin /var/www/magento2/app/code/DigitalOrigin/Pmt && \
-#docker-compose exec --user=magento2 magento20 ln -s /DigitalOrigin /var/www/magento2/aplazame && \
-#docker-compose exec --user=magento2 magento20 composer -d=/var/www/magento2/ require aplazame/aplazame-api-sdk && \
-#docker-compose exec --user=magento2 magento20 php /var/www/magento2/bin/magento module:enable Aplazame_Payment && \
+#docker-compose exec --user=magento2 magento20 ln -s /DigitalOrigin /var/www/magento2/pmt && \
+#docker-compose exec --user=magento2 magento20 php /var/www/magento2/bin/magento module:enable DigitalOrigin_Pmt && \
+
 docker-compose exec --user=magento2 magento20 php /var/www/magento2/bin/magento sampledata:deploy && \
 docker-compose exec --user=magento2 magento20 php /var/www/magento2/bin/magento setup:upgrade && \
 docker-compose exec --user=magento2 magento20 php /var/www/magento2/bin/magento setup:di:compile && \
 docker-compose exec --user=magento2 magento20 php /var/www/magento2/bin/magento cache:flush && \
-docker-compose exec --user=magento2 magento20 php /var/www/magento2/bin/magento cache:warmup --magento-warm-up-storefront=1 --no-interaction
