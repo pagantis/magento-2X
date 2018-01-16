@@ -1,0 +1,35 @@
+language: php
+sudo: required
+services:
+- docker
+php:
+- '7.1'
+env:
+  matrix:
+  - DOCKER_COMPOSE_VERSION=1.14.0
+  global:
+  - secure: P3vFErrczn55U4o7hkUzRnjMs2uTBfUo1TNo+KmMO99Z8mvQ6ZVRI1mpPLZh4UcS8P0K2Q/pgjIN88E7p4AU7xRskBTbg1MzX6q9Od2nOpu8uSX+07AOiUuAoSypVi9BiDeF86byslmZlsa6uGT9gRczzY1f4J6O9JnLHjGDLOihPHcj1s9JdqqITr1/qnP22Ur4VzSNX7dhfJAmyDacmAF4Ano1UujtQsUvnK3d3awPnEogwDi4+BYdLts4YNPZGs93VlWwbzm5cPXkW1PTVYJGimK5+8Up/imSu5HnI+oAIr3qTIA62O08X1LS/3KfZAWWxTXdX32enlzcKPcxJcA58HnaK6S0e9223Lrb8CZrZy4mrlg9XGRH1p4EAyt3uYJZtSaARB4bfSXQQ8IOnMnLpEePtiEn6LQp/Mgk/4K+8n3CSQqcQFbYl2MRosytA6zJk3KitUuHj7A9u2Yztngzfke13Tkl6d4v7CqZYDkBi69QUrTw/1CpZJVErDlLL12AvmvaT54Jfv64CFnecTc/i9ieA+7tX/8mgLbD3aTm+9dvJsuBiYK0hJ1Xf0V4G3xt75ZiRK7bS/7PyQQVFNLEcXhxrP4GVGavO+zrn5QR97Mz+Al9eEH8rn/6tEbNBSujHFZHx2LYnk5QSqL2BqLsSZkGIDkzg5KBfjNVwXA=
+  - secure: HJKd65GzQzoPY9pt1esCCprIXEDvDZ7l/PNQLW1Xc5xFRks2E4d/6GVIaUuR9YPYZINK0yMu9DH5M6XU6n6/oU+vAl9P5sLPApOpA6kItktXi0XzZ1gvZme7pahiRslBxWqZ3IGxzYewFKQT3HYXzawF0yllQa5cZYQ2gRVhDoApYOgjqfr3pRrReGlPjKzpJwBXOtTn1I1PhzSRtYSwcUG6pazfEwrHN46jKT5nC7omh+Ng8m1eL/pelatPYybvE47tVulh04Uz2T/6MLav/0SxmXY0MKHj9bfEqJJSUVl8s8eVr5HSAFazs+zRDIYfmJ7WjzfAoi77y9jmvfiw9EV1ci67sXW5SjnFHx0FPD5eSQltiSIAa83GhyNzP3ooSDgDB0AZ7+CDMoM1qsmQVo0ubMEUFeAxaRI2aZG704ieUhBQjWTCHRPJh54JJEYhzcNjdQlxy++iyMSSn8AZlesZHl1W5WYvDeUDI/IASpusUyGJ2hq7aABnluEBh8KoSUQj6K6m5A1VlSm2vzAN9APvAWCa+yFO9m651bcGg49PkC/QHe0UaASj/TpXjLO+dF56hEfawz6ybHmujDyaddrTqkkMYVyOtrJcJ3qCHZTww/1SX+NK8srAp5CvHf4OOfoeKIF8cYvnl1WCa9NUWJTcct3o8WbMZbpySR1m6z0=
+before_install:
+  - echo -e "MAGENTO_PUBLIC_KEY=${MAGENTO_PUBLIC_KEY}\nMAGENTO_PRIVATE_KEY=${MAGENTO_PRIVATE_KEY}" > .env
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname
+    -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  - sudo apt-get update
+  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+  - docker --version
+  - docker-compose --version
+before_script:
+  - phpenv config-rm xdebug.ini
+script:
+  - echo 'Composer install'
+  - composer install
+  - echo 'Npm install + grunt'
+  - npm install
+  - grunt default
+  - echo 'Build docker images'
+  - "./docker-init.sh"
+  - composer install
+  - vendor/bin/phpunit
