@@ -12,6 +12,7 @@ sleep 10
 
 echo 'Install Magento'
 docker-compose exec --user=root magento20 chown -R magento2:magento2 /var/www/ && \
+docker-compose exec --user=root magento20 chown -R magento2:magento2 /home/magento2/ && \
 docker-compose exec --user=magento2 magento20 /home/magento2/scripts/m2init magento:install --no-interaction --magento-host=magento20 && \
 docker-compose exec --user=magento2 magento20 mkdir -p /var/www/magento2/app/code/DigitalOrigin && \
 
