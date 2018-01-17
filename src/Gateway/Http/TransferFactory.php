@@ -1,15 +1,20 @@
 <?php
+
 /**
  * Copyright © 2016 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Magento\SamplePaymentGateway\Gateway\Http;
+namespace Paylater\Gateway\Http;
 
 use Magento\Payment\Gateway\Http\TransferBuilder;
 use Magento\Payment\Gateway\Http\TransferFactoryInterface;
 use Magento\Payment\Gateway\Http\TransferInterface;
-use Magento\SamplePaymentGateway\Gateway\Request\MockDataRequest;
+use Paylater\Gateway\Request\MockDataRequest;
 
+/**
+ * Class TransferFactory
+ * @package Paylater\Gateway\Http
+ */
 class TransferFactory implements TransferFactoryInterface
 {
     /**
@@ -38,11 +43,11 @@ class TransferFactory implements TransferFactoryInterface
             ->setBody($request)
             ->setMethod('POST')
             ->setHeaders(
-                [
+                array(
                     'force_result' => isset($request[MockDataRequest::FORCE_RESULT])
                         ? $request[MockDataRequest::FORCE_RESULT]
                         : null
-                ]
+                )
             )
             ->build();
     }

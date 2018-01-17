@@ -1,14 +1,19 @@
 <?php
+
 /**
  * Copyright © 2016 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Magento\SamplePaymentGateway\Gateway\Request;
+namespace Paylater\Gateway\Request;
 
 use Magento\Payment\Gateway\ConfigInterface;
 use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
 use Magento\Payment\Gateway\Request\BuilderInterface;
 
+/**
+ * Class AuthorizationRequest
+ * @package Paylater\Gateway\Request
+ */
 class AuthorizationRequest implements BuilderInterface
 {
     /**
@@ -44,7 +49,7 @@ class AuthorizationRequest implements BuilderInterface
         $order = $payment->getOrder();
         $address = $order->getShippingAddress();
 
-        return [
+        return array(
             'TXN_TYPE' => 'A',
             'INVOICE' => $order->getOrderIncrementId(),
             'AMOUNT' => $order->getGrandTotalAmount(),
@@ -54,6 +59,6 @@ class AuthorizationRequest implements BuilderInterface
                 'merchant_gateway_key',
                 $order->getStoreId()
             )
-        ];
+        );
     }
 }

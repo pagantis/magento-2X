@@ -10,9 +10,9 @@
     <!-- Payment Method Facade configuration -->
     <virtualType name="SamplePaymentGatewayFacade" type="Magento\Payment\Model\Method\Adapter">
         <arguments>
-            <argument name="code" xsi:type="const">\Magento\SamplePaymentGateway\Model\Ui\ConfigProvider::CODE</argument>
+            <argument name="code" xsi:type="const">\Paylater\Model\Ui\ConfigProvider::CODE</argument>
             <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
-            <argument name="infoBlockType" xsi:type="string">Magento\SamplePaymentGateway\Block\Info</argument>
+            <argument name="infoBlockType" xsi:type="string">Paylater\Block\Info</argument>
             <argument name="valueHandlerPool" xsi:type="object">SamplePaymentGatewayValueHandlerPool</argument>
             <argument name="commandPool" xsi:type="object">SamplePaymentGatewayCommandPool</argument>
         </arguments>
@@ -21,7 +21,7 @@
     <!-- Configuration reader -->
     <virtualType name="SamplePaymentGatewayConfig" type="Magento\Payment\Gateway\Config\Config">
         <arguments>
-            <argument name="methodCode" xsi:type="const">\Magento\SamplePaymentGateway\Model\Ui\ConfigProvider::CODE</argument>
+            <argument name="methodCode" xsi:type="const">\Paylater\Model\Ui\ConfigProvider::CODE</argument>
         </arguments>
     </virtualType>
 
@@ -32,7 +32,7 @@
         </arguments>
     </virtualType>
 
-    <type name="Magento\SamplePaymentGateway\Gateway\Http\Client\ClientMock">
+    <type name="Paylater\Gateway\Http\Client\ClientMock">
         <arguments>
             <argument name="logger" xsi:type="object">SamplePaymentGatewayLogger</argument>
         </arguments>
@@ -54,8 +54,8 @@
         <arguments>
             <argument name="requestBuilder" xsi:type="object">SamplePaymentGatewayAuthorizationRequest</argument>
             <argument name="handler" xsi:type="object">SamplePaymentGatewayResponseHandlerComposite</argument>
-            <argument name="transferFactory" xsi:type="object">Magento\SamplePaymentGateway\Gateway\Http\TransferFactory</argument>
-            <argument name="client" xsi:type="object">Magento\SamplePaymentGateway\Gateway\Http\Client\ClientMock</argument>
+            <argument name="transferFactory" xsi:type="object">Paylater\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">Paylater\Gateway\Http\Client\ClientMock</argument>
         </arguments>
     </virtualType>
 
@@ -63,12 +63,12 @@
     <virtualType name="SamplePaymentGatewayAuthorizationRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
         <arguments>
             <argument name="builders" xsi:type="array">
-                <item name="transaction" xsi:type="string">Magento\SamplePaymentGateway\Gateway\Request\AuthorizationRequest</item>
-                <item name="mockData" xsi:type="string">Magento\SamplePaymentGateway\Gateway\Request\MockDataRequest</item>
+                <item name="transaction" xsi:type="string">Paylater\Gateway\Request\AuthorizationRequest</item>
+                <item name="mockData" xsi:type="string">Paylater\Gateway\Request\MockDataRequest</item>
             </argument>
         </arguments>
     </virtualType>
-    <type name="Magento\SamplePaymentGateway\Gateway\Request\AuthorizationRequest">
+    <type name="Paylater\Gateway\Request\AuthorizationRequest">
         <arguments>
             <argument name="config" xsi:type="object">SamplePaymentGatewayConfig</argument>
         </arguments>
@@ -86,7 +86,7 @@
     </virtualType>
 
     <!-- Capture Request -->
-    <type name="Magento\SamplePaymentGateway\Gateway\Request\CaptureRequest">
+    <type name="Paylater\Gateway\Request\CaptureRequest">
         <arguments>
             <argument name="config" xsi:type="object">SamplePaymentGatewayConfig</argument>
         </arguments>
@@ -104,7 +104,7 @@
     </virtualType>
 
     <!-- Void Request -->
-    <type name="Magento\SamplePaymentGateway\Gateway\Request\VoidRequest">
+    <type name="Paylater\Gateway\Request\VoidRequest">
         <arguments>
             <argument name="config" xsi:type="object">SamplePaymentGatewayConfig</argument>
         </arguments>
@@ -134,7 +134,7 @@
         </arguments>
     </virtualType>
 
-    <type name="Magento\SamplePaymentGateway\Block\Info">
+    <type name="Paylater\Block\Info">
         <arguments>
             <argument name="config" xsi:type="object">SamplePaymentGatewayConfig</argument>
         </arguments>

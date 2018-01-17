@@ -1,22 +1,31 @@
 <?php
+
 /**
  * Copyright © 2016 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Magento\SamplePaymentGateway\Gateway\Validator;
+namespace Paylater\Gateway\Validator;
 
 use Magento\Payment\Gateway\Validator\AbstractValidator;
 use Magento\Payment\Gateway\Validator\ResultInterface;
-use Magento\SamplePaymentGateway\Gateway\Http\Client\ClientMock;
+use Paylater\Gateway\Http\Client\ClientMock;
 
+/**
+ * Class ResponseCodeValidator
+ * @package Paylater\Gateway\Validator
+ */
 class ResponseCodeValidator extends AbstractValidator
 {
+    /**
+     * Const ResultCode
+     */
     const RESULT_CODE = 'RESULT_CODE';
 
     /**
      * Performs validation of result code
      *
      * @param array $validationSubject
+     *
      * @return ResultInterface
      */
     public function validate(array $validationSubject)
@@ -30,18 +39,19 @@ class ResponseCodeValidator extends AbstractValidator
         if ($this->isSuccessfulTransaction($response)) {
             return $this->createResult(
                 true,
-                []
+                array()
             );
         } else {
             return $this->createResult(
                 false,
-                [__('Gateway rejected the transaction.')]
+                array(__('Gateway rejected the transaction.'))
             );
         }
     }
 
     /**
      * @param array $response
+     *
      * @return bool
      */
     private function isSuccessfulTransaction(array $response)

@@ -1,18 +1,23 @@
 <?php
+
 /**
  * Copyright © 2016 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Magento\SamplePaymentGateway\Model\Ui;
+namespace Paylater\Model\Ui;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
-use Magento\SamplePaymentGateway\Gateway\Http\Client\ClientMock;
+use Paylater\Gateway\Http\Client\ClientMock;
 
 /**
  * Class ConfigProvider
+ * @package Paylater\Model\Ui
  */
 final class ConfigProvider implements ConfigProviderInterface
 {
+    /**
+     * CODE constant
+     */
     const CODE = 'sample_gateway';
 
     /**
@@ -22,15 +27,15 @@ final class ConfigProvider implements ConfigProviderInterface
      */
     public function getConfig()
     {
-        return [
-            'payment' => [
-                self::CODE => [
-                    'transactionResults' => [
+        return array(
+            'payment' => array(
+                self::CODE => array(
+                    'transactionResults' => array(
                         ClientMock::SUCCESS => __('Success'),
                         ClientMock::FAILURE => __('Fraud')
-                    ]
-                ]
-            ]
-        ];
+                    )
+                )
+            )
+        );
     }
 }

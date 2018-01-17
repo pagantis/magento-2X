@@ -16,8 +16,9 @@ docker-compose exec --user=root magento20 chown -R magento2:magento2 /home/magen
 docker-compose exec --user=magento2 magento20 /home/magento2/scripts/m2init magento:install --no-interaction --magento-host=magento20 && \
 docker-compose exec --user=magento2 magento20 mkdir -p /var/www/magento2/app/code/DigitalOrigin && \
 
-#docker-compose exec --user=magento2 magento20 ln -s /DigitalOrigin /var/www/magento2/app/code/DigitalOrigin/Pmt && \
-#docker-compose exec --user=magento2 magento20 ln -s /DigitalOrigin /var/www/magento2/pmt && \
+docker-compose exec --user=magento2 magento20 ln -s /paylater /var/www/magento2/app/code/DigitalOrigin/Pmt && \
+docker-compose exec --user=magento2 magento20 ln -s /paylater /var/www/magento2/paylater && \
+
 #docker-compose exec --user=magento2 magento20 php /var/www/magento2/bin/magento module:enable DigitalOrigin_Pmt && \
 
 docker-compose exec --user=magento2 magento20 php /var/www/magento2/bin/magento sampledata:deploy && \

@@ -1,14 +1,19 @@
 <?php
+
 /**
  * Copyright © 2016 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Magento\SamplePaymentGateway\Block;
+namespace Paylater\Block;
 
 use Magento\Framework\Phrase;
 use Magento\Payment\Block\ConfigurableInfo;
-use Magento\SamplePaymentGateway\Gateway\Response\FraudHandler;
+use Paylater\Gateway\Response\FraudHandler;
 
+/**
+ * Class Info
+ * @package Paylater\Block
+ */
 class Info extends ConfigurableInfo
 {
     /**

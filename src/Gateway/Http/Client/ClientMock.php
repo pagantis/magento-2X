@@ -1,14 +1,19 @@
 <?php
+
 /**
  * Copyright © 2016 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Magento\SamplePaymentGateway\Gateway\Http\Client;
+namespace Paylater\Gateway\Http\Client;
 
 use Magento\Payment\Gateway\Http\ClientInterface;
 use Magento\Payment\Gateway\Http\TransferInterface;
 use Magento\Payment\Model\Method\Logger;
 
+/**
+ * Class ClientMock
+ * @package Paylater\Gateway\Http\Client
+ */
 class ClientMock implements ClientInterface
 {
     const SUCCESS = 1;
@@ -17,10 +22,10 @@ class ClientMock implements ClientInterface
     /**
      * @var array
      */
-    private $results = [
+    private $results = array(
         self::SUCCESS,
         self::FAILURE
-    ];
+    );
 
     /**
      * @var Logger
@@ -51,10 +56,10 @@ class ClientMock implements ClientInterface
         );
 
         $this->logger->debug(
-            [
+            array(
                 'request' => $transferObject->getBody(),
                 'response' => $response
-            ]
+            )
         );
 
         return $response;
@@ -69,10 +74,10 @@ class ClientMock implements ClientInterface
     {
 
         return array_merge(
-            [
+            array(
                 'RESULT_CODE' => $resultCode,
                 'TXN_ID' => $this->generateTxnId()
-            ],
+            ),
             $this->getFieldsBasedOnResponseType($resultCode)
         );
     }
@@ -112,14 +117,14 @@ class ClientMock implements ClientInterface
     {
         switch ($resultCode) {
             case self::FAILURE:
-                return [
-                    'FRAUD_MSG_LIST' => [
+                return array(
+                    'FRAUD_MSG_LIST' => array(
                         'Stolen card',
                         'Customer location differs'
-                    ]
-                ];
+                    )
+            );
         }
 
-        return [];
+        return array();
     }
 }

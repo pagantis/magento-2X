@@ -1,15 +1,20 @@
 <?php
+
 /**
  * Copyright © 2016 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Magento\SamplePaymentGateway\Gateway\Request;
+namespace Paylater\Gateway\Request;
 
 use Magento\Payment\Gateway\ConfigInterface;
 use Magento\Payment\Gateway\Request\BuilderInterface;
 use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
 
+/**
+ * Class VoidRequest
+ * @package Paylater\Gateway\Request
+ */
 class VoidRequest implements BuilderInterface
 {
     /**
@@ -50,13 +55,13 @@ class VoidRequest implements BuilderInterface
             throw new \LogicException('Order payment should be provided.');
         }
 
-        return [
+        return array(
             'TXN_TYPE' => 'V',
             'TXN_ID' => $payment->getLastTransId(),
             'MERCHANT_KEY' => $this->config->getValue(
                 'merchant_gateway_key',
                 $order->getStoreId()
             )
-        ];
+        );
     }
 }

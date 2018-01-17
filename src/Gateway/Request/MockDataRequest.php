@@ -1,16 +1,24 @@
 <?php
+
 /**
  * Copyright © 2016 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Magento\SamplePaymentGateway\Gateway\Request;
+namespace Paylater\Gateway\Request;
 
 use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
 use Magento\Payment\Gateway\Request\BuilderInterface;
-use Magento\SamplePaymentGateway\Gateway\Http\Client\ClientMock;
+use Paylater\Gateway\Http\Client\ClientMock;
 
+/**
+ * Class MockDataRequest
+ * @package Paylater\Gateway\Request
+ */
 class MockDataRequest implements BuilderInterface
 {
+    /**
+     * Force Result
+     */
     const FORCE_RESULT = 'FORCE_RESULT';
 
     /**
@@ -32,10 +40,10 @@ class MockDataRequest implements BuilderInterface
         $payment = $paymentDO->getPayment();
 
         $transactionResult = $payment->getAdditionalInformation('transaction_result');
-        return [
+        return array(
             self::FORCE_RESULT => $transactionResult === null
                 ? ClientMock::SUCCESS
                 : $transactionResult
-        ];
+        );
     }
 }

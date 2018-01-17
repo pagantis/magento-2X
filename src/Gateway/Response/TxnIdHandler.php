@@ -1,15 +1,23 @@
 <?php
+
 /**
  * Copyright © 2016 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Magento\SamplePaymentGateway\Gateway\Response;
+namespace Paylater\Gateway\Response;
 
 use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
 use Magento\Payment\Gateway\Response\HandlerInterface;
 
+/**
+ * Class TxnIdHandler
+ * @package Paylater\Gateway\Response
+ */
 class TxnIdHandler implements HandlerInterface
 {
+    /**
+     * Trans ID
+     */
     const TXN_ID = 'TXN_ID';
 
     /**

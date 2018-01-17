@@ -17,7 +17,7 @@ define(
         rendererList.push(
             {
                 type: 'sample_gateway',
-                component: 'Magento_SamplePaymentGateway/js/view/payment/method-renderer/sample_gateway'
+                component: 'DigitalOrigin_Pmt/js/view/payment/method-renderer/sample_gateway'
             }
         );
         /** Add view logic here if needed */
