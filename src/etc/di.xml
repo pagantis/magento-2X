@@ -10,7 +10,7 @@
     <!-- Payment Method Facade configuration -->
     <virtualType name="SamplePaymentGatewayFacade" type="Magento\Payment\Model\Method\Adapter">
         <arguments>
-            <argument name="code" xsi:type="const">\Paylater\Model\Ui\ConfigProvider::CODE</argument>
+            <!--argument name="code" xsi:type="const">\Paylater\Model\Ui\ConfigProvider::CODE</argument-->
             <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
             <argument name="infoBlockType" xsi:type="string">Paylater\Block\Info</argument>
             <argument name="valueHandlerPool" xsi:type="object">SamplePaymentGatewayValueHandlerPool</argument>
@@ -19,11 +19,11 @@
     </virtualType>
 
     <!-- Configuration reader -->
-    <virtualType name="SamplePaymentGatewayConfig" type="Magento\Payment\Gateway\Config\Config">
+    <!--virtualType name="SamplePaymentGatewayConfig" type="Magento\Payment\Gateway\Config\Config">
         <arguments>
             <argument name="methodCode" xsi:type="const">\Paylater\Model\Ui\ConfigProvider::CODE</argument>
         </arguments>
-    </virtualType>
+    </virtualType-->
 
     <!-- Logger, initialized with SamplePaymentGatewayConfig -->
     <virtualType name="SamplePaymentGatewayLogger" type="Magento\Payment\Model\Method\Logger">
