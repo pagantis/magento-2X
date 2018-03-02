@@ -21,18 +21,11 @@ Si tienes alguna duda o pregunta no tienes más que escribirnos un email a [sopo
 ## Development Instructions:
 
 To develop or improve this module you need to have installed in your environment
-    * Composer
+    * Docker and docker-compose
     
 To make the module operative you need to download the dependencies, 
 
-    composer install
-    
-Once both dependencies are ready you can generate the specific module files using
-
-    grunt default
-    
-Grunt will compress the CSS and the JS and generate a zip file with the necessary files to push
-to the market.
+    ./docker-init.sh dev
 
 You can always do a symbolic link from your local installation of prestashop in order to verify
 the functionality of the code.
