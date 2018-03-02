@@ -5,6 +5,7 @@ docker-compose up -d --build
 sleep 10
 
 echo 'Install Magento'
+docker-compose exec magento2 composer install
 docker-compose exec magento2 install-magento
 echo 'Install DigitalOrigin_Pmt'
 #docker-compose exec --user=www-data magento2 mkdir -p /var/www/html/app/code/DigitalOrigin && \
