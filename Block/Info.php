@@ -3,11 +3,11 @@
  * Copyright © 2016 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Paylater\Block;
+namespace DigitalOrigin\Pmt\Block;
 
 use Magento\Framework\Phrase;
 use Magento\Payment\Block\ConfigurableInfo;
-use Paylater\Gateway\Response\FraudHandler;
+use DigitalOrigin\Pmt\Gateway\Response\FraudHandler;
 
 class Info extends ConfigurableInfo
 {

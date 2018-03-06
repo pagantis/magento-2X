@@ -3,10 +3,10 @@
  * Copyright © 2016 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Paylater\Model\Ui;
+namespace DigitalOrigin\Pmt\Model\Ui;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
-use Paylater\Gateway\Http\Client\ClientMock;
+use DigitalOrigin\Pmt\Gateway\Http\Client\ClientMock;
 
 /**
  * Class ConfigProvider

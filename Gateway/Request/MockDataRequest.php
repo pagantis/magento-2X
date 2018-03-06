@@ -3,11 +3,11 @@
  * Copyright © 2016 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Paylater\Gateway\Request;
+namespace DigitalOrigin\Pmt\Gateway\Request;
 
 use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
 use Magento\Payment\Gateway\Request\BuilderInterface;
-use Paylater\Gateway\Http\Client\ClientMock;
+use DigitalOrigin\Pmt\Gateway\Http\Client\ClientMock;
 
 class MockDataRequest implements BuilderInterface
 {

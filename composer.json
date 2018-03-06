@@ -47,7 +47,7 @@
   "autoload": {
     "files": [ "registration.php" ],
     "psr-4": {
-      "Paylater\\": ""
+      "DigitalOrigin\\Pmt\\": ""
     }
   },
   "autoload-dev": {
