@@ -62,7 +62,9 @@ class ClientMock implements ClientInterface
     }
 
     /**
-     * Generates response
+     * Generate Response
+     *
+     * @param $resultCode
      *
      * @return array
      */

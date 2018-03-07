@@ -27,7 +27,7 @@ class Info extends ConfigurableInfo
      * Returns value view
      *
      * @param string $field
-     * @param string $value
+     * @param string | array $value
      * @return string | Phrase
      */
     protected function getValueView($field, $value)
