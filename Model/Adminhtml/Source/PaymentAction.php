@@ -1,14 +1,12 @@
 <?php
-/**
- * Copyright © 2016 Magento. All rights reserved.
- * See COPYING.txt for license details.
- */
+
 namespace DigitalOrigin\Pmt\Model\Adminhtml\Source;
 
 use Magento\Payment\Model\Method\AbstractMethod;
 
 /**
  * Class PaymentAction
+ * @package DigitalOrigin\Pmt\Model\Adminhtml\Source
  */
 class PaymentAction implements \Magento\Framework\Option\ArrayInterface
 {

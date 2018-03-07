@@ -1,18 +1,20 @@
 <?php
-/**
- * Copyright © 2016 Magento. All rights reserved.
- * See COPYING.txt for license details.
- */
+
 namespace DigitalOrigin\Pmt\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Payment\Observer\AbstractDataAssignObserver;
 
+/**
+ * Class DataAssignObserver
+ * @package DigitalOrigin\Pmt\Observer
+ */
 class DataAssignObserver extends AbstractDataAssignObserver
 {
     /**
      * @param Observer $observer
-     * @return void
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function execute(Observer $observer)
     {

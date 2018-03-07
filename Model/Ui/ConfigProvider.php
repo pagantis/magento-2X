@@ -1,8 +1,5 @@
 <?php
-/**
- * Copyright © 2016 Magento. All rights reserved.
- * See COPYING.txt for license details.
- */
+
 namespace DigitalOrigin\Pmt\Model\Ui;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
@@ -10,6 +7,7 @@ use DigitalOrigin\Pmt\Gateway\Http\Client\ClientMock;
 
 /**
  * Class ConfigProvider
+ * @package DigitalOrigin\Pmt\Model\Ui
  */
 final class ConfigProvider implements ConfigProviderInterface
 {

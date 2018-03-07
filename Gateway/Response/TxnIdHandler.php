@@ -1,13 +1,14 @@
 <?php
-/**
- * Copyright © 2016 Magento. All rights reserved.
- * See COPYING.txt for license details.
- */
+
 namespace DigitalOrigin\Pmt\Gateway\Response;
 
 use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
 use Magento\Payment\Gateway\Response\HandlerInterface;
 
+/**
+ * Class TxnIdHandler
+ * @package DigitalOrigin\Pmt\Gateway\Response
+ */
 class TxnIdHandler implements HandlerInterface
 {
     const TXN_ID = 'TXN_ID';

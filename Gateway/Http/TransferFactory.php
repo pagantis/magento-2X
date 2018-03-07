@@ -1,8 +1,5 @@
 <?php
-/**
- * Copyright © 2016 Magento. All rights reserved.
- * See COPYING.txt for license details.
- */
+
 namespace DigitalOrigin\Pmt\Gateway\Http;
 
 use Magento\Payment\Gateway\Http\TransferBuilder;
@@ -10,6 +7,10 @@ use Magento\Payment\Gateway\Http\TransferFactoryInterface;
 use Magento\Payment\Gateway\Http\TransferInterface;
 use DigitalOrigin\Pmt\Gateway\Request\MockDataRequest;
 
+/**
+ * Class TransferFactory
+ * @package DigitalOrigin\Pmt\Gateway\Http
+ */
 class TransferFactory implements TransferFactoryInterface
 {
     /**

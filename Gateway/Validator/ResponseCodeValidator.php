@@ -1,14 +1,15 @@
 <?php
-/**
- * Copyright © 2016 Magento. All rights reserved.
- * See COPYING.txt for license details.
- */
+
 namespace DigitalOrigin\Pmt\Gateway\Validator;
 
 use Magento\Payment\Gateway\Validator\AbstractValidator;
 use Magento\Payment\Gateway\Validator\ResultInterface;
 use DigitalOrigin\Pmt\Gateway\Http\Client\ClientMock;
 
+/**
+ * Class ResponseCodeValidator
+ * @package DigitalOrigin\Pmt\Gateway\Validator
+ */
 class ResponseCodeValidator extends AbstractValidator
 {
     const RESULT_CODE = 'RESULT_CODE';

@@ -1,14 +1,15 @@
 <?php
-/**
- * Copyright © 2016 Magento. All rights reserved.
- * See COPYING.txt for license details.
- */
+
 namespace DigitalOrigin\Pmt\Block;
 
 use Magento\Framework\Phrase;
 use Magento\Payment\Block\ConfigurableInfo;
 use DigitalOrigin\Pmt\Gateway\Response\FraudHandler;
 
+/**
+ * Class Info
+ * @package DigitalOrigin\Pmt\Block
+ */
 class Info extends ConfigurableInfo
 {
     /**

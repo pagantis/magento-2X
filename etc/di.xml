@@ -1,13 +1,5 @@
 <?xml version="1.0"?>
-<!--
-/**
- * Copyright © 2016 Magento. All rights reserved.
- * See COPYING.txt for license details.
- */
--->
-
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <!-- Payment Method Facade configuration -->
     <virtualType name="PaylaterFacade" type="Magento\Payment\Model\Method\Adapter">
         <arguments>
             <argument name="code" xsi:type="const">DigitalOrigin\Pmt\Model\Ui\ConfigProvider::CODE</argument>
@@ -17,28 +9,21 @@
             <argument name="commandPool" xsi:type="object">PaylaterCommandPool</argument>
         </arguments>
     </virtualType>
-
-    <!-- Configuration reader -->
     <virtualType name="PaylaterConfig" type="Magento\Payment\Gateway\Config\Config">
         <arguments>
             <argument name="methodCode" xsi:type="const">DigitalOrigin\Pmt\Model\Ui\ConfigProvider::CODE</argument>
         </arguments>
     </virtualType>
-
-    <!-- Logger, initialized with PaylaterConfig -->
     <virtualType name="PaylaterLogger" type="Magento\Payment\Model\Method\Logger">
         <arguments>
             <argument name="config" xsi:type="object">PaylaterConfig</argument>
         </arguments>
     </virtualType>
-
     <type name="DigitalOrigin\Pmt\Gateway\Http\Client\ClientMock">
         <arguments>
             <argument name="logger" xsi:type="object">PaylaterLogger</argument>
         </arguments>
     </type>
-
-    <!-- Commands infrastructure -->
     <virtualType name="PaylaterCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
         <arguments>
             <argument name="commands" xsi:type="array">
@@ -48,8 +33,6 @@
             </argument>
         </arguments>
     </virtualType>
-
-    <!-- Authorize command -->
     <virtualType name="PaylaterAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
         <arguments>
             <argument name="requestBuilder" xsi:type="object">PaylaterAuthorizationRequest</argument>
@@ -58,8 +41,6 @@
             <argument name="client" xsi:type="object">DigitalOrigin\Pmt\Gateway\Http\Client\ClientMock</argument>
         </arguments>
     </virtualType>
-
-    <!-- Authorization Request -->
     <virtualType name="PaylaterAuthorizationRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
         <arguments>
             <argument name="builders" xsi:type="array">
@@ -73,8 +54,6 @@
             <argument name="config" xsi:type="object">PaylaterConfig</argument>
         </arguments>
     </type>
-
-    <!-- Capture command -->
     <virtualType name="PaylaterCaptureCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
         <arguments>
             <argument name="requestBuilder" xsi:type="object">DigitalOrigin\Pmt\Gateway\Request\CaptureRequest</argument>
@@ -84,15 +63,11 @@
             <argument name="client" xsi:type="object">DigitalOrigin\Pmt\Gateway\Http\Client\ClientMock</argument>
         </arguments>
     </virtualType>
-
-    <!-- Capture Request -->
     <type name="DigitalOrigin\Pmt\Gateway\Request\CaptureRequest">
         <arguments>
             <argument name="config" xsi:type="object">PaylaterConfig</argument>
         </arguments>
     </type>
-
-    <!-- Void command -->
     <virtualType name="PaylaterVoidCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
         <arguments>
             <argument name="requestBuilder" xsi:type="object">DigitalOrigin\Pmt\Gateway\Request\VoidRequest</argument>
@@ -102,15 +77,11 @@
             <argument name="client" xsi:type="object">DigitalOrigin\Pmt\Gateway\Http\Client\ClientMock</argument>
         </arguments>
     </virtualType>
-
-    <!-- Void Request -->
     <type name="DigitalOrigin\Pmt\Gateway\Request\VoidRequest">
         <arguments>
             <argument name="config" xsi:type="object">PaylaterConfig</argument>
         </arguments>
     </type>
-
-    <!-- Response handlers -->
     <virtualType name="PaylaterResponseHandlerComposite" type="Magento\Payment\Gateway\Response\HandlerChain">
         <arguments>
             <argument name="handlers" xsi:type="array">
@@ -119,8 +90,6 @@
             </argument>
         </arguments>
     </virtualType>
-
-    <!-- Value handlers infrastructure -->
     <virtualType name="PaylaterValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
         <arguments>
             <argument name="handlers" xsi:type="array">
@@ -139,5 +108,4 @@
             <argument name="config" xsi:type="object">PaylaterConfig</argument>
         </arguments>
     </type>
-
 </config>

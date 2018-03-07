@@ -1,14 +1,15 @@
 <?php
-/**
- * Copyright © 2016 Magento. All rights reserved.
- * See COPYING.txt for license details.
- */
+
 namespace DigitalOrigin\Pmt\Gateway\Request;
 
 use Magento\Payment\Gateway\ConfigInterface;
 use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
 use Magento\Payment\Gateway\Request\BuilderInterface;
 
+/**
+ * Class AuthorizationRequest
+ * @package DigitalOrigin\Pmt\Gateway\Request
+ */
 class AuthorizationRequest implements BuilderInterface
 {
     /**
