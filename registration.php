@@ -1,14 +1,9 @@
 <?php
 
-/**
- * Copyright © 2016 Magento. All rights reserved.
- * See COPYING.txt for license details.
- */
-
 use \Magento\Framework\Component\ComponentRegistrar;
 
 ComponentRegistrar::register(
     ComponentRegistrar::MODULE,
     'DigitalOrigin_Pmt',
-    __DIR__
+    isset($file) ? dirname($file) : __DIR__
 );

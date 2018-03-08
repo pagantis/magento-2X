@@ -1,0 +1,33 @@
+<?php
+/**
+ * @var \DigitalOrigin\Pmt\Block\Product\Simulator $block
+ */
+if ($block->getSimulatorType() && $block->isEnabled()) {
+    if ($block->isProductInPromotion()) {
+        echo '<span class="pmt-promotion" id="pmt-promotion-extra">'. $block->getPromotionProductExtra() .'</span>';
+    }
+    ?>
+
+    <div id="pmt-simulator-product-page" class="PmtSimulator"
+         data-pmt-num-quota="4" data-pmt-max-ins="12"
+         data-pmt-type="<?= $block->getSimulatorType() ?>"
+         data-pmt-discount ="<?echo $block->isProductInPromotion()?>"
+         data-pmt-amount="<?= $block->getFinalPrice() ?>" data-pmt-expanded="<?php if ($block->getSimulatorType() == 1) echo 'no'; else echo 'yes'; ?>">
+    </div>
+    <script type="text/javascript">
+        if (typeof pmtClient !== 'undefined') {
+            pmtClient.setPublicKey('<?= $block->getPublicKey() ?>');
+            pmtClient.simulator.reload();
+        }
+    </script>
+    <?php
+}
+?>
+<style>
+    .pmt-promotion {
+        text-align: center;
+        font-weight: bold;
+        color: black;
+        font-size: medium;
+    }
+</style>
