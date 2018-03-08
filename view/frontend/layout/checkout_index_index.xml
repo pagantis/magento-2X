@@ -1,10 +1,3 @@
-<?xml version="1.0"?>
-<!--
-/**
- * Copyright © 2016 Magento. All rights reserved.
- * See COPYING.txt for license details.
- */
--->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceBlock name="checkout.root">
@@ -21,14 +14,11 @@
                                                 <item name="payment" xsi:type="array">
                                                     <item name="children" xsi:type="array">
                                                         <item name="renders" xsi:type="array">
-                                                            <!-- merge payment method renders here -->
                                                             <item name="children" xsi:type="array">
                                                                 <item name="paylater" xsi:type="array">
                                                                     <item name="component" xsi:type="string">DigitalOrigin_Pmt/js/view/payment/paylater</item>
                                                                     <item name="methods" xsi:type="array">
-                                                                        <item name="paylater" xsi:type="array">
-                                                                            <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
-                                                                        </item>
+                                                                        <item name="paylater" xsi:type="array"/>
                                                                     </item>
                                                                 </item>
                                                             </item>

@@ -1,51 +1,48 @@
-/**
- * Copyright © 2016 Magento. All rights reserved.
- * See COPYING.txt for license details.
- */
-/*browser:true*/
-/*global define*/
 define(
     [
-        'Magento_Checkout/js/view/payment/default'
+        'jquery',
+        'Magento_Checkout/js/view/payment/default',
+        'Magento_Checkout/js/action/redirect-on-success',
+        'Magento_Checkout/js/action/set-payment-information',
+        'Magento_Checkout/js/model/payment/additional-validators',
+        'Magento_Checkout/js/model/quote'
     ],
-    function (Component) {
+    function ($,
+              Component,
+              redirectOnSuccessAction,
+              setPaymentInformationAction,
+              additionalValidators,
+              quote
+    ) {
         'use strict';
 
         return Component.extend({
             defaults: {
-                template: 'DigitalOrigin_Pmt/payment/form',
-                transactionResult: ''
+                template: 'DigitalOrigin_Pmt/payment/checkout-form'
             },
 
-            initObservable: function () {
+            redirectAfterPlaceOrder: false,
 
-                this._super()
-                    .observe([
-                        'transactionResult'
-                    ]);
-                return this;
-            },
+            /**
+             * @override PlaceOrder
+             */
+            placeOrder: function (data, event) {
+                var self = this;
 
-            getCode: function() {
-                return 'paylater';
-            },
+                if (event) {
+                    event.preventDefault();
+                }
 
-            getData: function() {
-                return {
-                    'method': this.item.method,
-                    'additional_data': {
-                        'transaction_result': this.transactionResult()
-                    }
-                };
-            },
-
-            getTransactionResults: function() {
-                return _.map(window.checkoutConfig.payment.paylater.transactionResults, function(value, key) {
-                    return {
-                        'value': key,
-                        'transaction_result': value
-                    }
-                });
+                if (additionalValidators.validate()) {
+                    $.When(setPaymentInformationAction(this.messageContainer, {
+                        'method': self.getCode()
+                    })).done(this.refresh('https://google.es'))
+                        .fail(
+                            function () {
+                                self.isPlaceOrderActionAllowed(true);
+                            }
+                        );
+                }
             }
         });
     }

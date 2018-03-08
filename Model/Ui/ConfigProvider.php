@@ -3,7 +3,7 @@
 namespace DigitalOrigin\Pmt\Model\Ui;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
-use DigitalOrigin\Pmt\Gateway\Http\Client\ClientMock;
+use Magento\Checkout\Model\Session;
 
 /**
  * Class ConfigProvider
@@ -14,21 +14,35 @@ final class ConfigProvider implements ConfigProviderInterface
     const CODE = 'paylater';
 
     /**
+     * @var Session
+     */
+    protected $checkoutSession;
+
+    /**
+     * ConfigProvider constructor.
+     *
+     * @param Session $checkoutSession
+     */
+    public function __construct(Session $checkoutSession)
+    {
+        $this->checkoutSession = $checkoutSession;
+    }
+
+    /**
      * Retrieve assoc array of checkout configuration
      *
      * @return array
      */
     public function getConfig()
     {
+        $quote = $this->checkoutSession->getQuote();
+
         return [
             'payment' => [
                 self::CODE => [
-                    'transactionResults' => [
-                        ClientMock::SUCCESS => __('Success'),
-                        ClientMock::FAILURE => __('Fraud')
-                    ]
-                ]
-            ]
+                    'total' => $quote->getGrandTotal(),
+                ],
+            ],
         ];
     }
 }
