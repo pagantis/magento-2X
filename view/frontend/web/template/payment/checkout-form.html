@@ -5,47 +5,37 @@
                class="radio"
                data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()" />
         <label data-bind="attr: {'for': getCode()}" class="label">
+            <!-- PayPal Logo -->
+            <img data-bind="attr: {src: getPaymentAcceptanceMarkSrc(), alt: $t('Acceptance Mark')}" class="payment-icon"/>
+            <!-- PayPal Logo -->
             <span data-bind="text: getTitle()"></span>
+            <a data-bind="attr: {href: getPaymentAcceptanceMarkHref()}, click: showAcceptanceWindow"
+               class="action action-help">
+                <!-- ko i18n: 'What is PayPal?' --><!-- /ko -->
+            </a>
         </label>
     </div>
-    <div>
-        <script type="text/javascript">
-            if (typeof pmtClient !== 'undefined') {
-                pmtClient.setPublicKey('<?=$publicKey?>');
-                pmtClient.events.send('checkout', { basketAmount: '<?=$amount?>' } );
-            }
-        </script>
-        <?php if($simulatorType) { ?>
-        <div id="payment_form_<?=$_code?>" style="display: none">
-            <div id="paylater-checkout">
-                <div class="PmtSimulator"
-                     data-pmt-num-quota="4" data-pmt-max-ins="12"
-                     data-pmt-type="<?=$simulatorType?>"
-                     data-pmt-amount="<?=$amount?>" data-pmt-expanded="<?php if ($simulatorType == 1) echo 'no'; else echo 'yes'; ?>">
-                </div>
-            </div>
-        </div>
-        <script type="text/javascript">
-            if (typeof pmtClient !== 'undefined') {
-                pmtClient.simulator.reload();
-            }
-        </script>
-        <!-- TODO: put simulator here, change php for javascript variables -->
-    </div>
     <div class="payment-method-content">
+        <!-- ko foreach: getRegion('messages') -->
+        <!-- ko template: getTemplate() --><!-- /ko -->
+        <!--/ko-->
+        <fieldset class="fieldset" data-bind='attr: {id: "payment_form_" + getCode()}'>
+            <div class="payment-method-note">
+                <!-- ko i18n: 'You will be redirected to the PayPal website.' --><!-- /ko -->
+            </div>
+        </fieldset>
+        <div class="checkout-agreements-block">
+            <!-- ko foreach: $parent.getRegion('before-place-order') -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
         <div class="actions-toolbar">
             <div class="primary">
-                <button data-role="review-save"
+                <button class="action primary checkout"
                         type="submit"
-                        data-bind="
-                        attr: {title: $t('Place Order')},
-                        enable: (getCode() == isChecked()),
-                        click: placeOrder,
-                        css: {disabled: !isPlaceOrderActionAllowed()}
-                        "
-                        class="action primary checkout"
+                        data-bind="click: continueToPayPal, enable: (getCode() == isChecked())"
                         disabled>
-                    <span data-bind="i18n: 'Place Order'"></span>
+                    <span data-bind="i18n: 'Continue to PayPal'"></span>
                 </button>
             </div>
         </div>

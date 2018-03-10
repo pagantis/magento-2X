@@ -2,46 +2,78 @@ define(
     [
         'jquery',
         'Magento_Checkout/js/view/payment/default',
-        'Magento_Checkout/js/action/redirect-on-success',
-        'Magento_Checkout/js/action/set-payment-information',
-        'Magento_Checkout/js/model/payment/additional-validators',
-        'Magento_Checkout/js/model/quote'
+        'Magento_Paypal/js/action/set-payment-method',
+        'Magento_Checkout/js/model/payment/additional-validators'
     ],
-    function ($,
-              Component,
-              redirectOnSuccessAction,
-              setPaymentInformationAction,
-              additionalValidators,
-              quote
-    ) {
+    function ($, Component, setPaymentMethodAction, additionalValidators) {
         'use strict';
 
         return Component.extend({
             defaults: {
-                template: 'DigitalOrigin_Pmt/payment/checkout-form'
+                template: 'Magento_Paypal/payment/paypal-express-bml',
+                billingAgreement: ''
             },
 
-            redirectAfterPlaceOrder: false,
+            isAvailable: function() {
+                //TODO LOGIC
+                return true;
+            },
 
-            /**
-             * @override PlaceOrder
-             */
-            placeOrder: function (data, event) {
-                var self = this;
+            /** Init observable variables */
+            initObservable: function () {
+                this._super()
+                    .observe('billingAgreement');
+                return this;
+            },
 
-                if (event) {
-                    event.preventDefault();
+            /** Open window with  */
+            showAcceptanceWindow: function(data, event) {
+                window.open(
+                    $(event.target).attr('href'),
+                    'olcwhatispaypal',
+                    'toolbar=no, location=no,' +
+                    ' directories=no, status=no,' +
+                    ' menubar=no, scrollbars=yes,' +
+                    ' resizable=yes, ,left=0,' +
+                    ' top=0, width=400, height=350'
+                );
+                return false;
+            },
+
+            /** Returns payment acceptance mark link path */
+            getPaymentAcceptanceMarkHref: function() {
+                return window.checkoutConfig.payment.paypalExpress.paymentAcceptanceMarkHref;
+            },
+
+            /** Returns payment acceptance mark image path */
+            getPaymentAcceptanceMarkSrc: function() {
+                return window.checkoutConfig.payment.paypalExpress.paymentAcceptanceMarkSrc;
+            },
+
+            /** Returns billing agreement data */
+            getBillingAgreementCode: function() {
+                return window.checkoutConfig.payment.paypalExpress.billingAgreementCode[this.item.method];
+            },
+
+            /** Returns payment information data */
+            getData: function() {
+                var parent = this._super(),
+                    additionalData = null;
+
+                if (this.getBillingAgreementCode()) {
+                    additionalData = {};
+                    additionalData[this.getBillingAgreementCode()] = this.billingAgreement();
                 }
+                return $.extend(true, parent, {'additional_data': additionalData});
+            },
 
+            /** Redirect to paypal */
+            continueToPayPal: function () {
                 if (additionalValidators.validate()) {
-                    $.When(setPaymentInformationAction(this.messageContainer, {
-                        'method': self.getCode()
-                    })).done(this.refresh('https://google.es'))
-                        .fail(
-                            function () {
-                                self.isPlaceOrderActionAllowed(true);
-                            }
-                        );
+                    //update payment method information if additional data was changed
+                    this.selectPaymentMethod();
+                    setPaymentMethodAction(this.messageContainer);
+                    return false;
                 }
             }
         });
