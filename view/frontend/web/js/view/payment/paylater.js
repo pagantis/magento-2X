@@ -14,7 +14,6 @@ define(
                 component: 'DigitalOrigin_Pmt/js/view/payment/method-renderer/paylater'
             }
         );
-        /** Add view logic here if needed */
         return Component.extend({});
     }
 );
