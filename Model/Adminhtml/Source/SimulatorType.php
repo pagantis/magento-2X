@@ -18,7 +18,7 @@ class SimulatorType implements ArrayInterface
     /**
      * MINI
      */
-    const MINI = 1;
+    const MINI = 6;
 
     /**
      * COMPLETE
@@ -34,6 +34,11 @@ class SimulatorType implements ArrayInterface
      * TEXT
      */
     const TEXT = 4;
+
+    /**
+     * TEXT
+     */
+    const SIMPLE = 1;
 
     /**
      * @return array
@@ -56,6 +61,10 @@ class SimulatorType implements ArrayInterface
             array(
                 'label' => __(' Descriptive Text'),
                 'value' => self::TEXT,
+            ),
+            array(
+                'label' => __(' Simple'),
+                'value' => self::SIMPLE,
             ),
             array(
                 'label' => __(' Do not show'),

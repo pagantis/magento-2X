@@ -9,6 +9,25 @@ define(
     ],
     function ($, Component, url, customerData, errorProcessor, fullScreenLoader) {
         'use strict';
+        require.config({
+            paths: { "pmtSdk": "https://cdn.pagamastarde.com/pmt-js-client-sdk/3/js/client-sdk.min"},
+            waitSeconds: 40
+        });
+
+        require( ["jquery","pmtSdk"],
+            function ($, pmtClient) {
+                $(document).ready(function() {
+                    console.log(window.checkoutConfig.payment.paylater.pmtType);
+                    if (window.checkoutConfig.payment.paylater.pmtType != '0' &&
+                        window.checkoutConfig.payment.paylater.publicKey!='') {
+                        if (typeof pmtClient !== 'undefined') {
+                            pmtClient.setPublicKey(window.checkoutConfig.payment.paylater.publicKey);
+                            pmtClient.simulator.reload();
+                        }
+                    }
+                })
+            }
+        );
 
         return Component.extend({
             defaults: {
@@ -16,6 +35,22 @@ define(
             },
 
             redirectAfterPlaceOrder: false,
+
+            getPmtNumQuota: function() {
+                return  window.checkoutConfig.payment.paylater.pmtNumQuota
+            },
+
+            dataPmtMaxIns: function() {
+                return  window.checkoutConfig.payment.paylater.pmtMaxIns
+            },
+
+            getPmtType: function() {
+                return  window.checkoutConfig.payment.paylater.pmtType
+            },
+
+            getPmtTotal: function() {
+                return  window.checkoutConfig.payment.paylater.total
+            },
 
             /**
              * @override placeOrder function:

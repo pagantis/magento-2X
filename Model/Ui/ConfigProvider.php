@@ -14,6 +14,11 @@ final class ConfigProvider implements ConfigProviderInterface
     const CODE = 'paylater';
 
     /**
+     * @var \Magento\Payment\Model\MethodInterface
+     */
+    protected $method;
+
+    /**
      * @var Session
      */
     protected $checkoutSession;
@@ -21,10 +26,14 @@ final class ConfigProvider implements ConfigProviderInterface
     /**
      * ConfigProvider constructor.
      *
-     * @param Session $checkoutSession
+     * @param \Magento\Payment\Helper\Data $paymentHelper
+     * @param Session                      $checkoutSession
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function __construct(Session $checkoutSession)
+    public function __construct(\Magento\Payment\Helper\Data $paymentHelper, Session $checkoutSession)
     {
+        $this->method = $paymentHelper->getMethodInstance(self::CODE);
         $this->checkoutSession = $checkoutSession;
     }
 
@@ -41,6 +50,10 @@ final class ConfigProvider implements ConfigProviderInterface
             'payment' => [
                 self::CODE => [
                     'total' => $quote->getGrandTotal(),
+                    'publicKey' => $this->method->getConfigData('public_key'),
+                    'pmtType' => $this->method->getConfigData('checkout_simulator'),
+                    'pmtMaxIns' => $this->method->getConfigData('max_installments'),
+                    'pmtNumQuota' => $this->method->getConfigData('min_installments')
                 ],
             ],
         ];
