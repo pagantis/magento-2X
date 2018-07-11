@@ -13,11 +13,20 @@ sleep 10
 echo 'Install Magento'
 docker-compose exec magento2-${ENVIROMENT} install-magento
 echo 'Install DigitalOrigin_Pmt'
+if [ $1 == 'dev' ]
+then
 docker-compose exec -u www-data magento2-${ENVIROMENT} mkdir -p /var/www/html/app/code/DigitalOrigin && \
 docker-compose exec -u www-data magento2-${ENVIROMENT} ln -s /var/www/paylater /var/www/html/app/code/DigitalOrigin/Pmt && \
 docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt && \
 docker-compose exec magento2-${ENVIROMENT} chown -R www-data. /var/www/paylater
 docker-compose exec -u www-data magento2-${ENVIROMENT} composer install -d /var/www/paylater
+docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/orders-api-client -d /var/www/html
+else
+docker-compose exec -u www-data magento2-${ENVIROMENT} composer require DigitalOrigin/Pmt -d /var/www/html
+docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt
+docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:upgrade
+fi
+
 echo 'Sample Data + DI + SetupUpgrade + Clear Cache'
 docker-compose exec magento2-${ENVIROMENT} install-sampledata
 docker-compose exec -u www-data magento2-${ENVIROMENT} /var/www/html/bin/magento cron:run

@@ -17,8 +17,7 @@ define(
         require( ["jquery","pmtSdk"],
             function ($, pmtClient) {
                 $(document).ready(function() {
-                    console.log(window.checkoutConfig.payment.paylater.pmtType);
-                    if (window.checkoutConfig.payment.paylater.pmtType != '0' &&
+                    if (window.checkoutConfig.payment.paylater.pmtType  !='0' &&
                         window.checkoutConfig.payment.paylater.publicKey!='') {
                         if (typeof pmtClient !== 'undefined') {
                             pmtClient.setPublicKey(window.checkoutConfig.payment.paylater.publicKey);
@@ -52,26 +51,38 @@ define(
                 return  window.checkoutConfig.payment.paylater.total
             },
 
+            initObservable: function () {
+
+                this._super()
+                    .observe([
+                        'transactionResult'
+                    ]);
+                return this;
+            },
+
             /**
              * @override placeOrder function:
              */
-            placeOrder: function (data, event) {
+            placeOrder: function (data, event) { //data or this => UiClass  - Event JqueryEvent
+
                 var self = this;
 
                 if (event) {
                     event.preventDefault();
                 }
 
-                var paymentUrl = url.build('paylater/payment');
+                var paymentUrl = url.build('paylater/Payment'); //http://magento2.docker:8086/index.php/paylater/Payment
 
                 $.post(paymentUrl, 'json')
                     .done(function (response) {
+                        console.log(response);
                         window.location.replace(response);
                     })
                     .fail(function (response) {
-                        //TODO handle errors
+                        console.log('FAIL CASE');
                     })
                     .always(function () {
+                        console.log('ALWAYS CASE');
                         fullScreenLoader.stopLoader();
                     });
             }
