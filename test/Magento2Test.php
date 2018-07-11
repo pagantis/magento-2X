@@ -16,7 +16,7 @@ abstract class Magento2Test extends TestCase
     /**
      * Magento URL
      */
-    const MAGENTO_URL = 'http://magento20';
+    const MAGENTO_URL = 'http://magento2-test';
 
     /**
      * Magento Backoffice URL

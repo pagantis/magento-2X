@@ -1,26 +1,33 @@
 #!/bin/bash
-
-echo 'Composer install'
-composer install
-echo 'Npm install + grunt'
-npm install
-grunt default
+ENVIROMENT=$1
 echo 'Build docker images'
 docker-compose down
-docker-compose up -d
+docker-compose up -d --build magento2-${ENVIROMENT}
+if [ $1 == 'dev' ]
+then
+docker-compose up -d phpmyadmin
+fi
+docker-compose up -d selenium
 sleep 10
 
 echo 'Install Magento'
-docker-compose exec --user=root magento20 chown -R magento2:magento2 /var/www/ && \
-docker-compose exec --user=root magento20 chown -R magento2:magento2 /home/magento2/ && \
-docker-compose exec --user=magento2 magento20 /home/magento2/scripts/m2init magento:install --no-interaction --magento-host=magento20 && \
-docker-compose exec --user=magento2 magento20 mkdir -p /var/www/magento2/app/code/DigitalOrigin && \
+docker-compose exec magento2-${ENVIROMENT} install-magento
+echo 'Install DigitalOrigin_Pmt'
+if [ $1 == 'dev' ]
+then
+docker-compose exec -u www-data magento2-${ENVIROMENT} mkdir -p /var/www/html/app/code/DigitalOrigin && \
+docker-compose exec -u www-data magento2-${ENVIROMENT} ln -s /var/www/paylater /var/www/html/app/code/DigitalOrigin/Pmt && \
+docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt && \
+docker-compose exec magento2-${ENVIROMENT} chown -R www-data. /var/www/paylater
+docker-compose exec -u www-data magento2-${ENVIROMENT} composer install -d /var/www/paylater
+docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/orders-api-client -d /var/www/html
+else
+docker-compose exec -u www-data magento2-${ENVIROMENT} composer require DigitalOrigin/Pmt -d /var/www/html
+docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt
+docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:upgrade
+fi
 
-#docker-compose exec --user=magento2 magento20 ln -s /DigitalOrigin /var/www/magento2/app/code/DigitalOrigin/Pmt && \
-#docker-compose exec --user=magento2 magento20 ln -s /DigitalOrigin /var/www/magento2/pmt && \
-#docker-compose exec --user=magento2 magento20 php /var/www/magento2/bin/magento module:enable DigitalOrigin_Pmt && \
-
-docker-compose exec --user=magento2 magento20 php /var/www/magento2/bin/magento sampledata:deploy && \
-docker-compose exec --user=magento2 magento20 php /var/www/magento2/bin/magento setup:upgrade && \
-docker-compose exec --user=magento2 magento20 php /var/www/magento2/bin/magento setup:di:compile && \
-docker-compose exec --user=magento2 magento20 php /var/www/magento2/bin/magento cache:flush
+echo 'Sample Data + DI + SetupUpgrade + Clear Cache'
+docker-compose exec magento2-${ENVIROMENT} install-sampledata
+docker-compose exec -u www-data magento2-${ENVIROMENT} /var/www/html/bin/magento cron:run
+echo 'Build of Magento2 enviroment complete: http://magento2.docker:8086'

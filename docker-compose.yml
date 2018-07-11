@@ -1,59 +1,94 @@
-version: '2'
-
+version: '3.0'
 services:
-    magento20:
-        build:
-          dockerfile: Dockerfile
-          context: ./
-        hostname: magento20
-        domainname: paylater
-        volumes:
-          - "~/.composer:/home/magento2/.composer"
-          - "./src:/paylater"
-          - magento:/var/www/magento2
-        environment:
-          - MAGENTO_ADMIN_USER=admin
-          - MAGENTO_ADMIN_PASSWORD=password123
-          - MAGENTO_BACKEND_PATH=admin
-          - MAGENTO_CRON_RUN=0
-          - MAGENTO_DI_COMPILE=0
-          - MAGENTO_DOWNLOAD_SOURCES_CLOUD=0
-          - MAGENTO_DOWNLOAD_SOURCES_COMPOSER=1
-          - MAGENTO_EDITION=ce
-          - MAGENTO_GRUNT_COMPILE=0
-          - MAGENTO_SAMPLE_DATA_INSTALL=1
-          - MAGENTO_STATIC_CONTENTS_DEPLOY=0
-          - MAGENTO_USE_SOURCES_IN_HOST=0
-          - MAGENTO_WARM_UP_STOREFRONT=1
-          - MAGENTO_VERSION=
-          - USE_ELASTICSEARCH=0
-          - USE_RABBITMQ=0
-          - USE_REDIS_CACHE=0
-          - USE_REDIS_FULL_PAGE_CACHE=0
-          - USE_REDIS_SESSIONS=0
-          - USE_SHARED_WEBROOT=
-          - USE_UNISON_SYNC=0
-          - USE_VARNISH=0
-        env_file:
-          - ./.env.dist
-          - ./.env
-        extra_hosts:
-          - "magento20:127.0.0.1"
-        ports:
-          - "1748:80"
-    db:
-        image: mysql:5.6
-        env_file:
-          - ./.env.dist
-          - ./.env
-        environment:
-          - MYSQL_ROOT_PASSWORD=root
-          - MYSQL_DATABASE=magento2
-
-    selenium:
-        image: selenium/standalone-chrome:3.7.1
-        ports:
-          - "4444:4444"
-
+  magento2-dev:
+    image: alexcheng/magento2:2.2.1
+    environment:
+      - MYSQL_HOST=db-dev
+      - MYSQL_ROOT_PASSWORD=password123
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password123
+      - MYSQL_DATABASE=magento2-dev
+      - MAGENTO_LANGUAGE=es_ES
+      - MAGENTO_TIMEZONE=Europe/Madrid
+      - MAGENTO_DEFAULT_CURRENCY=EUR
+      - MAGENTO_URL=http://magento2.docker:8086
+      - MAGENTO_BACKEND_FRONTNAME=admin
+      - MAGENTO_USE_SECURE=0
+      - MAGENTO_BASE_URL_SECURE=0
+      - MAGENTO_USE_SECURE_ADMIN=0
+      - MAGENTO_ADMIN_FIRSTNAME=Admin
+      - MAGENTO_ADMIN_LASTNAME=MyStore
+      - MAGENTO_ADMIN_EMAIL=amdin@example.com
+      - MAGENTO_ADMIN_USERNAME=admin
+      - MAGENTO_ADMIN_PASSWORD=password123
+    ports:
+      - "8086:80"
+    extra_hosts:
+      - "magento2.docker:127.0.0.1"
+    links:
+      - db-dev
+    env_file:
+      - .env
+    volumes:
+      - ./:/var/www/paylater
+    working_dir: /var/www/html/
+  db-dev:
+    image: mysql:5.6.23
+    volumes:
+      - db-data:/var/lib/mysql/data
+    env_file:
+      - .env
+    environment:
+      - MYSQL_ROOT_PASSWORD=password123
+      - MYSQL_DATABASE=magento2-dev
+  magento2-test:
+    image: alexcheng/magento2:2.2.1
+    environment:
+      - MYSQL_HOST=db-test
+      - MYSQL_ROOT_PASSWORD=password123
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password123
+      - MYSQL_DATABASE=magento2-test
+      - MAGENTO_LANGUAGE=es_ES
+      - MAGENTO_TIMEZONE=Europe/Madrid
+      - MAGENTO_DEFAULT_CURRENCY=EUR
+      - MAGENTO_URL=http://magento2-test
+      - MAGENTO_BACKEND_FRONTNAME=admin
+      - MAGENTO_USE_SECURE=0
+      - MAGENTO_BASE_URL_SECURE=0
+      - MAGENTO_USE_SECURE_ADMIN=0
+      - MAGENTO_ADMIN_FIRSTNAME=Admin
+      - MAGENTO_ADMIN_LASTNAME=MyStore
+      - MAGENTO_ADMIN_EMAIL=amdin@example.com
+      - MAGENTO_ADMIN_USERNAME=admin
+      - MAGENTO_ADMIN_PASSWORD=password123
+    extra_hosts:
+      - "magento2:127.0.0.1"
+    links:
+      - db-test
+    env_file:
+      - .env
+    volumes:
+      - ./:/var/www/paylater
+    working_dir: /var/www/html/
+  db-test:
+    image: mysql:5.6.23
+    volumes:
+      - db-data:/var/lib/mysql/data
+    env_file:
+      - .env
+    environment:
+      - MYSQL_ROOT_PASSWORD=password123
+      - MYSQL_DATABASE=magento2-test
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8087:80"
+    links:
+      - db-dev
+  selenium:
+      image: selenium/standalone-chrome:3.7.1
+      ports:
+        - "4444:4444"
 volumes:
-  magento:
+  db-data:

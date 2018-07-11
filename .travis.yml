@@ -21,15 +21,6 @@ before_install:
   - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
   - docker --version
   - docker-compose --version
-before_script:
-  - phpenv config-rm xdebug.ini
 script:
-  - echo 'Composer install'
-  - composer install
-  - echo 'Npm install + grunt'
-  - npm install
-  - grunt default
-  - echo 'Build docker images'
-  - "./docker-init.sh"
-  - composer install
+  - "./docker-init.sh test"
   - vendor/bin/phpunit
