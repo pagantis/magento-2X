@@ -1,33 +1,43 @@
 <?php
 /**
- * @var string $checkoutUrl
- * @var string $url
- * @var string $css
+ * @var \DigitalOrigin\Pmt\Block\Payment\Iframe $block
  */
 
-//TODO FIX THIS
-$url = 'https://form.pagamastarde.com/845b96462c064097b0b9e9624159cc01';
-$css = 'https://shopper.pagamastarde.com/css/paylater-modal.min.css';
-$checkoutUrl = 'http://magento2.docker:8086/index.php/checkout/#payment';
-
+//if ($block->url && $block->checkoutUrl) {
 ?>
-<link rel="stylesheet" type="text/css" media="all" href="<?=$css?>">
-<div class="paylater-content">
-    <div id="myModal" class="paylater_modal" style="display: block;">
-        <div class="paylater_modal-content">
-            <iframe id="iframe-pagantis" name="iframe-pagantis" style="width: 100%; height: 100%; display: block" frameborder="0" src="<?=$url?>"></iframe>
-            <button class="paylater_modal-close" id="paylater_close" title="Cerrar" type="button">X</button>
-        </div>
-    </div>
+<script type="text/javascript">
+    require.config({
+        paths: { "pmtSdk": "https://cdn.pagamastarde.com/pmt-js-client-sdk/3/js/client-sdk.min"},
+        waitSeconds: 0
+    });
 
-    <script type="text/javascript">
-        var closeModal = function closeModal(evt) {
-            evt.preventDefault();
-            window.location.href = "<?=$checkoutUrl?>";
-        };
-        var elements = document.querySelectorAll('#paylater_close, #myModal');
-        Array.prototype.forEach.call(elements, function(el){
-            el.addEventListener('click', closeModal);
-        });
-    </script>
-</div>
+    require( ["pmtSdk", "jquery" ],
+        function (pmtClient, $) {
+            if (typeof pmtClient !== 'undefined') {
+                console.log("pmtclient = DEFINED");
+                $(document).ready( function(){
+                    pmtClient.modal.open(
+                        "<?=$block->getOrderUrl(); ?>",
+                        {
+                            closeOnBackDropClick: false,
+                            closeOnEscPress: false,
+                            backDropDark: false,
+                            largeSize: true,
+                            closeConfirmationMessage: "{l s='Sure you want to leave?' mod='paylater'}"
+                        }
+                    );
+                });
+                pmtClient.modal.onClose(function() {
+                    window.location.href = "<?=$block->getCheckoutUrl(); ?>";
+                });
+            }
+            else {
+                console.log("pmtclient = UNDEFINED");
+            }
+        }
+    );
+</script>
+<?php
+//}
+?>
+
