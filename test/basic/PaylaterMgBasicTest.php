@@ -1,17 +1,17 @@
 <?php
 
-namespace Test\Basic;
+namespace DigitalOrigin\Test\Basic;
 
+use DigitalOrigin\Test\Common\AbstractMg21Selenium;
 use Facebook\WebDriver\WebDriverExpectedCondition;
-use Test\PaylaterMagentoTest;
 
 /**
- * Class PaylaterMg21BasicTest
- * @package Test\Basic
+ * Class PaylaterMgBasicTest
+ * @package DigitalOrigin\Test\Basic
  *
  * @group magento-basic
  */
-class PaylaterMg21BasicTest extends PaylaterMagentoTest
+class PaylaterMgBasicTest extends AbstractMg21Selenium
 {
     /**
      * String
@@ -26,15 +26,12 @@ class PaylaterMg21BasicTest extends PaylaterMagentoTest
     /**
      * testMagentoOpen
     */
-    public function testMagentoOpen()
+    public function testPaylaterMg21BasicTest()
     {
         $this->webDriver->get(self::MAGENTO_URL);
-        $this->webDriver->wait(30, 500)->until(
-            WebDriverExpectedCondition::titleContains(
-                self::TITLE
-            )
-        );
-        $this->assertContains(self::TITLE, $this->webDriver->getTitle());
+        $condition = WebDriverExpectedCondition::titleContains(self::TITLE);
+        $this->webDriver->wait()->until($condition);
+        $this->assertTrue((bool) $condition);
         $this->quit();
     }
 
@@ -44,12 +41,9 @@ class PaylaterMg21BasicTest extends PaylaterMagentoTest
     public function testBackofficeOpen()
     {
         $this->webDriver->get(self::MAGENTO_URL.self::BACKOFFICE_FOLDER);
-        $this->webDriver->wait(30, 500)->until(
-            WebDriverExpectedCondition::titleContains(
-                self::BACKOFFICE_TITLE
-            )
-        );
-        $this->assertContains(self::BACKOFFICE_TITLE, $this->webDriver->getTitle());
+        $condition = WebDriverExpectedCondition::titleContains(self::BACKOFFICE_TITLE);
+        $this->webDriver->wait()->until($condition);
+        $this->assertTrue((bool) $condition);
         $this->quit();
     }
 }

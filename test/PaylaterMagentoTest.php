@@ -1,6 +1,6 @@
 <?php
 
-namespace Test;
+namespace DigitalOrigin\Test;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\WebDriverCapabilityType;
@@ -8,15 +8,15 @@ use Facebook\WebDriver\WebDriverBy;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class Magento21Test
- * @package Test
+ * Class PaylaterMagentoTest
+ * @package DigitalOrigin\Test
  */
-abstract class Magento21Test extends TestCase
+abstract class PaylaterMagentoTest extends TestCase
 {
     /**
      * Magento URL
      */
-    const MAGENTO_URL = 'http://magento2-test';
+    const MAGENTO_URL = 'http://magento2.docker:8086/index.php';
 
     /**
      * Magento Backoffice URL
@@ -24,25 +24,33 @@ abstract class Magento21Test extends TestCase
     const BACKOFFICE_FOLDER = '/admin';
 
     /**
+     * Magento Logout URL
+     */
+    const LOGOUT_FOLDER = '/customer/account/logout/';
+
+    /**
      * @var array
      */
     protected $configuration = array(
         'backofficeUsername' => 'admin',
         'backofficePassword' => 'password123',
-        'username'           => 'demo@prestashop.com',
-        'password'           => 'prestashop_demo',
         'publicKey'          => 'tk_fd53cd467ba49022e4f8215e',
         'secretKey'          => '21e57baa97459f6a',
-        'birthdate'          => '05/05/2005',
+        'methodName'         => 'Financiación instantánea',
+        'defaultSimulatorOpt' => 6,
+        'defaultMinIns' => 3,
+        'defaultMaxIns' => 12,
+        'username'           => 'demo@prestashop.com',
+        'password'           => 'Prestashop_demo',
         'firstname'          => 'John',
         'lastname'           => 'Doe Martinez',
-        'email'              => 'john.doe@digitalorigin.com',
-        'company'            => 'Digital Origin SL',
+        'email'              => 'john.doe4@digitalorigin.com',
+        //'company'            => 'Digital Origin SL',
         'zip'                => '08023',
         'city'               => 'Barcelona',
         'street'             => 'Av Diagonal 585, planta 7',
         'phone'              => '600123123',
-        'dni'                => '09422447Z',
+        //'dni'                => '09422447Z',
     );
 
     /**
