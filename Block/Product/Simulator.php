@@ -96,7 +96,7 @@ class Simulator extends Template
         $config = $scopeConfig->getValue('payment/paylater');
 
         $this->enabled = $config['active'];
-        $this->publicKey = $config['public_key'];
+        $this->publicKey = isset($config['public_key']) ? $config['public_key'] : '';
         $this->productSimulator = $config['product_simulator'];
         $this->minAmount = $config['min_amount'];
         $this->maxAmount = $config['max_amount'];
