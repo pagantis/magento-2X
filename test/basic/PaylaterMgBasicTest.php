@@ -3,15 +3,15 @@
 namespace Test\Basic;
 
 use Facebook\WebDriver\WebDriverExpectedCondition;
-use Test\Magento2Test;
+use Test\PaylaterMagentoTest;
 
 /**
- * Class BasicTest
+ * Class PaylaterMg21BasicTest
  * @package Test\Basic
  *
  * @group magento-basic
  */
-class BasicTest extends Magento2Test
+class PaylaterMg21BasicTest extends PaylaterMagentoTest
 {
     /**
      * String

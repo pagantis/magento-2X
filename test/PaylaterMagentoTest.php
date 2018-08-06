@@ -8,10 +8,10 @@ use Facebook\WebDriver\WebDriverBy;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class Magento2Test
+ * Class Magento21Test
  * @package Test
  */
-abstract class Magento2Test extends TestCase
+abstract class Magento21Test extends TestCase
 {
     /**
      * Magento URL
