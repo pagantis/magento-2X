@@ -1,7 +1,8 @@
 {
-  "name": "DigitalOrigin/Pmt",
+  "name": "pagamastarde/magento-2x",
   "description": "Paga+Tarde Magento 2 module",
   "type": "magento2-module",
+  "version" : "6.0.0",
   "keywords": [
     "api",
     "rest",
