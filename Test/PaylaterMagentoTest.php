@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalOrigin\Test;
+namespace DigitalOrigin\Pmt\Test;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\WebDriverCapabilityType;
@@ -16,7 +16,7 @@ abstract class PaylaterMagentoTest extends TestCase
     /**
      * Magento URL
      */
-    const MAGENTO_URL = 'http://magento2.docker:8086/index.php';
+    const MAGENTO_URL = 'http://magento2-Test/index.php';
 
     /**
      * Magento Backoffice URL
@@ -29,6 +29,42 @@ abstract class PaylaterMagentoTest extends TestCase
     const LOGOUT_FOLDER = '/customer/account/logout/';
 
     /**
+     * Magento Checkout URL
+     */
+    const CHECKOUT_FOLDER = '/checkout/';
+
+    /**
+     * Product name
+     */
+    const PRODUCT_NAME = 'Fusion Backpack';
+
+    /**
+     * Product quantity after
+     */
+    const PRODUCT_QTY_AFTER = 3;
+
+    /**
+     * Magento checkout Title
+     */
+    const CHECKOUT_TITLE = 'Checkout';
+
+    /**
+     * Magento checkout Title
+     */
+    const CART_TITLE = 'Cart';
+
+    /**
+     * Magento checkout Title
+     */
+    const SUCCESS_TITLE = 'Success Page';
+
+    /**
+     * Magento checkout Title
+     */
+    const ORDER_TITLE = 'Order #';
+
+
+    /**
      * @var array
      */
     protected $configuration = array(
@@ -37,26 +73,37 @@ abstract class PaylaterMagentoTest extends TestCase
         'publicKey'          => 'tk_fd53cd467ba49022e4f8215e',
         'secretKey'          => '21e57baa97459f6a',
         'methodName'         => 'Financiación instantánea',
-        'defaultSimulatorOpt' => 6,
-        'defaultMinIns' => 3,
-        'defaultMaxIns' => 12,
+        'defaultSimulatorOpt'=> 6,
+        'defaultMinIns'      => 3,
+        'defaultMaxIns'      => 12,
+        'minAmount'          => 70,
         'username'           => 'demo@prestashop.com',
         'password'           => 'Prestashop_demo',
         'firstname'          => 'John',
-        'lastname'           => 'Doe Martinez',
-        'email'              => 'john.doe4@digitalorigin.com',
-        //'company'            => 'Digital Origin SL',
+        'lastname'           => 'Döe Martinez',
+        'email'              => null,
         'zip'                => '08023',
         'city'               => 'Barcelona',
         'street'             => 'Av Diagonal 585, planta 7',
         'phone'              => '600123123',
         //'dni'                => '09422447Z',
+        //'company'            => 'Digital Origin SL',
     );
 
     /**
      * @var RemoteWebDriver
      */
     protected $webDriver;
+
+    /**
+     * PaylaterMagentoTest constructor.
+     */
+    public function __construct()
+    {
+        $this->configuration['email'] = "john.doe+".microtime(true)."@digitalorigin.com";
+
+        return parent::__construct();
+    }
 
     /**
      * Configure selenium

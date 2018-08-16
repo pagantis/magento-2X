@@ -1,8 +1,8 @@
 <?php
 
-namespace DigitalOrigin\Test\Basic;
+namespace DigitalOrigin\Pmt\Test\Basic;
 
-use DigitalOrigin\Test\Common\AbstractMg21Selenium;
+use DigitalOrigin\Pmt\Test\Common\AbstractMg21Selenium;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 
 /**

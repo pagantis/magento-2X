@@ -29,6 +29,8 @@ papeleos, ¡y la respuesta es inmediata!</checkout_description>
                 <max_installments>12</max_installments>
                 <price_selector>div.price-final_price span.price-wrapper span.price</price_selector>
                 <quantity_selector>div.fieldset div.qty div.control input.qty</quantity_selector>
+                <ok_url>checkout/onepage/success</ok_url>
+                <ko_url>checkout/#payment</ko_url>
             </paylater>
         </payment>
     </default>

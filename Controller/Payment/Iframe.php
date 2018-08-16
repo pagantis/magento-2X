@@ -54,7 +54,7 @@ class Iframe extends Action
 
             return $resultPage;
         } catch (\Exception $exception) {
-            $this->logger->info("[ERROR_4]".$exception->getMessage());
+            $this->logger->info(__METHOD__.'=>'.$exception->getMessage());
             die($exception->getMessage());
         }
     }

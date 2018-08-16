@@ -21,8 +21,9 @@ docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/mag
 docker-compose exec magento2-${ENVIROMENT} chown -R www-data. /var/www/paylater
 docker-compose exec -u www-data magento2-${ENVIROMENT} composer install -d /var/www/paylater
 docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/orders-api-client -d /var/www/html
+docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/selenium-form-utils -d /var/www/html
 else
-docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/magento-2x:v6.0.0 -d /var/www/html
+docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/magento-2x:v6.0.0.x-dev -d /var/www/html
 docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt
 docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:upgrade
 fi

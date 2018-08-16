@@ -2,118 +2,127 @@
 
 namespace DigitalOrigin\Pmt\Controller\Payment;
 
-use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
-use Magento\Framework\App\ObjectManager;
-use Magento\Framework\Controller\Result\JsonFactory;
-use Magento\Framework\View\Result\PageFactory;
-use Magento\Sales\Model\Order;
-use Magento\Framework\Serialize\Serializer\Json;
-use PagaMasTarde\OrdersApiClient\Model\Order\User\Address;
+use Magento\Quote\Model\QuoteRepository;
+use Magento\Sales\Model\ResourceModel\Order\Collection as OrderCollection;
+use Magento\Checkout\Model\Session;
 use DigitalOrigin\Pmt\Helper\Config;
 use DigitalOrigin\Pmt\Logger\Logger;
+use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\Module\ModuleList;
+use PagaMasTarde\OrdersApiClient\Model\Order\User\Address;
 
 define('__ROOT__', dirname((dirname(dirname(__FILE__)))));
 
 /**
- * Class Iframe
+ * Class Index
  * @package DigitalOrigin\Pmt\Controller\Payment
  */
 class Index extends Action
 {
-    /**
-     * @var PageFactory
-     */
-    protected $resultPageFactory;
+    /** Orders tablename */
+    const ORDERS_TABLE = 'cart_process';
 
-    /**
-     * @var JsonFactory
-     */
-    protected $jsonFactory;
-
-    /**
-     * @var Context
-     */
+    /** @var Context $context */
     protected $context;
 
-    /**
-     * @var Order $order
-     */
-    protected $order;
+    /** @var QuoteRepository  $quoteRepository */
+    protected $quoteRepository;
 
-    /**
-     * @var Session $session
-     */
+    /** @var OrderCollection $orderCollection */
+    protected $orderCollection;
+
+    /** @var Session $session */
     protected $session;
 
-    /**
-     * @var Json $jsonHelper
-     */
-    protected $jsonHelper;
+    /** @var mixed $config */
+    protected $config;
 
-    /**
-     * @var ObjectManager $objectManager
-     */
-    protected $objectManager;
+    /** @var Logger $logger */
+    protected $logger;
 
-    /**
-     * @var config
-     */
-    public $config;
+    /** @var ResourceConnection $dbObject */
+    protected $dbObject;
 
-    /**
-     * @var Logger
-     */
-    public $logger;
+    /** @var ProductMetadataInterface $productMetadataInterface */
+    protected $productMetadataInterface;
+
+    /** @var ModuleList $moduleList */
+    protected $moduleList;
 
     /**
      * Index constructor.
      *
-     * @param JsonFactory                     $resultJsonFactory
-     * @param Context                         $context
-     * @param PageFactory                     $resultPageFactory
-     * @param Order                           $order
-     * @param Session                         $session
-     * @param Json                            $jsonHelper
-     * @param Config                          $config
-     * @param Logger                          $logger
+     * @param Context                  $context
+     * @param Session                  $session
+     * @param Config                   $config
+     * @param Logger                   $logger
+     * @param QuoteRepository          $quoteRepository
+     * @param OrderCollection          $orderCollection
+     * @param ResourceConnection       $dbObject
+     * @param ModuleList               $moduleList
+     * @param ProductMetadataInterface $productMetadataInterface
+     *
      */
     public function __construct(
-        JsonFactory $resultJsonFactory,
         Context $context,
-        PageFactory $resultPageFactory,
-        Order $order,
+        QuoteRepository $quoteRepository,
+        OrderCollection $orderCollection,
         Session $session,
-        Json $jsonHelper,
         Config $config,
-        Logger $logger
+        Logger $logger,
+        ResourceConnection $dbObject,
+        ProductMetadataInterface $productMetadataInterface,
+        ModuleList $moduleList
     ) {
-        $this->jsonHelper = $jsonHelper;
+        parent::__construct($context);
         $this->session = $session;
-        $this->order = $order;
-        $this->jsonFactory = $resultJsonFactory;
         $this->context = $context;
         $this->config = $config->getConfig();
         $this->logger = $logger;
-        $this->objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        parent::__construct($context);
+        $this->quoteRepository = $quoteRepository;
+        $this->orderCollection = $orderCollection;
+        $this->dbObject = $dbObject;
+        $this->moduleList = $moduleList;
+        $this->productMetadataInterface = $productMetadataInterface;
     }
 
     /**
-     * You will pay controller
+     * Main function
+     *
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function execute()
     {
         try {
+            $cancelUrl = $this->_url->getUrl('checkout', ['_fragment' => 'payment']);
             $quote = $this->session->getQuote();
             /** @var Order $order */
             $lastOrder = $this->session->getLastRealOrder();
-            $customer = $quote->getCustomer();
             $params = $this->getRequest()->getParams();
+            $customer = $quote->getCustomer();
+            $shippingAddress = $quote->getShippingAddress();
+
+            if (isset($params['email']) && $params['email']!='') {
+                $this->session->setEmail($params['email']); //Get guest email after refresh page
+                $customer->setEmail($params['email']);
+                $quote->setCheckoutMethod('guest');
+                $quote->getBillingAddress()->setEmail($params['email']);
+            } elseif ($customer->getEmail()=='') {
+                $customer->setEmail($this->session->getEmail());
+                $quote->setCheckoutMethod('guest');
+                $quote->getBillingAddress()->setEmail($this->session->getEmail());
+            }
+
+            /** @var Quote $currentQuote */
+            $currentQuote = $this->quoteRepository->get($quote->getId());
+            $currentQuote->setCustomerEmail($customer->getEmail());
+            $this->quoteRepository->save($currentQuote);
 
             $userAddress =  new Address();
-            $shippingAddress = $quote->getShippingAddress();
             $userAddress
                 ->setZipCode($shippingAddress->getPostcode())
                 ->setFullName($shippingAddress->getFirstname()." ".$shippingAddress->getLastname())
@@ -146,21 +155,12 @@ class Index extends Action
             ;
 
             $orderUser = new \PagaMasTarde\OrdersApiClient\Model\Order\User();
-            $email ='';
-            if (isset($params['email']) && $params['email']!='') {
-                $email = $params['email'];
-                $this->session->setEmail($email);
-            } elseif ($customer->getEmail()!='') {
-                $email = $customer->getEmail();
-            } else { //TODO
-                $email = $this->session->getEmail();
-            }
-            $billingAddress->setEmail($email);
+            $billingAddress->setEmail($customer->getEmail());
             $orderUser
                 ->setAddress($userAddress)
                 ->setFullName($shippingAddress->getFirstname()." ".$shippingAddress->getLastname())
                 ->setBillingAddress($orderBillingAddress)
-                ->setEmail($email)
+                ->setEmail($customer->getEmail())
                 ->setFixPhone($shippingAddress->getTelephone())
                 ->setMobilePhone($shippingAddress->getTelephone())
                 ->setShippingAddress($orderShippingAddress)
@@ -199,25 +199,23 @@ class Index extends Action
             }
 
             $orderShoppingCart = new \PagaMasTarde\OrdersApiClient\Model\Order\ShoppingCart();
-            $grandTotal = $quote->collectTotals()->getTotals()['grand_total']->getData('value');
             $orderShoppingCart
                 ->setDetails($details)
                 ->setOrderReference($quote->getId())
                 ->setPromotedAmount(0)
-                ->setTotalAmount(intval(strval(100 * $grandTotal)))
+                ->setTotalAmount(intval(strval(100 * $quote->getGrandTotal())))
             ;
 
             $orderConfigurationUrls = new \PagaMasTarde\OrdersApiClient\Model\Order\Configuration\Urls();
             $quoteId = $quote->getId();
-            $cancelUrl = $this->_url->getUrl('checkout', ['_fragment' => 'payment']);
-            $okUrl = $this->_url->getUrl('paylater/Notify', ['_query' => ['quoteId'=>$quoteId]]);
+            $okUrl = $this->_url->getUrl('paylater/notify', ['_query' => ['quoteId'=>$quoteId]]);
             $orderConfigurationUrls
                 ->setCancel($cancelUrl)
                 ->setKo($okUrl)
                 ->setNotificationCallback($okUrl)
                 ->setOk($okUrl)
             ;
-
+$this->logger->info('OkUrl'.$okUrl);
             $orderChannel = new \PagaMasTarde\OrdersApiClient\Model\Order\Configuration\Channel();
             $orderChannel
                 ->setAssistedSale(false)
@@ -243,7 +241,7 @@ class Index extends Action
                 ->setUser($orderUser)
             ;
         } catch (\PagaMasTarde\OrdersApiClient\Exception\ValidationException $validationException) {
-            $this->logger->info("[ERROR_1]".$validationException->getMessage());
+            $this->logger->info(__METHOD__.'=>'.$validationException->getMessage());
             echo $cancelUrl;
             exit;
         }
@@ -259,7 +257,6 @@ class Index extends Action
             );
 
             $order = $orderClient->createOrder($order);
-
             if ($order instanceof \PagaMasTarde\OrdersApiClient\Model\Order) {
                 $url = $order->getActionUrls()->getForm();
                 $result = $this->insertRow($quote->getId(), $order->getId());
@@ -270,7 +267,7 @@ class Index extends Action
                 throw new \Exception('Order not created');
             }
         } catch (\Exception $exception) {
-            $this->logger->info("[ERROR_2]".$exception->getMessage());
+            $this->logger->info(__METHOD__.'=>'.$exception->getMessage());
             echo $cancelUrl;
             exit;
         }
@@ -293,55 +290,62 @@ class Index extends Action
      * Get the orders of a customer
      * @param $customerId
      *
-     * @return array|mixed
+     * @return array
      */
     private function getOrders($customerId)
     {
         $orderCollection = array();
         if ($customerId!='') {
-            $orderCollection = $this->objectManager->create('\Magento\Sales\Model\ResourceModel\Order\Collection');
-            $orderCollection->addAttributeToFilter('customer_id', $customerId)
+            $this->orderCollection->addAttributeToFilter('customer_id', $customerId)
                             ->addAttributeToFilter(
                                 'status',
                                 ['in' => ['processing','pending','complete']]
                             )
                             ->load();
-            $orderCollection = $orderCollection->getData();
+            $orderCollection = $this->orderCollection->getData();
         }
         return $orderCollection;
     }
 
     /**
-     * @return mixed
+     * @return \Zend_Db_Statement_Interface
      */
     private function checkDbTable()
     {
-        $dbConnection = $this->objectManager->get('Magento\Framework\App\ResourceConnection')->getConnection();
-        $query = "CREATE TABLE IF NOT EXISTS `mg_pmt_order` ( `id` int, `order_id` int, PRIMARY KEY (`id`, `order_id`))";
+        $dbConnection = $this->dbObject->getConnection();
+        $tableName = $this->dbObject->getTableName(self::ORDERS_TABLE);
+        $query = "CREATE TABLE IF NOT EXISTS `$tableName` ( `id` int, `order_id` varchar(50), `mg_order_id` varchar(50), 
+                  PRIMARY KEY (`id`))";
         return $dbConnection->query($query);
     }
 
     /**
-     * @param $cartId
-     * @param $orderId
+     * @param $quoteId
+     * @param $pmtOrderId
      *
-     * @return mixed
+     * @return int
      */
-    private function insertRow($quoteId, $orderId)
+    private function insertRow($quoteId, $pmtOrderId)
     {
         $this->checkDbTable();
-        $dbConnection = $this->objectManager->get('Magento\Framework\App\ResourceConnection')->getConnection();
-        $query = "INSERT INTO `mg_pmt_order` (`id`, `order_id`) VALUES ('$quoteId','$orderId') 
-                          ON DUPLICATE KEY UPDATE `order_id` = '$orderId'";
-        return $dbConnection->query($query);
+        $dbConnection = $this->dbObject->getConnection();
+        $tableName = $this->dbObject->getTableName(self::ORDERS_TABLE);
+        return $dbConnection->insertOnDuplicate(
+            $tableName,
+            array('id'=>$quoteId,'order_id'=>$pmtOrderId),
+            array('order_id')
+        );
     }
 
+    /**
+     * @return array
+     */
     private function getMetadata()
     {
         $curlInfo = curl_version();
         $curlVersion = $curlInfo['version'];
-        $magentoVersion = $this->objectManager->get('Magento\Framework\App\ProductMetadataInterface')->getVersion();
-        $moduleInfo = $this->objectManager->get('Magento\Framework\Module\ModuleList')->getOne('DigitalOrigin_Pmt');
+        $magentoVersion = $this->productMetadataInterface->getVersion();
+        $moduleInfo = $this->moduleList->getOne('DigitalOrigin_Pmt');
         return array(  'magento' => $magentoVersion,
                        'pmt' => $moduleInfo['setup_version'],
                        'php' => phpversion(),

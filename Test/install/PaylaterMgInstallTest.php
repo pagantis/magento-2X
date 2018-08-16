@@ -1,8 +1,8 @@
 <?php
 
-namespace DigitalOrigin\Test\Install;
+namespace DigitalOrigin\Pmt\Test\Install;
 
-use DigitalOrigin\Test\Common\AbstractMg21Selenium;
+use DigitalOrigin\Pmt\Test\Common\AbstractMg21Selenium;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverBy;
 
@@ -52,6 +52,7 @@ class PaylaterMgInstallTest extends AbstractMg21Selenium
         }
         $this->findById('payment_us_paylater_public_key')->clear()->sendKeys($this->configuration['publicKey']);
         $this->findById('payment_us_paylater_secret_key')->clear()->sendKeys($this->configuration['secretKey']);
+        //$this->findById('payment_us_paylater_min_amount')->clear()->sendKeys($this->configuration['minAmount']);
 
         $this->findById('payment_us_paylater_title')->clear()->sendKeys($this->configuration['methodName']);
         $this->webDriver->findElement(WebDriverBy::id('payment_us_paylater_product_simulator'))

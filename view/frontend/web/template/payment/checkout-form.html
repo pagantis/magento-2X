@@ -5,7 +5,7 @@
                name="payment[method]"
                class="radio"
                data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
-        <label data-bind="attr: {'for': getCode()}" class="label"><span data-bind="text: getTitle()"></span></label>
+        <label data-bind="attr: {'for': getCode()}" class="label paylater_title"><span data-bind="text: getTitle()"></span></label>
     </div>
     <div class="payment-method-content">
         <br/>
@@ -13,7 +13,7 @@
         <div class="PmtSimulator"
              data-pmt-style="blue" data-pmt-discount="0" data-pmt-expanded="no"
              data-bind="attr: {'data-pmt-amount': getPmtTotal(), 'data-pmt-type': getPmtType(),
-             'data-pmt-num-quota': getPmtNumQuota(), 'data-pmt-max-ins': dataPmtMaxIns(), 'data-dirty': loadSimulator() }">
+             'data-pmt-num-quota': getPmtNumQuota(), 'data-pmt-max-ins': dataPmtMaxIns() }">
         </div>
         <!-- ko foreach: getRegion('messages') -->
         <!-- ko template: getTemplate() --><!-- /ko -->
