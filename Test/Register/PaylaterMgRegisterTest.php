@@ -1,8 +1,8 @@
 <?php
 
-namespace DigitalOrigin\Test\Register;
+namespace DigitalOrigin\Pmt\Test\Register;
 
-use DigitalOrigin\Test\Common\AbstractMg21Selenium;
+use DigitalOrigin\Pmt\Test\Common\AbstractMg21Selenium;
 
 /**
  * Class PaylaterMgInstallTest
