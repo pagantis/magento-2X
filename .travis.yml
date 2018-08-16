@@ -22,5 +22,6 @@ before_install:
   - docker --version
   - docker-compose --version
 script:
-  - composer install --ignore-platform-reqs
   - './generate.sh'
+  - docker cp magento-2x_magento2-test_1:/var/www/.composer/auth.json .
+  - composer install --ignore-platform-reqs

@@ -280,6 +280,7 @@ class Index extends Action
             $this->magentoOrder = $this->orderRepositoryInterface->get($this->magentoOrderId);
             $orderStatus        = strtolower($this->magentoOrder->getStatus());
             //Magento status flow => https://docs.magento.com/m2/ce/user_guide/sales/order-status-workflow.html
+            //Order Workflow => https://docs.magento.com/m2/ce/user_guide/sales/order-workflow.html
             $acceptedStatus     = array('processing', 'completed');
             if (in_array($orderStatus, $acceptedStatus)) {
                 if (!$this->_objectManager->get(\Magento\Checkout\Model\Session\SuccessValidator::class)->isValid()) {
