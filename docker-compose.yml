@@ -31,7 +31,7 @@ services:
       - .env
     volumes:
       - ./:/var/www/paylater
-    working_dir: /var/www/html/
+    working_dir: /var/www/html/app/code/DigitalOrigin/Pmt
   db-dev:
     image: mysql:5.6.23
     volumes:
@@ -70,7 +70,7 @@ services:
       - .env
     volumes:
       - ./:/var/www/paylater
-    working_dir: /var/www/html/
+    working_dir: /var/www/html/vendor/pagamastarde/magento-2x
   db-test:
     image: mysql:5.6.23
     volumes:
