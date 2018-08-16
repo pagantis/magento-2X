@@ -8,8 +8,8 @@
 set -e
 
 # Run test
-docker-compose exec magento2-test vendor/bin/phpunit --group magento-basic
-docker-compose exec magento2-test vendor/bin/phpunit --group magento-install
-docker-compose exec magento2-test vendor/bin/phpunit --group magento-buy-unregistered
-docker-compose exec magento2-test vendor/bin/phpunit --group magento-register
-docker-compose exec magento2-test vendor/bin/phpunit --group magento-buy-registered
+vendor/bin/phpunit --group magento-basic
+vendor/bin/phpunit --group magento-install
+vendor/bin/phpunit --group magento-buy-unregistered
+vendor/bin/phpunit --group magento-register
+vendor/bin/phpunit --group magento-buy-registered

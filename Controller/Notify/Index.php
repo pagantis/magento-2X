@@ -15,7 +15,7 @@ use DigitalOrigin\Pmt\Helper\Config;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Checkout\Model\Session;
 
-define('__ROOT__', dirname((dirname(dirname(__FILE__)))));
+//define('__ROOT__', dirname((dirname(dirname(__FILE__)))));
 
 /**
  * Class Index

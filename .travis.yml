@@ -22,4 +22,5 @@ before_install:
   - docker --version
   - docker-compose --version
 script:
+  - composer install --ignore-platform-reqs
   - './generate.sh'

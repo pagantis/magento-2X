@@ -14,7 +14,7 @@ use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Module\ModuleList;
 use PagaMasTarde\OrdersApiClient\Model\Order\User\Address;
 
-define('__ROOT__', dirname((dirname(dirname(__FILE__)))));
+//define('__ROOT__', dirname((dirname(dirname(__FILE__)))));
 
 /**
  * Class Index
