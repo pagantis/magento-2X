@@ -190,8 +190,13 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $newPrice = $simulatorElement->getAttribute('data-pmt-amount');
         $newSimulatorPrice = $currentSimulatorPrice * self::PRODUCT_QTY_AFTER;
         $this->assertEquals($newPrice, $newSimulatorPrice, "PR22,PR23");
-        $this->findById('product_addtocart_form')->submit();
-        sleep(3);
+
+        $addToCartSearch = WebDriverBy::id('product-addtocart-button');
+        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($addToCartSearch);
+        $this->webDriver->wait()->until($condition);
+
+        $this->findById('product-addtocart-button')->click();
+        sleep(5);
     }
 
     /**

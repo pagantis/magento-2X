@@ -31,7 +31,7 @@ services:
       - .env
     volumes:
       - ./:/var/www/paylater
-    working_dir: /var/www/html/app/code/DigitalOrigin/Pmt
+    working_dir: /var/www/html
   db-dev:
     image: mysql:5.6.23
     volumes:
@@ -52,7 +52,7 @@ services:
       - MAGENTO_LANGUAGE=es_ES
       - MAGENTO_TIMEZONE=Europe/Madrid
       - MAGENTO_DEFAULT_CURRENCY=EUR
-      - MAGENTO_URL=http://magento2-test
+      - MAGENTO_URL=http://magento2-test:8089
       - MAGENTO_BACKEND_FRONTNAME=admin
       - MAGENTO_USE_SECURE=0
       - MAGENTO_BASE_URL_SECURE=0
@@ -62,6 +62,8 @@ services:
       - MAGENTO_ADMIN_EMAIL=amdin@example.com
       - MAGENTO_ADMIN_USERNAME=admin
       - MAGENTO_ADMIN_PASSWORD=password123
+    ports:
+      - "8089:80"
     extra_hosts:
       - "magento2:127.0.0.1"
     links:
@@ -70,7 +72,7 @@ services:
       - .env
     volumes:
       - ./:/var/www/paylater
-    working_dir: /var/www/html/vendor/pagamastarde/magento-2x
+    working_dir: /var/www/html
   db-test:
     image: mysql:5.6.23
     volumes:

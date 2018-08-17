@@ -32,6 +32,18 @@ class Index extends Action
     /** Payment code */
     const PAYMENT_METHOD = 'paylater';
 
+    /** @var string  */
+    const ALREADY_PROCESSED = 'Cart already processed.';
+
+    /** @var string  */
+    const NO_QUOTE = 'QuoteId not found';
+
+    /** @var string  */
+    const NO_ORDERID = 'We can not get the PagaMasTarde identification.';
+
+    /** @var string  */
+    const WRONG_AMOUNT = 'Wrong order amount';
+
     /** @var QuoteManagement */
     protected $quoteManagement;
 
@@ -161,7 +173,7 @@ class Index extends Action
     {
         if ($this->getRequest()->getParam('quoteId')=='') {
             $this->notifyResult['notification_error'] = false;
-            throw new \Exception('QuoteId not found');
+            throw new \Exception(self::NO_QUOTE);
         }
 
         return $this->getRequest()->getParam('quoteId');
@@ -206,7 +218,7 @@ class Index extends Action
 
         if ($queryResult['order_id'] == '') {
             $this->notifyResult['notification_error'] = false;
-            throw new \Exception('We can not get the PagaMasTarde identification.');
+            throw new \Exception(self::NO_ORDERID);
         }
         return $queryResult['order_id'];
     }
@@ -226,7 +238,7 @@ class Index extends Action
         $payed = in_array($this->pmtOrder->getStatus(), $pmtStatus);
         if (!$payed) {
             $this->notifyResult['notification_error'] = true;
-            throw new \Exception('Wrong pmt status ['.$this->pmtOrder->getStatus().']');
+            throw new \Exception(self::WRONG_AMOUNT.$this->pmtOrder->getStatus());
         }
 
         return;
@@ -241,7 +253,7 @@ class Index extends Action
         if ($this->quote->getIsActive()=='0') {
             $this->magentoOrderId = $this->getMgOrderId();
             $this->notifyResult['notification_error'] = false;
-            throw new \Exception('Already processed');
+            throw new \Exception(self::ALREADY_PROCESSED);
         }
         return true;
     }
@@ -254,7 +266,7 @@ class Index extends Action
         $grandTotal = $this->quote->getGrandTotal();
         if ($this->pmtOrder->getShoppingCart()->getTotalAmount() != intval(strval(100 * $grandTotal))) {
             $this->notifyResult['notification_error'] = true;
-            throw new \Exception('Wrong order amount');
+            throw new \Exception(self::WRONG_AMOUNT);
         }
         return;
     }
@@ -283,7 +295,7 @@ class Index extends Action
             //Order Workflow => https://docs.magento.com/m2/ce/user_guide/sales/order-workflow.html
             $acceptedStatus     = array('processing', 'completed');
             if (in_array($orderStatus, $acceptedStatus)) {
-                if (!$this->_objectManager->get(\Magento\Checkout\Model\Session\SuccessValidator::class)->isValid()) {
+                if ($this->notifyResult['notification_message'] == self::ALREADY_PROCESSED) {
                     $this->checkoutSession->setLastOrderId($this->magentoOrderId);
                     $this->checkoutSession->setLastRealOrderId($this->magentoOrder->getIncrementId());
                     $this->checkoutSession->setLastQuoteId($this->quoteId);
@@ -332,15 +344,9 @@ class Index extends Action
             $tableName    = $this->dbObject->getTableName(self::CONCURRENCY_TABLE);
             if ($mode == false) {
                 $dbConnection->delete($tableName, "timestamp<".(time() - 5));
-               // $sql = "DELETE FROM $tableName WHERE timestamp<".(time() - 5);
             } elseif ($this->quoteId!='') {
                 $dbConnection->delete($tableName, "id  = ".$this->quoteId);
-               // $sql = "DELETE FROM $tableName WHERE id  = ".$this->quoteId;
             }
-            /*if ($sql!='') {
-                $this->logger->info($sql);
-                $dbConnection->query($sql);
-            }*/
         } catch (Exception $exception) {
             $this->logger->info(__METHOD__.'=>'.$exception->getMessage());
             $this->notifyResult['notification_message'] = $exception->getMessage();
