@@ -16,7 +16,7 @@ abstract class PaylaterMagentoTest extends TestCase
     /**
      * Magento URL
      */
-    const MAGENTO_URL = 'http://magento2-test:8089/index.php';
+    const MAGENTO_URL = 'http://magento2-test/index.php';
 
     /**
      * Magento Backoffice URL
