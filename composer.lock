@@ -2795,16 +2795,16 @@
         },
         {
             "name": "pagamastarde/selenium-form-utils",
-            "version": "v1.0.1",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PagaMasTarde/selenium-form-utils.git",
-                "reference": "91d8cef802fa13557007c9566835be713b680fee"
+                "reference": "1f2dd08cc42eb1464923504adb9b0dd2620aae17"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PagaMasTarde/selenium-form-utils/zipball/91d8cef802fa13557007c9566835be713b680fee",
-                "reference": "91d8cef802fa13557007c9566835be713b680fee",
+                "url": "https://api.github.com/repos/PagaMasTarde/selenium-form-utils/zipball/1f2dd08cc42eb1464923504adb9b0dd2620aae17",
+                "reference": "1f2dd08cc42eb1464923504adb9b0dd2620aae17",
                 "shasum": ""
             },
             "require": {
@@ -2834,7 +2834,7 @@
                 }
             ],
             "description": "Paga+Tarde PHP Library. Selenium helper to end a test purchase. Helper to test the payment validation and redirection",
-            "time": "2018-08-06T10:14:41+00:00"
+            "time": "2018-08-16T08:53:15+00:00"
         },
         {
             "name": "psr/container",
