@@ -32,17 +32,15 @@ class Index extends Action
     /** Payment code */
     const PAYMENT_METHOD = 'paylater';
 
-    /** @var string  */
+    /**
+     * EXCEPTION RESPONSES
+     */
     const ALREADY_PROCESSED = 'Cart already processed.';
-
-    /** @var string  */
     const NO_QUOTE = 'QuoteId not found';
-
-    /** @var string  */
     const NO_ORDERID = 'We can not get the PagaMasTarde identification.';
-
-    /** @var string  */
     const WRONG_AMOUNT = 'Wrong order amount';
+    const WRONG_STATUS = 'Invalid Pmt status';
+    const NO_PMTID = 'We can not get the PagaMasTarde identification';
 
     /** @var QuoteManagement */
     protected $quoteManagement;
@@ -238,7 +236,7 @@ class Index extends Action
         $payed = in_array($this->pmtOrder->getStatus(), $pmtStatus);
         if (!$payed) {
             $this->notifyResult['notification_error'] = true;
-            throw new \Exception(self::WRONG_AMOUNT.$this->pmtOrder->getStatus());
+            throw new \Exception(self::WRONG_STATUS."=>".$this->pmtOrder->getStatus());
         }
 
         return;
@@ -409,7 +407,7 @@ class Index extends Action
 
         if ($queryResult['mg_order_id']=='') {
             $this->notifyResult['notification_error'] = false;
-            throw new \Exception('We can not get the PagaMasTarde identification.');
+            throw new \Exception(self::NO_PMTID);
         }
         return $queryResult['mg_order_id'];
     }
