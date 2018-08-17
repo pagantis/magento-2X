@@ -2,9 +2,6 @@
 
 # Prepare environment and build package
 ./docker-init.sh test
-docker cp magento-2x_magento2-test_1:/var/www/.composer/auth.json .
-composer install --ignore-platform-reqs
-set -e
 
 # Run test
 vendor/bin/phpunit --group magento-basic
