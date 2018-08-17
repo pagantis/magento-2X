@@ -14,8 +14,6 @@ use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Module\ModuleList;
 use PagaMasTarde\OrdersApiClient\Model\Order\User\Address;
 
-//define('__ROOT__', dirname((dirname(dirname(__FILE__)))));
-
 /**
  * Class Index
  * @package DigitalOrigin\Pmt\Controller\Payment
@@ -215,7 +213,7 @@ class Index extends Action
                 ->setNotificationCallback($okUrl)
                 ->setOk($okUrl)
             ;
-$this->logger->info('OkUrl'.$okUrl);
+
             $orderChannel = new \PagaMasTarde\OrdersApiClient\Model\Order\Configuration\Channel();
             $orderChannel
                 ->setAssistedSale(false)
