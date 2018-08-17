@@ -185,7 +185,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $simulatorElement = $this->findByClass('PmtSimulator');
         $currentSimulatorPrice = $simulatorElement->getAttribute('data-pmt-amount');
         $this->configureProduct(self::PRODUCT_QTY_AFTER);
-        sleep(3);
+        sleep(5);
         $simulatorElement = $this->findByClass('PmtSimulator');
         $newPrice = $simulatorElement->getAttribute('data-pmt-amount');
         $newSimulatorPrice = $currentSimulatorPrice * self::PRODUCT_QTY_AFTER;
