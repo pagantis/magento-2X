@@ -15,8 +15,6 @@ use DigitalOrigin\Pmt\Helper\Config;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Checkout\Model\Session;
 
-//define('__ROOT__', dirname((dirname(dirname(__FILE__)))));
-
 /**
  * Class Index
  * @package DigitalOrigin\Pmt\Controller\Notify
@@ -35,12 +33,12 @@ class Index extends Action
     /**
      * EXCEPTION RESPONSES
      */
-    const ALREADY_PROCESSED = 'Cart already processed.';
     const NO_QUOTE = 'QuoteId not found';
-    const NO_ORDERID = 'We can not get the PagaMasTarde identification.';
+    const ALREADY_PROCESSED = 'Cart already processed.';
+    const NO_ORDERID = 'We can not get the PagaMasTarde identification in database.';
     const WRONG_AMOUNT = 'Wrong order amount';
     const WRONG_STATUS = 'Invalid Pmt status';
-    const NO_PMTID = 'We can not get the PagaMasTarde identification';
+    const NO_MGID = 'We can not get the Magento order identification';
 
     /** @var QuoteManagement */
     protected $quoteManagement;
@@ -186,6 +184,7 @@ class Index extends Action
      */
     private function validateOrder()
     {
+        $this->getMagentoOrderId();
         $pmtOrderId = $this->getPmtOrderId();
         $orderClient = new Client($this->config['public_key'], $this->config['secret_key']);
         $this->pmtOrder = $orderClient->getOrder($pmtOrderId);
@@ -219,6 +218,22 @@ class Index extends Action
             throw new \Exception(self::NO_ORDERID);
         }
         return $queryResult['order_id'];
+    }
+
+    private function getMagentoOrderId()
+    {
+        $dbConnection = $this->dbObject->getConnection();
+        $tableName    = $this->dbObject->getTableName(self::ORDERS_TABLE);
+        $query        = "select mg_order_id from $tableName where id='$this->quoteId'";
+        $queryResult  = $dbConnection->fetchRow($query);
+
+        if ($queryResult['mg_order_id'] != '') {
+            $this->magentoOrderId = $queryResult['mg_order_id'];
+            $this->notifyResult['notification_error'] = false;
+            throw new \Exception(self::ALREADY_PROCESSED);
+        }
+
+        return $queryResult['mg_order_id'];
     }
 
     /**
@@ -293,13 +308,11 @@ class Index extends Action
             //Order Workflow => https://docs.magento.com/m2/ce/user_guide/sales/order-workflow.html
             $acceptedStatus     = array('processing', 'completed');
             if (in_array($orderStatus, $acceptedStatus)) {
-                if ($this->notifyResult['notification_message'] == self::ALREADY_PROCESSED) {
-                    $this->checkoutSession->setLastOrderId($this->magentoOrderId);
-                    $this->checkoutSession->setLastRealOrderId($this->magentoOrder->getIncrementId());
-                    $this->checkoutSession->setLastQuoteId($this->quoteId);
-                    $this->checkoutSession->setLastSuccessQuoteId($this->quoteId);
-                    $this->checkoutSession->setLastOrderStatus($this->magentoOrder->getStatus());
-                }
+                $this->checkoutSession->setLastOrderId($this->magentoOrderId);
+                $this->checkoutSession->setLastRealOrderId($this->magentoOrder->getIncrementId());
+                $this->checkoutSession->setLastQuoteId($this->quoteId);
+                $this->checkoutSession->setLastSuccessQuoteId($this->quoteId);
+                $this->checkoutSession->setLastOrderStatus($this->magentoOrder->getStatus());
                 if ($this->config['ok_url'] != '') {
                     $returnUrl = $this->config['ok_url'];
                 } else {
@@ -336,14 +349,13 @@ class Index extends Action
     private function unblockConcurrency($mode = false)
     {
         try {
-            $sql='';
             $this->checkDbTable();
             $dbConnection = $this->dbObject->getConnection();
             $tableName    = $this->dbObject->getTableName(self::CONCURRENCY_TABLE);
             if ($mode == false) {
                 $dbConnection->delete($tableName, "timestamp<".(time() - 5));
             } elseif ($this->quoteId!='') {
-                $dbConnection->delete($tableName, "id  = ".$this->quoteId);
+                $dbConnection->delete($tableName, "id=".$this->quoteId);
             }
         } catch (Exception $exception) {
             $this->logger->info(__METHOD__.'=>'.$exception->getMessage());
@@ -362,8 +374,6 @@ class Index extends Action
         try {
             $dbConnection = $this->dbObject->getConnection();
             $tableName    = $this->dbObject->getTableName(self::CONCURRENCY_TABLE);
-            //$sql = "INSERT INTO $tableName VALUE (" . $this->quoteId. "," . time() . ")";
-            //$dbConnection->query($sql);
             $dbConnection->insert($tableName, array('id'=>$this->quoteId, 'timestamp'=>time()));
         } catch (\Exception $exception) {
             $this->logger->info(__METHOD__.'=>'.$exception->getMessage());
@@ -383,9 +393,6 @@ class Index extends Action
         $dbConnection = $this->dbObject->getConnection();
         $tableName    = $this->dbObject->getTableName(self::ORDERS_TABLE);
         $pmtOrderId   = $this->pmtOrder->getId();
-        /*$query        = "update $tableName set `mg_order_id`=$this->magentoOrderId
-                         where order_id ='$pmtOrderId' and id='$this->quoteId'";
-        $queryResult  = $dbConnection->fetchRow($query);*/
         $dbConnection->update(
             $tableName,
             array('mg_order_id'=>$this->magentoOrderId),
@@ -407,7 +414,7 @@ class Index extends Action
 
         if ($queryResult['mg_order_id']=='') {
             $this->notifyResult['notification_error'] = false;
-            throw new \Exception(self::NO_PMTID);
+            throw new \Exception(self::NO_MGID);
         }
         return $queryResult['mg_order_id'];
     }
