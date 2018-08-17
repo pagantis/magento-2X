@@ -191,10 +191,17 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $newSimulatorPrice = $currentSimulatorPrice * self::PRODUCT_QTY_AFTER;
         $this->assertEquals($newPrice, $newSimulatorPrice, "PR22,PR23");
 
+        $paymentFormElement = WebDriverBy::id('product-addtocart-button');
+        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($paymentFormElement);
+        $this->webDriver->wait()->until($condition);
         $addToCartButton = WebDriverBy::cssSelector("#product_addtocart_form > .box-tocart > .fieldset > .actions > #product-addtocart-button");
-        $menuElement = $this->webDriver->findElement($addToCartButton);
-        $menuElement->click();
-
+        try {
+            $menuElement = $this->webDriver->findElement($addToCartButton);
+            $menuElement->click();
+        } catch (\Exception $exception) {
+            $addToCartButton = $this->findById('product-addtocart-button');
+            $addToCartButton->click();
+        }
         sleep(5);
     }
 
@@ -271,7 +278,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $this->webDriver->get(self::MAGENTO_URL.self::CHECKOUT_FOLDER);
         $condition = WebDriverExpectedCondition::titleContains(self::CHECKOUT_TITLE);
         $this->webDriver->wait()->until($condition);
-        $this->assertTrue((bool)$condition);
+        $this->assertTrue((bool)$condition, self::MAGENTO_URL.self::CHECKOUT_FOLDER);
     }
 
     /**
