@@ -2,6 +2,7 @@
 
 namespace DigitalOrigin\Pmt\Test;
 
+use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\WebDriverCapabilityType;
 use Facebook\WebDriver\WebDriverBy;
@@ -110,8 +111,12 @@ abstract class PaylaterMagentoTest extends TestCase
      */
     protected function setUp()
     {
-        $capabilities    = array(WebDriverCapabilityType::BROWSER_NAME => 'chrome');
-        $this->webDriver = RemoteWebDriver::create('http://localhost:4444/wd/hub', $capabilities);
+        $this->webDriver = RemoteWebDriver::create(
+            'http://localhost:4444/wd/hub',
+            DesiredCapabilities::chrome(),
+            60000,
+            60000
+        );
     }
 
     /**
