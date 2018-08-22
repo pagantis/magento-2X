@@ -185,7 +185,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $simulatorElement = $this->findByClass('PmtSimulator');
         $currentSimulatorPrice = $simulatorElement->getAttribute('data-pmt-amount');
         $this->configureProduct(self::PRODUCT_QTY_AFTER);
-        sleep(15);
+        sleep(10);
         $simulatorElement = $this->findByClass('PmtSimulator');
         $newPrice = $simulatorElement->getAttribute('data-pmt-amount');
         $newSimulatorPrice = $currentSimulatorPrice * self::PRODUCT_QTY_AFTER;
@@ -194,14 +194,8 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $paymentFormElement = WebDriverBy::id('product-addtocart-button');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($paymentFormElement);
         $this->webDriver->wait()->until($condition);
-        $addToCartButton = WebDriverBy::cssSelector("#product_addtocart_form > .box-tocart > .fieldset > .actions > #product-addtocart-button");
-        try {
-            $menuElement = $this->webDriver->findElement($addToCartButton);
-            $menuElement->click();
-        } catch (\Exception $exception) {
-            $addToCartButton = $this->findById('product-addtocart-button');
-            $addToCartButton->click();
-        }
+        $addToCartButton = $this->findById('product-addtocart-button');
+        $addToCartButton->click();
         sleep(5);
     }
 
