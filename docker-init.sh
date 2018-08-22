@@ -3,10 +3,6 @@ ENVIROMENT=$1
 echo 'Build docker images'
 docker-compose down
 docker-compose up -d --build magento2-${ENVIROMENT}
-if [ $1 == 'dev' ]
-then
-docker-compose up -d phpmyadmin
-fi
 docker-compose up -d selenium
 sleep 10
 
@@ -31,4 +27,4 @@ fi
 echo 'Sample Data + DI + SetupUpgrade + Clear Cache'
 docker-compose exec magento2-${ENVIROMENT} install-sampledata
 docker-compose exec -u www-data magento2-${ENVIROMENT} /var/www/html/bin/magento cron:run
-echo 'Build of Magento2 enviroment complete: http://magento2.docker:8086'
+echo 'Build of Magento2 complete: http://magento2-' + ${ENVIROMENT} + '.docker and the port 8085 or 8086'

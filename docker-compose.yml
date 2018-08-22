@@ -11,7 +11,7 @@ services:
       - MAGENTO_LANGUAGE=es_ES
       - MAGENTO_TIMEZONE=Europe/Madrid
       - MAGENTO_DEFAULT_CURRENCY=EUR
-      - MAGENTO_URL=http://magento2.docker:8086
+      - MAGENTO_URL=http://magento2-dev.docker:8086
       - MAGENTO_BACKEND_FRONTNAME=admin
       - MAGENTO_USE_SECURE=0
       - MAGENTO_BASE_URL_SECURE=0
@@ -24,7 +24,7 @@ services:
     ports:
       - "8086:80"
     extra_hosts:
-      - "magento2.docker:127.0.0.1"
+      - "magento2-dev.docker:127.0.0.1"
     links:
       - db-dev
     env_file:
@@ -32,15 +32,15 @@ services:
     volumes:
       - ./:/var/www/paylater
     working_dir: /var/www/html/
+
   db-dev:
     image: mysql:5.6.23
     volumes:
       - db-data:/var/lib/mysql/data
-    env_file:
-      - .env
     environment:
       - MYSQL_ROOT_PASSWORD=password123
       - MYSQL_DATABASE=magento2-dev
+
   magento2-test:
     image: alexcheng/magento2:2.2.1
     environment:
@@ -71,21 +71,15 @@ services:
     env_file:
       - .env
     working_dir: /var/www/html/
+
   db-test:
     image: mysql:5.6.23
     volumes:
       - db-data:/var/lib/mysql/data
-    env_file:
-      - .env
     environment:
       - MYSQL_ROOT_PASSWORD=password123
       - MYSQL_DATABASE=magento2-test
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    ports:
-      - "8087:80"
-    links:
-      - db-dev
+
   selenium:
       image: selenium/standalone-chrome:3.7.1
       ports:
