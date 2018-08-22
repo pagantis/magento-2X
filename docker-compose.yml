@@ -91,6 +91,7 @@ services:
       ports:
         - "4444:4444"
       extra_hosts:
-        - "magento2-test.docker:${DOCKERHOST}"
+      - "magento2-test.docker:${DOCKERHOST}"
+      - "magento2-dev.docker:${DOCKERHOST}"
 volumes:
   db-data:
