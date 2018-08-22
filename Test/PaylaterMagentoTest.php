@@ -4,7 +4,6 @@ namespace DigitalOrigin\Pmt\Test;
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use Facebook\WebDriver\Remote\WebDriverCapabilityType;
 use Facebook\WebDriver\WebDriverBy;
 use PHPUnit\Framework\TestCase;
 
@@ -17,7 +16,7 @@ abstract class PaylaterMagentoTest extends TestCase
     /**
      * Magento URL
      */
-    const MAGENTO_URL = 'http://magento2-test.docker/index.php';
+    const MAGENTO_URL = 'http://magento2-test.docker:8085/index.php';
 
     /**
      * Magento Backoffice URL

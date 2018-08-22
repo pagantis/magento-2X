@@ -52,7 +52,7 @@ services:
       - MAGENTO_LANGUAGE=es_ES
       - MAGENTO_TIMEZONE=Europe/Madrid
       - MAGENTO_DEFAULT_CURRENCY=EUR
-      - MAGENTO_URL=http://magento2-test.docker
+      - MAGENTO_URL=http://magento2-test.docker:8085
       - MAGENTO_BACKEND_FRONTNAME=admin
       - MAGENTO_USE_SECURE=0
       - MAGENTO_BASE_URL_SECURE=0
@@ -90,5 +90,7 @@ services:
       image: selenium/standalone-chrome:3.7.1
       ports:
         - "4444:4444"
+      extra_hosts:
+        - "magento2-test.docker:${DOCKERHOST}"
 volumes:
   db-data:
