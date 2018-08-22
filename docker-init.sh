@@ -23,7 +23,7 @@ docker-compose exec -u www-data magento2-${ENVIROMENT} composer install -d /var/
 docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/orders-api-client -d /var/www/html
 docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/selenium-form-utils -d /var/www/html
 else
-docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/magento-2x:$(git rev-parse --abbrev-ref HEAD).x-dev -d /var/www/html
+docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/magento-2x:$(git describe --contains --all HEAD).x-dev -d /var/www/html
 docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt
 docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:upgrade
 fi
