@@ -11,17 +11,21 @@ docker-compose exec magento2-${ENVIROMENT} install-magento
 echo 'Install DigitalOrigin_Pmt'
 if [ $1 == 'dev' ]
 then
-docker-compose exec -u www-data magento2-${ENVIROMENT} mkdir -p /var/www/html/app/code/DigitalOrigin && \
-docker-compose exec -u www-data magento2-${ENVIROMENT} ln -s /var/www/paylater /var/www/html/app/code/DigitalOrigin/Pmt && \
-docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt && \
-docker-compose exec magento2-${ENVIROMENT} chown -R www-data. /var/www/paylater
-docker-compose exec -u www-data magento2-${ENVIROMENT} composer install -d /var/www/paylater
-docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/orders-api-client -d /var/www/html
-docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/selenium-form-utils -d /var/www/html
+    docker-compose exec -u www-data magento2-${ENVIROMENT} mkdir -p /var/www/html/app/code/DigitalOrigin && \
+    docker-compose exec -u www-data magento2-${ENVIROMENT} ln -s /var/www/paylater /var/www/html/app/code/DigitalOrigin/Pmt && \
+    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt && \
+    docker-compose exec magento2-${ENVIROMENT} chown -R www-data. /var/www/paylater
+    docker-compose exec -u www-data magento2-${ENVIROMENT} composer install -d /var/www/paylater
 else
-docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/magento-2x:$(git describe --contains --all HEAD).x-dev -d /var/www/html
-docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt
-docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:upgrade
+    package=$(git describe --contains --all HEAD)'.x-dev'
+    if [ $package == 'master.x-dev' ]
+    then
+        package='dev-master'
+    fi
+    echo 'Package: '$package
+    docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/magento-2x:$package -d /var/www/html
+    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt
+    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:upgrade
 fi
 
 echo 'Sample Data + DI + SetupUpgrade + Clear Cache'
