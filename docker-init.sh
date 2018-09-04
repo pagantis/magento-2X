@@ -17,7 +17,8 @@ then
     docker-compose exec magento2-${ENVIROMENT} chown -R www-data. /var/www/paylater
     docker-compose exec -u www-data magento2-${ENVIROMENT} composer install -d /var/www/paylater
 else
-    package=$(git describe --contains --all HEAD)'.x-dev'
+    version=echo $(git describe --all HEAD) | sed  -e 's/heads\///' -e 's/-.*//'
+    package=$version'.x-dev'
     if [ $package == 'master.x-dev' ]
     then
         package='dev-master'
