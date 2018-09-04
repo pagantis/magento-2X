@@ -307,7 +307,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
     {
         $firstnameElement = WebDriverBy::name('firstname');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($firstnameElement);
-        $this->webDriver->wait()->until($condition);
+        $this->webDriver->wait(60)->until($condition);
         $this->assertTrue((bool) $condition);
 
         $this->webDriver->findElement(WebDriverBy::name('country_id'))
