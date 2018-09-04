@@ -182,6 +182,9 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
     public function checkProductPage()
     {
         $this->checkSimulator();
+        $pmtSimElement = WebDriverBy::className('PmtSimulator');
+        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($pmtSimElement);
+        $this->webDriver->wait()->until($condition);
         $simulatorElement = $this->findByClass('PmtSimulator');
         $currentSimulatorPrice = $simulatorElement->getAttribute('data-pmt-amount');
         $this->configureProduct(self::PRODUCT_QTY_AFTER);
