@@ -388,7 +388,10 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $this->assertNotEmpty($price);
 
         sleep(2);
-        $menuSearch = WebDriverBy::cssSelector("#checkout-payment-method-load > .payment-methods > .payment-group > ._active > .payment-method-content > .actions-toolbar > .primary");
+        $checkoutButton = WebDriverBy::cssSelector("#checkout-payment-method-load > .payment-methods > .payment-group > ._active > .payment-method-content > .actions-toolbar > .primary");
+        $condition = WebDriverExpectedCondition::elementToBeClickable($checkoutButton);
+        $this->webDriver->wait()->until($condition);
+
         $menuElement = $this->webDriver->findElement($menuSearch);
         $menuElement->click();
         return $price;
