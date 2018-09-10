@@ -302,8 +302,6 @@ class Index extends Action
         if ($this->magentoOrderId!='') {
             /** @var Order $order */
             $this->magentoOrder = $this->orderRepositoryInterface->get($this->magentoOrderId);
-            //Magento status flow => https://docs.magento.com/m2/ce/user_guide/sales/order-status-workflow.html
-            //Order Workflow => https://docs.magento.com/m2/ce/user_guide/sales/order-workflow.html
             if (!$this->_objectManager->get(\Magento\Checkout\Model\Session\SuccessValidator::class)->isValid()) {
                 $this->checkoutSession
                     ->setLastOrderId($this->magentoOrderId)
@@ -311,6 +309,13 @@ class Index extends Action
                     ->setLastQuoteId($this->quoteId)
                     ->setLastSuccessQuoteId($this->quoteId)
                     ->setLastOrderStatus($this->magentoOrder->getStatus());
+            }
+
+            //Magento status flow => https://docs.magento.com/m2/ce/user_guide/sales/order-status-workflow.html
+            //Order Workflow => https://docs.magento.com/m2/ce/user_guide/sales/order-workflow.html
+            $orderStatus       = strtolower($this->magentoOrder->getStatus());
+            $acceptedStatus     = array('processing', 'completed');
+            if (in_array($orderStatus, $acceptedStatus)) {
                 if ($this->config['ok_url'] != '') {
                     $returnUrl = $this->config['ok_url'];
                 } else {
