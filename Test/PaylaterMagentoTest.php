@@ -54,7 +54,7 @@ abstract class PaylaterMagentoTest extends TestCase
     const CART_TITLE = 'Cart';
 
     /**
-     * Magento checkout Title
+     * Magento success Title
      */
     const SUCCESS_TITLE = 'Success Page';
 
