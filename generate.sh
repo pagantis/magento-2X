@@ -3,7 +3,7 @@
 # Prepare environment and build package
 ./docker-init.sh test
 sleep 15
-docker cp magento2x_magento2-test_1:/var/www/.composer/auth.json .
+docker cp magento2test:/var/www/.composer/auth.json .
 composer install --ignore-platform-reqs
 set -e
 
