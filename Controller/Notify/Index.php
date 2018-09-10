@@ -125,7 +125,6 @@ class Index extends Action
      */
     public function execute()
     {
-        $this->logger->info('Notifying via '.$_SERVER['REQUEST_METHOD']);
         try {
             $this->quoteId = $this->getQuoteId();
             if ($this->unblockConcurrency()) {
@@ -233,7 +232,7 @@ class Index extends Action
             throw new \Exception(self::ALREADY_PROCESSED);
         }
 
-        return $queryResult['mg_order_id'];
+        return;
     }
 
     /**
@@ -303,16 +302,15 @@ class Index extends Action
         if ($this->magentoOrderId!='') {
             /** @var Order $order */
             $this->magentoOrder = $this->orderRepositoryInterface->get($this->magentoOrderId);
-            $orderStatus        = strtolower($this->magentoOrder->getStatus());
             //Magento status flow => https://docs.magento.com/m2/ce/user_guide/sales/order-status-workflow.html
             //Order Workflow => https://docs.magento.com/m2/ce/user_guide/sales/order-workflow.html
-            $acceptedStatus     = array('processing', 'completed');
-            if (in_array($orderStatus, $acceptedStatus)) {
-                $this->checkoutSession->setLastOrderId($this->magentoOrderId);
-                $this->checkoutSession->setLastRealOrderId($this->magentoOrder->getIncrementId());
-                $this->checkoutSession->setLastQuoteId($this->quoteId);
-                $this->checkoutSession->setLastSuccessQuoteId($this->quoteId);
-                $this->checkoutSession->setLastOrderStatus($this->magentoOrder->getStatus());
+            if (!$this->_objectManager->get(\Magento\Checkout\Model\Session\SuccessValidator::class)->isValid()) {
+                $this->checkoutSession
+                    ->setLastOrderId($this->magentoOrderId)
+                    ->setLastRealOrderId($this->magentoOrder->getIncrementId())
+                    ->setLastQuoteId($this->quoteId)
+                    ->setLastSuccessQuoteId($this->quoteId)
+                    ->setLastOrderStatus($this->magentoOrder->getStatus());
                 if ($this->config['ok_url'] != '') {
                     $returnUrl = $this->config['ok_url'];
                 } else {
@@ -337,7 +335,6 @@ class Index extends Action
         $dbConnection = $this->dbObject->getConnection();
         $tableName    = $this->dbObject->getTableName(self::CONCURRENCY_TABLE);
         $query = "CREATE TABLE IF NOT EXISTS $tableName(`id` int not null,`timestamp` int not null,PRIMARY KEY (`id`))";
-        $this->logger->info($query);
         return $dbConnection->query($query);
     }
 

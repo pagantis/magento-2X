@@ -207,6 +207,7 @@ class Index extends Action
             $orderConfigurationUrls = new \PagaMasTarde\OrdersApiClient\Model\Order\Configuration\Urls();
             $quoteId = $quote->getId();
             $okUrl = $this->_url->getUrl('paylater/notify', ['_query' => ['quoteId'=>$quoteId]]);
+            $this->logger->info($okUrl);
             $orderConfigurationUrls
                 ->setCancel($cancelUrl)
                 ->setKo($okUrl)
