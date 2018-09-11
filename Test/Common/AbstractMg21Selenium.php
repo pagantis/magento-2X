@@ -303,6 +303,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function verifyPaylater()
     {
+        $this->webDriver->wait(40);
         SeleniumHelper::finishForm($this->webDriver);
     }
 
