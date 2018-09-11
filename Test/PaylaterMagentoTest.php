@@ -63,6 +63,11 @@ abstract class PaylaterMagentoTest extends TestCase
      */
     const ORDER_TITLE = 'Order #';
 
+    /**
+     * Pmt Order Title
+     */
+    const PMT_TITLE = 'Paga+Tarde #';
+
 
     /**
      * @var array
