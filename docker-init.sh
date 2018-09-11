@@ -29,7 +29,7 @@ else
     echo "Esta es la rama del pull request" ${TRAVIS_PULL_REQUEST_BRANCH}
     if [ ${TRAVIS_PULL_REQUEST_BRANCH} != '' ]
     then
-        package = ${TRAVIS_PULL_REQUEST_BRANCH}'.x-dev'
+        package=${TRAVIS_PULL_REQUEST_BRANCH}'.x-dev'
     fi
     echo 'Package: '$package
     docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/magento-2x:$package -d /var/www/html
@@ -40,4 +40,5 @@ fi
 echo 'Sample Data + DI + SetupUpgrade + Clear Cache'
 docker-compose exec magento2-${ENVIROMENT} install-sampledata
 docker-compose exec -u www-data magento2-${ENVIROMENT} /var/www/html/bin/magento cron:run
+docker container port magento2-${ENVIROMENT}
 echo 'Build of Magento2 complete: http://magento2-'${ENVIROMENT}'.docker:'${PORT}
