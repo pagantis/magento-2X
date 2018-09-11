@@ -27,9 +27,9 @@ else
         package='dev-master'
     fi
     echo "Esta es la rama del pull request" ${TRAVIS_PULL_REQUEST_BRANCH}
-    if [ ${TRAVIS_PULL_REQUEST_BRANCH} !== '' ]
+    if [ ${TRAVIS_PULL_REQUEST_BRANCH} != '' ]
     then
-        echo "Esta es la rama del pull request" ${TRAVIS_PULL_REQUEST_BRANCH}
+        package = ${TRAVIS_PULL_REQUEST_BRANCH}'.x-dev'
     fi
     echo 'Package: '$package
     docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/magento-2x:$package -d /var/www/html
