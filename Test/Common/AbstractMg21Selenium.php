@@ -368,6 +368,11 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($paylaterElement);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
+
+        $condition = WebDriverExpectedCondition::elementToBeClickable($paylaterElement);
+        $this->webDriver->wait()->until($condition);
+        $this->assertTrue((bool) $condition);
+
         sleep(2);
         $this->findById('paylater')->click();
         sleep(2);
@@ -376,6 +381,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($paylaterElement);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
+
         $menuSearch = WebDriverBy::cssSelector("#checkout-payment-method-load > .payment-methods > .payment-group > ._active > .payment-method-title");
         $menuElement = $this->webDriver->findElement($menuSearch);
         $actualString = $menuElement->getText();
