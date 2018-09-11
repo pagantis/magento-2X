@@ -304,7 +304,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
     public function verifyPaylater()
     {
         $condition = WebDriverExpectedCondition::titleContains(self::PMT_TITLE);
-        $this->webDriver->wait()->until($condition);
+        $this->webDriver->wait(300)->until($condition, $this->webDriver->getCurrentURL());
         $this->assertTrue((bool)$condition, $this->webDriver->getCurrentURL());
 
         SeleniumHelper::finishForm($this->webDriver);
