@@ -303,7 +303,12 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function verifyPaylater()
     {
-        SeleniumHelper::finishForm($this->webDriver);
+        try {
+            echo $this->url();
+            SeleniumHelper::finishForm($this->webDriver);
+        } catch (\Exception $e) {
+            echo $this->url();
+        }
     }
 
     /**
