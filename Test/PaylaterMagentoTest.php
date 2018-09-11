@@ -49,24 +49,24 @@ abstract class PaylaterMagentoTest extends TestCase
     const CHECKOUT_TITLE = 'Checkout';
 
     /**
-     * Magento checkout Title
+     * Magento cart Title
      */
     const CART_TITLE = 'Cart';
 
     /**
-     * Magento success Title
+     * Magento success title
      */
     const SUCCESS_TITLE = 'Success Page';
 
     /**
-     * Magento checkout Title
+     * Magento order confirmation title
      */
     const ORDER_TITLE = 'Order #';
 
     /**
      * Pmt Order Title
      */
-    const PMT_TITLE = 'Paga+Tarde #';
+    const PMT_TITLE = 'Paga+Tarde';
 
 
     /**
