@@ -5,10 +5,19 @@ define(
         'mage/url',
         'Magento_Customer/js/customer-data',
         'Magento_Checkout/js/model/error-processor',
-        'Magento_Checkout/js/model/full-screen-loader'
+        'Magento_Checkout/js/model/full-screen-loader',
+        'Magento_Checkout/js/model/quote',
+        '//cdn.pagamastarde.com/pmt-js-client-sdk/3/js/client-sdk.min.js',
+        'Magento_Checkout/js/action/select-payment-method',
+        'Magento_Checkout/js/checkout-data'
     ],
-    function ($, Component, url, customerData, errorProcessor, fullScreenLoader) {
+    function ($, Component, url, customerData, errorProcessor, fullScreenLoader, quote, pmtClient, selectPaymentMethodAction, checkoutData) {
         'use strict';
+
+        window.checkoutConfig.payment.paylater.guestEmail = quote.guestEmail;
+
+        window.pmtClient = pmtClient;
+
         require.config({
             paths: { "pmtSdk": "https://cdn.pagamastarde.com/pmt-js-client-sdk/3/js/client-sdk.min"},
             waitSeconds: 40
@@ -17,7 +26,7 @@ define(
         require( ["jquery","pmtSdk"],
             function ($, pmtClient) {
                 $(document).ready(function() {
-                    if (window.checkoutConfig.payment.paylater.pmtType  !='0' &&
+                    if (window.checkoutConfig.payment.paylater.pmtType != '0' &&
                         window.checkoutConfig.payment.paylater.publicKey!='') {
                         if (typeof pmtClient !== 'undefined') {
                             pmtClient.setPublicKey(window.checkoutConfig.payment.paylater.publicKey);
@@ -29,63 +38,73 @@ define(
         );
 
         return Component.extend({
-            defaults: {
-                template: 'DigitalOrigin_Pmt/payment/checkout-form'
-            },
+                defaults: {
+                    template: 'DigitalOrigin_Pmt/payment/checkout-form'
+                },
 
-            redirectAfterPlaceOrder: false,
+                redirectAfterPlaceOrder: false,
 
-            getPmtNumQuota: function() {
-                return  window.checkoutConfig.payment.paylater.pmtNumQuota
-            },
+                /*loadSimulator: function ()
+                {
+                        if (window.checkoutConfig.payment.paylater.pmtType  !='0' &&
+                            window.checkoutConfig.payment.paylater.publicKey!=''  &&
+                            window.checkoutConfig.payment.paylater.secretKey!='')
+                        {
+                            if (typeof window.pmtClient !== 'undefined')
+                            {
+                                window.pmtClient.setPublicKey(window.checkoutConfig.payment.paylater.publicKey);
+                                window.pmtClient.simulator.reload();
+                                return true;
+                            }
+                        }
+                },*/
 
-            dataPmtMaxIns: function() {
-                return  window.checkoutConfig.payment.paylater.pmtMaxIns
-            },
+                getPmtNumQuota: function () {
+                    return window.checkoutConfig.payment.paylater.pmtNumQuota
+                },
 
-            getPmtType: function() {
-                return  window.checkoutConfig.payment.paylater.pmtType
-            },
+                dataPmtMaxIns: function () {
+                    return window.checkoutConfig.payment.paylater.pmtMaxIns
+                },
 
-            getPmtTotal: function() {
-                return  window.checkoutConfig.payment.paylater.total
-            },
+                getPmtType: function () {
+                    return window.checkoutConfig.payment.paylater.pmtType
+                },
 
-            initObservable: function () {
+                getPmtTotal: function () {
+                    return window.checkoutConfig.payment.paylater.total
+                },
 
-                this._super()
-                    .observe([
-                        'transactionResult'
-                    ]);
-                return this;
-            },
+                getPublicKey: function () {
+                    return window.checkoutConfig.payment.paylater.publicKey
+                },
 
-            /**
-             * @override placeOrder function:
-             */
-            placeOrder: function (data, event) { //data or this => UiClass  - Event JqueryEvent
+                getSecretKey: function () {
+                    return window.checkoutConfig.payment.paylater.secretKey
+                },
 
-                var self = this;
+                getDisplayMode: function () {
+                    return window.checkoutConfig.payment.paylater.displayMode
+                },
 
-                if (event) {
-                    event.preventDefault();
-                }
+                selectPaymentMethod: function() {
+                    selectPaymentMethodAction(this.getData());
+                    checkoutData.setSelectedPaymentMethod(this.item.method);
+                    return true;
+                },
 
-                var paymentUrl = url.build('paylater/Payment'); //http://magento2.docker:8086/index.php/paylater/Payment
-
-                $.post(paymentUrl, 'json')
-                    .done(function (response) {
-                        console.log(response);
-                        window.location.replace(response);
-                    })
-                    .fail(function (response) {
-                        console.log('FAIL CASE');
-                    })
-                    .always(function () {
-                        console.log('ALWAYS CASE');
-                        fullScreenLoader.stopLoader();
-                    });
-            }
-        });
+                placeOrder: function () {
+                    var paymentUrl = url.build('paylater/Payment');
+                    $.post(paymentUrl, { email: window.checkoutConfig.payment.paylater.guestEmail }, 'json')
+                        .done(function (response) {
+                            console.log(response);
+                            window.location.replace(response);
+                        })
+                        .fail(function (response) {
+                            console.log(response);
+                            window.location.replace(response);
+                        })
+                },
+            });
     }
 );

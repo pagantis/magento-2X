@@ -51,20 +51,8 @@ class SimulatorType implements ArrayInterface
                 'value' => self::MINI,
             ),
             array(
-                'label' => __(' Complete'),
-                'value' => self::COMPLETE,
-            ),
-            array(
                 'label' => __(' Selector'),
                 'value' => self::SELECTOR,
-            ),
-            array(
-                'label' => __(' Descriptive Text'),
-                'value' => self::TEXT,
-            ),
-            array(
-                'label' => __(' Simple'),
-                'value' => self::SIMPLE,
             ),
             array(
                 'label' => __(' Do not show'),

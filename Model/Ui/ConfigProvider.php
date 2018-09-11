@@ -51,9 +51,11 @@ final class ConfigProvider implements ConfigProviderInterface
                 self::CODE => [
                     'total' => $quote->getGrandTotal(),
                     'publicKey' => $this->method->getConfigData('public_key'),
+                    'secretKey' => $this->method->getConfigData('secret_key'),
                     'pmtType' => $this->method->getConfigData('checkout_simulator'),
                     'pmtMaxIns' => $this->method->getConfigData('max_installments'),
-                    'pmtNumQuota' => $this->method->getConfigData('min_installments')
+                    'pmtNumQuota' => $this->method->getConfigData('min_installments'),
+                    'displayMode' => $this->method->getConfigData('display_mode'),
                 ],
             ],
         ];

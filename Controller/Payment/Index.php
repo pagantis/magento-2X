@@ -2,16 +2,17 @@
 
 namespace DigitalOrigin\Pmt\Controller\Payment;
 
-use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
-use Magento\Framework\Controller\Result\JsonFactory;
-use Magento\Framework\View\Result\PageFactory;
-use Magento\Sales\Model\Order;
-use Magento\Framework\Serialize\Serializer\Json;
+use Magento\Quote\Model\QuoteRepository;
+use Magento\Sales\Model\ResourceModel\Order\Collection as OrderCollection;
+use Magento\Checkout\Model\Session;
+use DigitalOrigin\Pmt\Helper\Config;
+use DigitalOrigin\Pmt\Logger\Logger;
+use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\Module\ModuleList;
 use PagaMasTarde\OrdersApiClient\Model\Order\User\Address;
-
-define('__ROOT__', dirname((dirname(dirname(__FILE__)))));
 
 /**
  * Class Index
@@ -19,181 +20,334 @@ define('__ROOT__', dirname((dirname(dirname(__FILE__)))));
  */
 class Index extends Action
 {
-    /**
-     * @var PageFactory
-     */
-    protected $resultPageFactory;
+    /** Orders tablename */
+    const ORDERS_TABLE = 'cart_process';
 
-    /**
-     * @var JsonFactory
-     */
-    protected $jsonFactory;
-
-    /**
-     * @var Context
-     */
+    /** @var Context $context */
     protected $context;
 
-    /**
-     * @var Order $order
-     */
-    protected $order;
+    /** @var QuoteRepository  $quoteRepository */
+    protected $quoteRepository;
 
-    /**
-     * @var Session $session
-     */
+    /** @var OrderCollection $orderCollection */
+    protected $orderCollection;
+
+    /** @var Session $session */
     protected $session;
 
-    /**
-     * @var Json $jsonHelper
-     */
-    protected $jsonHelper;
+    /** @var mixed $config */
+    protected $config;
+
+    /** @var Logger $logger */
+    protected $logger;
+
+    /** @var ResourceConnection $dbObject */
+    protected $dbObject;
+
+    /** @var ProductMetadataInterface $productMetadataInterface */
+    protected $productMetadataInterface;
+
+    /** @var ModuleList $moduleList */
+    protected $moduleList;
 
     /**
      * Index constructor.
      *
-     * @param JsonFactory $resultJsonFactory
-     * @param Context     $context
-     * @param PageFactory $resultPageFactory
-     * @param Order       $order
-     * @param Session     $session
-     * @param Json        $jsonHelper
+     * @param Context                  $context
+     * @param Session                  $session
+     * @param Config                   $config
+     * @param Logger                   $logger
+     * @param QuoteRepository          $quoteRepository
+     * @param OrderCollection          $orderCollection
+     * @param ResourceConnection       $dbObject
+     * @param ModuleList               $moduleList
+     * @param ProductMetadataInterface $productMetadataInterface
+     *
      */
     public function __construct(
-        JsonFactory $resultJsonFactory,
         Context $context,
-        PageFactory $resultPageFactory,
-        Order $order,
+        QuoteRepository $quoteRepository,
+        OrderCollection $orderCollection,
         Session $session,
-        Json $jsonHelper
+        Config $config,
+        Logger $logger,
+        ResourceConnection $dbObject,
+        ProductMetadataInterface $productMetadataInterface,
+        ModuleList $moduleList
     ) {
-        $this->jsonHelper = $jsonHelper;
-        $this->session = $session;
-        $this->order = $order;
-        $this->jsonFactory = $resultJsonFactory;
-        $this->context = $context;
-        $this->resultPageFactory = $resultPageFactory;
         parent::__construct($context);
+        $this->session = $session;
+        $this->context = $context;
+        $this->config = $config->getConfig();
+        $this->logger = $logger;
+        $this->quoteRepository = $quoteRepository;
+        $this->orderCollection = $orderCollection;
+        $this->dbObject = $dbObject;
+        $this->moduleList = $moduleList;
+        $this->productMetadataInterface = $productMetadataInterface;
     }
 
     /**
-     * Get Order
+     * Main function
      *
-     * @return bool|Order
-     */
-    public function getOrder()
-    {
-        if ($this->session->getLastRealOrder()) {
-            $lastOrderId = $this->session->getLastRealOrder()->getId();
-            return $this->order->loadByIncrementId($lastOrderId);
-        }
-
-        return false;
-    }
-
-    /**
-     * You will pay controller
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function execute()
     {
         try {
-            //$checkoutPaymentUrl = $this->_url->getUrl('checkout', ['_fragment' => 'payment']);
+            $cancelUrl = $this->_url->getUrl('checkout', ['_fragment' => 'payment']);
             $quote = $this->session->getQuote();
+            /** @var Order $order */
+            $lastOrder = $this->session->getLastRealOrder();
+            $params = $this->getRequest()->getParams();
+            $customer = $quote->getCustomer();
             $shippingAddress = $quote->getShippingAddress();
-            $billingAddress = $quote->getBillingAddress();
-            $orderShippingAddress = new Address();
-            $orderShippingAddress
+
+            if (isset($params['email']) && $params['email']!='') {
+                $this->session->setEmail($params['email']); //Get guest email after refresh page
+                $customer->setEmail($params['email']);
+                $quote->setCheckoutMethod('guest');
+                $quote->getBillingAddress()->setEmail($params['email']);
+            } elseif ($customer->getEmail()=='') {
+                $customer->setEmail($this->session->getEmail());
+                $quote->setCheckoutMethod('guest');
+                $quote->getBillingAddress()->setEmail($this->session->getEmail());
+            }
+
+            /** @var Quote $currentQuote */
+            $currentQuote = $this->quoteRepository->get($quote->getId());
+            $currentQuote->setCustomerEmail($customer->getEmail());
+            $this->quoteRepository->save($currentQuote);
+
+            $userAddress =  new Address();
+            $userAddress
                 ->setZipCode($shippingAddress->getPostcode())
-                ->setFullName($shippingAddress->getFirstname() . ' ' . $shippingAddress->getLastname())
+                ->setFullName($shippingAddress->getFirstname()." ".$shippingAddress->getLastname())
                 ->setCountryCode('ES')
                 ->setCity($shippingAddress->getCity())
                 ->setAddress($shippingAddress->getStreetFull())
             ;
-            var_dump($billingAddress->getStreetFull());
-            die;
-            /*$orderBillingAddress = new \PagaMasTarde\OrdersApiClient\Model\Order\User\Address();
+
+            $orderShippingAddress = new Address();
+            $orderShippingAddress
+                ->setZipCode($shippingAddress->getPostcode())
+                ->setFullName($shippingAddress->getFirstname()." ".$shippingAddress->getLastname())
+                ->setCountryCode('ES')
+                ->setCity($shippingAddress->getCity())
+                ->setAddress($shippingAddress->getStreetFull())
+                ->setFixPhone($shippingAddress->getTelephone())
+                ->setMobilePhone($shippingAddress->getTelephone())
+            ;
+
+            $orderBillingAddress =  new Address();
+            $billingAddress = $quote->getBillingAddress();
             $orderBillingAddress
                 ->setZipCode($billingAddress->getPostcode())
-                ->setFullName($billingAddress->getFirstname() . ' ' . $billingAddress->getLastname())
+                ->setFullName($billingAddress->getFirstname()." ".$shippingAddress->getLastname())
                 ->setCountryCode('ES')
                 ->setCity($billingAddress->getCity())
                 ->setAddress($billingAddress->getStreetFull())
-            ;*/
-            /*$orderUser = new \PagaMasTarde\OrdersApiClient\Model\Order\User();
+                ->setFixPhone($billingAddress->getTelephone())
+                ->setMobilePhone($billingAddress->getTelephone())
+            ;
+
+            $orderUser = new \PagaMasTarde\OrdersApiClient\Model\Order\User();
+            $billingAddress->setEmail($customer->getEmail());
             $orderUser
-                ->setAddress($orderShippingAddress)
-                ->setFullName($orderShippingAddress->getFullName())
+                ->setAddress($userAddress)
+                ->setFullName($shippingAddress->getFirstname()." ".$shippingAddress->getLastname())
                 ->setBillingAddress($orderBillingAddress)
-                ->setDateOfBirth($customer->birthday)
-                ->setEmail($this->context->cookie->logged ? $this->context->cookie->email : $customer->email)
-                ->setFixPhone($shippingAddress->phone)
-                ->setMobilePhone($shippingAddress->phone_mobile)
+                ->setEmail($customer->getEmail())
+                ->setFixPhone($shippingAddress->getTelephone())
+                ->setMobilePhone($shippingAddress->getTelephone())
                 ->setShippingAddress($orderShippingAddress)
-            ;*/
-            //$orders = Order::getCustomerOrders($customer->id);
-            /** @var \PrestaShop\PrestaShop\Adapter\Entity\Order $order */
-            /*foreach ($orders as $order) {
-                if ($order['valid']) {
-                    $orderHistory = new \PagaMasTarde\OrdersApiClient\Model\Order\User\OrderHistory();
-                    $orderHistory
-                        ->setAmount(intval(100 * $order['total_paid']))
-                        ->setDate(new \DateTime($order['date_add']))
-                    ;
-                    $orderUser->addOrderHistory($orderHistory);
-                }
-            }*/
-            /*if (\PagaMasTarde\OrdersApiClient\Model\Order\User::dniCheck($shippingAddress->dni)) {
-                $orderUser->setDni($shippingAddress->dni);
-            }*/
-            /*$details = new \PagaMasTarde\OrdersApiClient\Model\Order\ShoppingCart\Details();
-            $details->setShippingCost(intval(strval(100 * $cart->getTotalShippingCost())));
-            $items = $cart->getProducts();
+            ;
+
+            if ($customer->getDob()) {
+                $orderUser->setDateOfBirth($customer->getDob());
+            }
+            if (\PagaMasTarde\OrdersApiClient\Model\Order\User::dniCheck($customer->getTaxvat())) {
+                $orderUser->setDni($customer->getTaxvat());
+                $orderBillingAddress->setDni($customer->getTaxvat());
+                $orderShippingAddress->setDni($customer->getTaxvat());
+            }
+
+            $previousOrders = $this->getOrders($customer->getId());
+            foreach ($previousOrders as $orderElement) {
+                $orderHistory = new \PagaMasTarde\OrdersApiClient\Model\Order\User\OrderHistory();
+                $orderHistory
+                    ->setAmount(intval(100 * $orderElement['grand_total']))
+                    ->setDate(new \DateTime($orderElement['created_at']))
+                ;
+                $orderUser->addOrderHistory($orderHistory);
+            }
+
+            $details = new \PagaMasTarde\OrdersApiClient\Model\Order\ShoppingCart\Details();
+            $shippingCost = $quote->collectTotals()->getTotals()['shipping']->getData('value');
+            $details->setShippingCost(intval(strval(100 * $shippingCost)));
+            $items = $quote->getAllVisibleItems();
             foreach ($items as $key => $item) {
                 $product = new \PagaMasTarde\OrdersApiClient\Model\Order\ShoppingCart\Details\Product();
                 $product
-                    ->setAmount(intval(100 * $item['price_wt']))
-                    ->setQuantity($item['quantity'])
-                    ->setDescription($item['name']);
+                    ->setAmount(intval(100 * $item->getPrice()))
+                    ->setQuantity($item->getQty())
+                    ->setDescription($item->getName());
                 $details->addProduct($product);
-            }*/
-            /*$orderShoppingCart = new \PagaMasTarde\OrdersApiClient\Model\Order\ShoppingCart();
+            }
+
+            $orderShoppingCart = new \PagaMasTarde\OrdersApiClient\Model\Order\ShoppingCart();
             $orderShoppingCart
                 ->setDetails($details)
-                ->setOrderReference($cart->id)
+                ->setOrderReference($quote->getId())
                 ->setPromotedAmount(0)
-                ->setTotalAmount(intval(strval(100 * $cart->getOrderTotal(true))))
-            ;*/
-            /*$orderConfigurationUrls = new \PagaMasTarde\OrdersApiClient\Model\Order\Configuration\Urls();
+                ->setTotalAmount(intval(strval(100 * $quote->getGrandTotal())))
+            ;
+
+            $orderConfigurationUrls = new \PagaMasTarde\OrdersApiClient\Model\Order\Configuration\Urls();
+            $quoteId = $quote->getId();
+            $okUrl = $this->_url->getUrl('paylater/notify', ['_query' => ['quoteId'=>$quoteId]]);
+            $this->logger->info($okUrl);
             $orderConfigurationUrls
                 ->setCancel($cancelUrl)
-                ->setKo($cancelUrl)
+                ->setKo($okUrl)
                 ->setNotificationCallback($okUrl)
                 ->setOk($okUrl)
-            ;*/
-            /*$orderChannel = new \PagaMasTarde\OrdersApiClient\Model\Order\Configuration\Channel();
+            ;
+
+            $orderChannel = new \PagaMasTarde\OrdersApiClient\Model\Order\Configuration\Channel();
             $orderChannel
                 ->setAssistedSale(false)
-                ->setType(PagaMasTarde\OrdersApiClient\Model\Order\Configuration\Channel::ONLINE)
-            ;*/
-            /*$orderConfiguration = new \PagaMasTarde\OrdersApiClient\Model\Order\Configuration();
+                ->setType(\PagaMasTarde\OrdersApiClient\Model\Order\Configuration\Channel::ONLINE)
+            ;
+            $orderConfiguration = new \PagaMasTarde\OrdersApiClient\Model\Order\Configuration();
             $orderConfiguration
                 ->setChannel($orderChannel)
                 ->setUrls($orderConfigurationUrls)
-            ;*/
-            /*$metadataOrder = new \PagaMasTarde\OrdersApiClient\Model\Order\Metadata();
+            ;
+
+            $metadataOrder = new \PagaMasTarde\OrdersApiClient\Model\Order\Metadata();
+            $metadata = $this->getMetadata();
             foreach ($metadata as $key => $metadatum) {
-                $metadataOrder
-                    ->addMetadata($key, $metadatum);
-            }*/
-            /*$order = new \PagaMasTarde\OrdersApiClient\Model\Order();
+                $metadataOrder->addMetadata($key, $metadatum);
+            }
+
+            $order = new \PagaMasTarde\OrdersApiClient\Model\Order();
             $order
                 ->setConfiguration($orderConfiguration)
                 ->setMetadata($metadataOrder)
                 ->setShoppingCart($orderShoppingCart)
                 ->setUser($orderUser)
-            ;*/
+            ;
         } catch (\PagaMasTarde\OrdersApiClient\Exception\ValidationException $validationException) {
-            die($validationException);
+            $this->logger->info(__METHOD__.'=>'.$validationException->getMessage());
+            echo $cancelUrl;
+            exit;
         }
+
+        try {
+            if ($this->config['public_key']=='' || $this->config['secret_key']=='') {
+                throw new \Exception('Public and Secret Key not found');
+            }
+
+            $orderClient = new \PagaMasTarde\OrdersApiClient\Client(
+                $this->config['public_key'],
+                $this->config['secret_key']
+            );
+
+            $order = $orderClient->createOrder($order);
+            if ($order instanceof \PagaMasTarde\OrdersApiClient\Model\Order) {
+                $url = $order->getActionUrls()->getForm();
+                $result = $this->insertRow($quote->getId(), $order->getId());
+                if (!$result) {
+                    throw new \Exception('Unable to save pmt-order-id');
+                }
+            } else {
+                throw new \Exception('Order not created');
+            }
+        } catch (\Exception $exception) {
+            $this->logger->info(__METHOD__.'=>'.$exception->getMessage());
+            echo $cancelUrl;
+            exit;
+        }
+
+        $displayMode = $this->config['display_mode'];
+        if (!$displayMode) {
+            echo $url;
+            exit;
+        } else {
+            $iframeUrl = $this->_url->getUrl(
+                "paylater/Payment/iframe",
+                ['_query' => ["orderId"=>$order->getId()]]
+            );
+            echo $iframeUrl;
+            exit;
+        }
+    }
+
+    /**
+     * Get the orders of a customer
+     * @param $customerId
+     *
+     * @return array
+     */
+    private function getOrders($customerId)
+    {
+        $orderCollection = array();
+        if ($customerId!='') {
+            $this->orderCollection->addAttributeToFilter('customer_id', $customerId)
+                            ->addAttributeToFilter(
+                                'status',
+                                ['in' => ['processing','pending','complete']]
+                            )
+                            ->load();
+            $orderCollection = $this->orderCollection->getData();
+        }
+        return $orderCollection;
+    }
+
+    /**
+     * @return \Zend_Db_Statement_Interface
+     */
+    private function checkDbTable()
+    {
+        $dbConnection = $this->dbObject->getConnection();
+        $tableName = $this->dbObject->getTableName(self::ORDERS_TABLE);
+        $query = "CREATE TABLE IF NOT EXISTS `$tableName` ( `id` int, `order_id` varchar(50), `mg_order_id` varchar(50), 
+                  PRIMARY KEY (`id`))";
+        return $dbConnection->query($query);
+    }
+
+    /**
+     * @param $quoteId
+     * @param $pmtOrderId
+     *
+     * @return int
+     */
+    private function insertRow($quoteId, $pmtOrderId)
+    {
+        $this->checkDbTable();
+        $dbConnection = $this->dbObject->getConnection();
+        $tableName = $this->dbObject->getTableName(self::ORDERS_TABLE);
+        return $dbConnection->insertOnDuplicate(
+            $tableName,
+            array('id'=>$quoteId,'order_id'=>$pmtOrderId),
+            array('order_id')
+        );
+    }
+
+    /**
+     * @return array
+     */
+    private function getMetadata()
+    {
+        $curlInfo = curl_version();
+        $curlVersion = $curlInfo['version'];
+        $magentoVersion = $this->productMetadataInterface->getVersion();
+        $moduleInfo = $this->moduleList->getOne('DigitalOrigin_Pmt');
+        return array(  'magento' => $magentoVersion,
+                       'pmt' => $moduleInfo['setup_version'],
+                       'php' => phpversion(),
+                       'curl' => $curlVersion);
     }
 }

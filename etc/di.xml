@@ -14,7 +14,7 @@
             <argument name="methodCode" xsi:type="const">DigitalOrigin\Pmt\Model\Ui\ConfigProvider::CODE</argument>
         </arguments>
     </virtualType>
-    <virtualType name="PaylaterLogger" type="Magento\Payment\Model\Method\Logger">
+    <!--virtualType name="PaylaterLogger" type="Magento\Payment\Model\Method\Logger">
         <arguments>
             <argument name="config" xsi:type="object">PaylaterConfig</argument>
         </arguments>
@@ -23,7 +23,7 @@
         <arguments>
             <argument name="logger" xsi:type="object">PaylaterLogger</argument>
         </arguments>
-    </type>
+    </type-->
     <virtualType name="PaylaterCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
         <arguments>
             <argument name="commands" xsi:type="array">
@@ -102,10 +102,22 @@
             <argument name="configInterface" xsi:type="object">PaylaterConfig</argument>
         </arguments>
     </virtualType>
-
     <type name="DigitalOrigin\Pmt\Block\Info">
         <arguments>
             <argument name="config" xsi:type="object">PaylaterConfig</argument>
+        </arguments>
+    </type>
+    <type name="DigitalOrigin\Pmt\Logger\Handler">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+    <type name="DigitalOrigin\Pmt\Logger\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">pmtLog</argument>
+            <argument name="handlers"  xsi:type="array">
+                <item name="system" xsi:type="object">DigitalOrigin\Pmt\Logger\Handler</item>
+            </argument>
         </arguments>
     </type>
 </config>
