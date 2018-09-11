@@ -303,9 +303,9 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function verifyPaylater()
     {
-        sleep(20);
+        $this->webDriver->wait(60, 500);
         $url = $this->webDriver->getCurrentURL();
-        $this->debugConsole($url);
+        var_export($url, true);
         SeleniumHelper::finishForm($this->webDriver);
     }
 
@@ -459,18 +459,5 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $this->assertEquals($minInstallments, $this->configuration['defaultMinIns'], "PR20//PR29");
         $maxInstallments = $simulatorElement->getAttribute('data-pmt-max-ins');
         $this->assertEquals($maxInstallments, $this->configuration['defaultMaxIns'], "PR20//PR29");
-    }
-
-    /**
-     * Debugger
-     * @param $data
-     */
-    public function debugConsole($data)
-    {
-        $output = $data;
-        if (is_array($output)) {
-            $output = implode(',', $output);
-        }
-        var_export($output, true);
     }
 }
