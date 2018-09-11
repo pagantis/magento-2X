@@ -303,12 +303,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function verifyPaylater()
     {
-        try {
-            echo $this->url();
-            SeleniumHelper::finishForm($this->webDriver);
-        } catch (\Exception $e) {
-            echo $this->url();
-        }
+        SeleniumHelper::finishForm($this->webDriver);
     }
 
     /**
@@ -397,7 +392,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $condition = WebDriverExpectedCondition::elementToBeClickable($checkoutButton);
         $this->webDriver->wait()->until($condition);
 
-        $menuElement = $this->webDriver->findElement($menuSearch);
+        $menuElement = $this->webDriver->findElement($checkoutButton);
         $menuElement->click();
         return $price;
     }
