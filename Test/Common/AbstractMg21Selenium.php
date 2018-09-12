@@ -320,7 +320,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
 
-        $countryElement = WebDriverBy::name('firstname');
+        $countryElement = WebDriverBy::name('country_id');
         $condition = WebDriverExpectedCondition::elementToBeClickable($countryElement);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
