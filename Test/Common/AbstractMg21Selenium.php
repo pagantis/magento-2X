@@ -317,9 +317,13 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
     {
         $firstnameElement = WebDriverBy::name('firstname');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($firstnameElement);
-        $this->webDriver->wait(60)->until($condition);
+        $this->webDriver->wait(200)->until($condition);
         $this->assertTrue((bool) $condition);
 
+        $countryElement = WebDriverBy::name('country_id');
+        $condition = WebDriverExpectedCondition::elementToBeClickable($countryElement);
+        $this->webDriver->wait()->until($condition);
+        $this->assertTrue((bool) $condition);
         $this->webDriver->findElement(WebDriverBy::name('country_id'))
                         ->findElement(WebDriverBy::cssSelector("option[value='ES']"))
                         ->click();
@@ -349,6 +353,10 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
+
+        $condition = WebDriverExpectedCondition::elementToBeClickable($continueElement);
+        $this->webDriver->wait()->until($condition);
+
         $this->findByName('ko_unique_1')->click();
 
         $continueElement = WebDriverBy::className('continue');
@@ -368,6 +376,11 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($paylaterElement);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
+
+        $condition = WebDriverExpectedCondition::elementToBeClickable($paylaterElement);
+        $this->webDriver->wait()->until($condition);
+        $this->assertTrue((bool) $condition);
+
         sleep(2);
         $this->findById('paylater')->click();
         sleep(2);
@@ -376,6 +389,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($paylaterElement);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
+
         $menuSearch = WebDriverBy::cssSelector("#checkout-payment-method-load > .payment-methods > .payment-group > ._active > .payment-method-title");
         $menuElement = $this->webDriver->findElement($menuSearch);
         $actualString = $menuElement->getText();
