@@ -380,9 +380,8 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $condition = WebDriverExpectedCondition::elementToBeClickable($paylaterElement);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
-
-        sleep(2);
         $this->findById('paylater')->click();
+
         sleep(2);
 
         $paylaterElement = WebDriverBy::className('payment-group');
@@ -404,6 +403,12 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
 
         $this->assertNotEquals($price, 0, $price);
         $this->assertNotEmpty($price);
+
+        $simulatorElement = $this->findByClass('PmtSimulator');
+        $simulatorPrice = $simulatorElement->getAttribute('data-pmt-amount');
+        $simulatorPrice = preg_replace('/[^\x{20}-\x{7F}]/u', '', $simulatorPrice);
+        $price = preg_replace('/[^\x{20}-\x{7F}]/u', '', $price);
+        $this->assertContains($simulatorPrice, $price, json_encode(array($price,$simulatorPrice)));
 
         sleep(2);
         $checkoutButton = WebDriverBy::cssSelector("#checkout-payment-method-load > .payment-methods > .payment-group > ._active > .payment-method-content > .actions-toolbar > .primary");
