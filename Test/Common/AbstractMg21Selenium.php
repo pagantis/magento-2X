@@ -380,6 +380,8 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $condition = WebDriverExpectedCondition::elementToBeClickable($paylaterElement);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
+
+        sleep(2);
         $this->findById('paylater')->click();
 
         sleep(2);
