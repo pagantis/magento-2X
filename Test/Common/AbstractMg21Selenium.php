@@ -381,7 +381,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
 
-        sleep(2);
+        sleep(5);
         $this->findById('paylater')->click();
 
         sleep(2);
