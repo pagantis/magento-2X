@@ -460,7 +460,8 @@ class Index extends Action
     /** STEP 9 CPO - Confirmation Pmt Order */
     private function rollbackMerchantOrder()
     {
-        $this->magentoOrder->setStatus('Pending');
+        $this->magentoOrder->setState(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT, true);
+        $this->magentoOrder->setStatus(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
     }
 
     private function getRedirectUrl()
