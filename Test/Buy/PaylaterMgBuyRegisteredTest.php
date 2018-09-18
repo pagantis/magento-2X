@@ -43,7 +43,7 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
 
     private function comparePrices()
     {
-        $this->assertEquals($this->getCheckoutPrice(), $this->getConfirmationPrice(), "PR46");
+        $this->assertContains($this->getCheckoutPrice(), $this->getConfirmationPrice(), "PR46");
     }
 
     /**
