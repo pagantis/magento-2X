@@ -74,11 +74,6 @@
                     <source_model>DigitalOrigin\Pmt\Model\Adminhtml\Source\SimulatorType</source_model>
                     <comment>Incluir un simulador de cuotas en el checkout</comment>
                 </field>
-                <field id="sort_order" translate="label" type="text" sortOrder="14" showInDefault="1" showInWebsite="1"
-                       showInStore="0">
-                    <label>Sort Order</label>
-                    <frontend_class>validate-number</frontend_class>
-                </field>
                 <field id="price_selector" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Selector de precio</label>
                     <comment>Selector de html para obtener el precio en la página de producto. Será la cantidad usada
