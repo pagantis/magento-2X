@@ -56,6 +56,7 @@ final class ConfigProvider implements ConfigProviderInterface
                     'pmtMaxIns' => $this->method->getConfigData('max_installments'),
                     'pmtNumQuota' => $this->method->getConfigData('min_installments'),
                     'displayMode' => $this->method->getConfigData('display_mode'),
+                    'subtitle' => $this->method->getConfigData('checkout_description'),
                 ],
             ],
         ];

@@ -44,6 +44,10 @@ define(
                     }, 3000);
                 },
 
+                getSubtitle: function () {
+                    return window.checkoutConfig.payment.paylater.subtitle
+                },
+
                 getPmtNumQuota: function () {
                     return window.checkoutConfig.payment.paylater.pmtNumQuota
                 },
