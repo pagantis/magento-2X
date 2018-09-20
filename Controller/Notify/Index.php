@@ -315,7 +315,7 @@ class Index extends Action
             $exceptionObject = new \stdClass();
             $exceptionObject->method= __FUNCTION__;
             $exceptionObject->status='500';
-            $exceptionObject->result= self::CPO;
+            $exceptionObject->result= self::CPO_ERR_MSG;
             $exceptionObject->result_description = $e->getMessage();
             throw new \Exception(serialize($exceptionObject));
         }
@@ -430,7 +430,7 @@ class Index extends Action
     {
         $grandTotal = $this->quote->getGrandTotal();
         if ($this->pmtOrder->getShoppingCart()->getTotalAmount() != intval(strval(100 * $grandTotal))) {
-            throw new \Exception(self::VA_WRONG_AMOUNT);
+            throw new \Exception(self::VA_ERR_MSG);
         }
     }
     /** STEP 8 PMO - Process Merchant Order */
