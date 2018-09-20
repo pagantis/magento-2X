@@ -21,11 +21,11 @@
                 </field>
                 <field id="public_key" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Public Key (*)</label>
-                    <comment>OBLIGATORIO. Puede obtenerla en su perfil de usuario de pagamastarde</comment>
+                    <comment>OBLIGATORIO. Puede obtenerla en su perfil de usuario de Paga+Tarde</comment>
                 </field>
                 <field id="secret_key" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Secret Key (*)</label>
-                    <comment>OBLIGATORIO. Puede obtenerla en su perfil de usuario de pagamastarde</comment>
+                    <comment>OBLIGATORIO. Puede obtenerla en su perfil de usuario de Paga+Tarde</comment>
                 </field>
                 <field id="title" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Titulo</label>
