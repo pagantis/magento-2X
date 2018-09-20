@@ -5,7 +5,7 @@
             <group id="paylater" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Paga+Tarde</label>
                 <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Enabled</label>
+                    <label>Activar el modulo (*)</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="backoffice_button" type="button" translate="button_label" sortOrder="2" showInDefault="1" showInWebsite="1">
@@ -20,56 +20,57 @@
                     <frontend_model>DigitalOrigin\Pmt\Model\Adminhtml\Source\ConfigButtonLinkType</frontend_model>
                 </field>
                 <field id="public_key" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Public API Key(*)</label>
+                    <label>Public Key (*)</label>
                     <comment>OBLIGATORIO. Puede obtenerla en su perfil de usuario de pagamastarde</comment>
                 </field>
                 <field id="secret_key" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Private API Key(*)</label>
-                </field>
-                <field id="title" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Title</label>
+                    <label>Secret Key (*)</label>
                     <comment>OBLIGATORIO. Puede obtenerla en su perfil de usuario de pagamastarde</comment>
                 </field>
+                <field id="title" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Titulo</label>
+                    <comment>Titulo del método de pago en el checkout</comment>
+                </field>
                 <field id="checkout_description" translate="label" type="text" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Checkout description</label>
+                    <label>Descripción en el checkout</label>
                     <comment>Título a mostrar junto al simulador en el checkout</comment>
                 </field>
                 <field id="min_amount" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1"
                        showInStore="0">
-                    <label>Minimum cart amount (ex: 24.99)</label>
+                    <label>Importe mínimo</label>
                     <frontend_class>validate-number</frontend_class>
                     <comment>Cantidad mínima para habilitar el módulo.</comment>
                 </field>
                 <field id="max_amount" translate="label" type="text" sortOrder="8" showInDefault="1" showInWebsite="1"
                        showInStore="10000000">
-                    <label>Maximum cart amount (ex: 24.99)</label>
+                    <label>Importe máximo</label>
                     <frontend_class>validate-number</frontend_class>
                     <comment>Cantidad maxima para habilitar el módulo</comment>
                 </field>
                 <field id="min_installments" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1"
                        showInStore="3">
-                    <label>Number of installments by default</label>
+                    <label>Número de cuotas por defecto</label>
                     <frontend_class>validate-number</frontend_class>
                     <comment>Número de cuotas que va a mostrar el simulador por defecto. Debe estar entre 2-12</comment>
                 </field>
                 <field id="max_installments" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
                        showInStore="12">
-                    <label>Max installments in simulator product(From 2 to 12)</label>
+                    <label>Máximo número de pagos</label>
                     <frontend_class>validate-number</frontend_class>
                     <comment>Número máximo de pagos para mostrar en el simulador. Debe estar entre 2-12</comment>
                 </field>
                 <field id="display_mode" translate="label" type="select" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>How to open payment</label>
+                    <label>Visualización</label>
                     <source_model>DigitalOrigin\Pmt\Model\Adminhtml\Source\DisplayType</source_model>
                     <comment>Abrir el formulario en un pop-up</comment>
                 </field>
                 <field id="product_simulator" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Product Simulator</label>
+                    <label>Simulador en el producto</label>
                     <source_model>DigitalOrigin\Pmt\Model\Adminhtml\Source\SimulatorType</source_model>
                     <comment>Incluir un simulador de cuotas en la pagina de producto</comment>
                 </field>
                 <field id="checkout_simulator" translate="label" type="select" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Checkout Simulator</label>
+                    <label>Simulador en el checkout</label>
                     <source_model>DigitalOrigin\Pmt\Model\Adminhtml\Source\SimulatorType</source_model>
                     <comment>Incluir un simulador de cuotas en el checkout</comment>
                 </field>
@@ -79,23 +80,23 @@
                     <frontend_class>validate-number</frontend_class>
                 </field>
                 <field id="price_selector" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Price selector</label>
+                    <label>Selector de precio</label>
                     <comment>Selector de html para obtener el precio en la página de producto. Será la cantidad usada
                         en el simulador de producto si este está activo. Por defecto: "div.price-final_price span.price-wrapper span.price"</comment>
                 </field>
                 <field id="quantity_selector" translate="label" type="text" sortOrder="16" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Quantity selector</label>
+                    <label>Selector de cantidad</label>
                     <comment>Selector de html para obtener el número de productos a comprar en la página de producto.
                         La cantidad de productos será multiplicada por el precio de producto para obtener el precio final, este precio
                         será el que se usará en el simulador de producto si este está activo. Dejar en blanco para omitir su uso.
                         Por defecto: "div.fieldset div.qty div.control input.qty"</comment>
                 </field>
                 <field id="ok_url" translate="label" type="text" sortOrder="17" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Ok url</label>
+                    <label>Url Ok</label>
                     <comment>Pagina donde será redirigido el usuario tras un proceso de pago correcto.</comment>
                 </field>
                 <field id="ko_url" translate="label" type="text" sortOrder="18" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Ko url</label>
+                    <label>Url Ko</label>
                     <comment>Pagina donde será redirigido el usuario tras un proceso de pago erroneo.</comment>
                 </field>
             </group>
