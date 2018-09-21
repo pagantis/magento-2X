@@ -349,6 +349,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function goToPayment()
     {
+        sleep(5);
         $continueElement = WebDriverBy::name('ko_unique_1');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
         $this->webDriver->wait()->until($condition);
