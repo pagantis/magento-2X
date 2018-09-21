@@ -167,7 +167,7 @@ class Index extends Action
             if ($customer->getDob()) {
                 $orderUser->setDateOfBirth($customer->getDob());
             }
-            if (\PagaMasTarde\OrdersApiClient\Model\Order\User::dniCheck($customer->getTaxvat())) {
+            if ($customer->getTaxvat()!='') {
                 $orderUser->setDni($customer->getTaxvat());
                 $orderBillingAddress->setDni($customer->getTaxvat());
                 $orderShippingAddress->setDni($customer->getTaxvat());
