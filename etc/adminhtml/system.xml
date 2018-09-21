@@ -5,15 +5,15 @@
             <group id="paylater" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Paga+Tarde</label>
                 <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Activar el modulo (*)</label>
+                    <label>Activar el módulo (*)</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="backoffice_button" type="button" translate="button_label" sortOrder="2" showInDefault="1" showInWebsite="1">
-                    <attribute type="button_label">Go to Paga+Tarde</attribute>
+                    <attribute type="button_label">Ir a Paga+Tarde</attribute>
                     <attribute type="button_url">
                         <![CDATA[https://bo.pagamastarde.com]]>
                     </attribute>
-                    <attribute type="button_credentials_label">Get Credentials</attribute>
+                    <attribute type="button_credentials_label">Obtener credenciales</attribute>
                     <attribute type="button_credentials_url">
                         <![CDATA[https://bo.pagamastarde.com/shop]]>
                     </attribute>
@@ -28,8 +28,8 @@
                     <comment>OBLIGATORIO. Puede obtenerla en su perfil de usuario de Paga+Tarde</comment>
                 </field>
                 <field id="title" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Titulo</label>
-                    <comment>Titulo del método de pago en el checkout</comment>
+                    <label>Título</label>
+                    <comment>Título del método de pago en el checkout</comment>
                 </field>
                 <field id="checkout_description" translate="label" type="text" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Descripción en el checkout</label>
