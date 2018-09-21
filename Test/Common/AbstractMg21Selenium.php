@@ -332,9 +332,9 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
                         ->findElement(WebDriverBy::cssSelector("option[value='139']"))
                         ->click();
 
+        $this->findByName('postcode')->clear()->sendKeys($this->configuration['zip']);
         $this->findByName('street[0]')->clear()->sendKeys($this->configuration['street']);
         $this->findByName('city')->clear()->sendKeys($this->configuration['city']);
-        $this->findByName('postcode')->clear()->sendKeys($this->configuration['zip']);
         $this->findById('customer-email')->clear()->sendKeys($this->configuration['email']);
         $this->findByName('firstname')->clear()->sendKeys($this->configuration['firstname']);
         $this->findByName('lastname')->clear()->sendKeys($this->configuration['lastname']);
@@ -349,8 +349,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function goToPayment()
     {
-        sleep(5);
-        $continueElement = WebDriverBy::name('ko_unique_1');
+        $continueElement = WebDriverBy::name('ko_unique_3');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
@@ -359,7 +358,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
 
-        $this->findByName('ko_unique_1')->click();
+        $this->findByName('ko_unique_3')->click();
 
         $continueElement = WebDriverBy::className('continue');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
