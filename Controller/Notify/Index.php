@@ -136,7 +136,6 @@ class Index extends Action
         $this->orderRepositoryInterface = $orderRepositoryInterface;
         $this->dbObject = $dbObject;
         $this->checkoutSession = $checkoutSession;
-        //$this->notifyResult = array('notification_message'=>'','notification_error'=>true, 'notification_status'=>'500');
     }
 
     //MAIN FUNCTION
@@ -167,8 +166,17 @@ class Index extends Action
             if (!isset($response)) {
                 $response = $this->confirmPmtOrder();
             }
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
             $this->rollbackMerchantOrder();
+            $exception = unserialize($exception->getMessage());
+            $status = $exception->status;
+            $response = array();
+            $response['timestamp'] = time();
+            $response['order_id']= $this->magentoOrderId;
+            $response['result'] = self::CPO_ERR_MSG;
+            $response['result_description'] = $exception->result_description;
+            $response = json_encode($response);
+            $this->logger->info($exception->method.'=>'.$exception->result_description);
         }
 
         $this->unblockConcurrency(true);
@@ -438,6 +446,7 @@ class Index extends Action
     {
         $this->paymentInterface->setMethod(self::PAYMENT_METHOD);
         $this->magentoOrderId = $this->quoteManagement->placeOrder($this->quoteId, $this->paymentInterface);
+        /** @var \Magento\Sales\Api\Data\OrderInterface magentoOrder */
         $this->magentoOrder = $this->orderRepositoryInterface->get($this->magentoOrderId);
 
         if ($this->magentoOrderId == '') {
@@ -487,7 +496,7 @@ class Index extends Action
                 if ($this->config['ok_url'] != '') {
                     $returnUrl = $this->config['ok_url'];
                 } else {
-                    $returnUrl = '/checkout/onepage/success';
+                    $returnUrl = 'checkout/onepage/success';
                 }
             } else {
                 if ($this->config['ko_url'] != '') {
