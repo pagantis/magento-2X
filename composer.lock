@@ -2849,16 +2849,16 @@
         },
         {
             "name": "pagamastarde/orders-api-client",
-            "version": "v1.0.9",
+            "version": "v1.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PagaMasTarde/ordersApiClient.git",
-                "reference": "8b56f642dd68b1f4ade787ef1643d31f6239c213"
+                "reference": "a233675f52f0ff770b079d6468bee4fae6186c61"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PagaMasTarde/ordersApiClient/zipball/8b56f642dd68b1f4ade787ef1643d31f6239c213",
-                "reference": "8b56f642dd68b1f4ade787ef1643d31f6239c213",
+                "url": "https://api.github.com/repos/PagaMasTarde/ordersApiClient/zipball/a233675f52f0ff770b079d6468bee4fae6186c61",
+                "reference": "a233675f52f0ff770b079d6468bee4fae6186c61",
                 "shasum": ""
             },
             "require": {
@@ -2887,7 +2887,7 @@
                 }
             ],
             "description": "PagaMasTarde Orders Api Client in PHP. Use the api with simple methods and using OOP.",
-            "time": "2018-09-20T08:35:44+00:00"
+            "time": "2018-09-21T10:32:25+00:00"
         },
         {
             "name": "pagamastarde/selenium-form-utils",
