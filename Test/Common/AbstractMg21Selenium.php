@@ -349,16 +349,29 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function goToPayment()
     {
-        $continueElement = WebDriverBy::name('ko_unique_3');
-        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
-        $this->webDriver->wait()->until($condition);
-        $this->assertTrue((bool) $condition);
+        try {
+            $continueElement = WebDriverBy::name('ko_unique_1');
+            $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
+            $this->webDriver->wait()->until($condition);
+            $this->assertTrue((bool) $condition);
 
-        $condition = WebDriverExpectedCondition::elementToBeClickable($continueElement);
-        $this->webDriver->wait()->until($condition);
-        $this->assertTrue((bool) $condition);
+            $condition = WebDriverExpectedCondition::elementToBeClickable($continueElement);
+            $this->webDriver->wait()->until($condition);
+            $this->assertTrue((bool) $condition);
 
-        $this->findByName('ko_unique_3')->click();
+            $this->findByName('ko_unique_1')->click();
+        } catch (\Exception $e) {
+            $continueElement = WebDriverBy::name('ko_unique_3');
+            $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
+            $this->webDriver->wait()->until($condition);
+            $this->assertTrue((bool) $condition);
+
+            $condition = WebDriverExpectedCondition::elementToBeClickable($continueElement);
+            $this->webDriver->wait()->until($condition);
+            $this->assertTrue((bool) $condition);
+
+            $this->findByName('ko_unique_3')->click();
+        }
 
         $continueElement = WebDriverBy::className('continue');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
