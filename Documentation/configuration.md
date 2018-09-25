@@ -13,7 +13,7 @@ To access to Paga+Tarde admin panel, we need to open the Magento admin panel and
 
 In Paga+tarde panel we can set the fields below:
 
-| Field        | Description           | 
+| Field &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       | Description           | 
 | :------------- |:-------------| 
 | Enabled      | Yes => Module enabled
 |              | No => Módule disabled (Por defecto)
