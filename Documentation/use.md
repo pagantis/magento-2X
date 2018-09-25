@@ -1,21 +1,11 @@
 # Configuration
 
-To access to the Paga+Tarde admin panel, we need to open the Magento admin panel and follow the next steps:
+If the module is enabled and configured rightly, you can see Paga+Tarde like new payment method in checkout.
 
-1 – STORES => Configuration
-![Step 1](./magento21_step1.png?raw=true "Step 1")
+![Step 1](./magento21_checkout1.png?raw=true "Step 1")
 
-2 – SALES => Payment Methods
-![Step 2](./magento21_step2.png?raw=true "Step 2")
+The module have a installments simulator, this simulator can be watched on screen after press in our payment method.
+In Paga+Tarde admin panel we can modify title, description and installment simulator.
 
-3 – Paga+Tarde
-![Step 3](./magento21_step3.png?raw=true "Step 3")
-
-
-Colons can be used to align columns.
-
-| Tables        | Are           | Cool  |
-| ------------- |:-------------:| -----:|
-| col 3 is      | right-aligned | $1600 |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
+![Step 2](./magento21_checkout1.png?raw=true "Step 2")
+After press "Place order" button, the user will be redirected to Paga+Tarde side or watch our form in a pop-up over checkout page, according with the configuration in our Paga+Tarde admin panel.
