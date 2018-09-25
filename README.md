@@ -5,10 +5,10 @@
 [![composer.lock](https://poser.pugx.org/pagamastarde/magento-2x/composerlock)](https://packagist.org/packages/pagamastarde/magento-2x)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/PagaMasTarde/magento-2x/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/PagaMasTarde/magento-2x/?branch=master)
 
-## Requirements
+## :hand: Requirements
 This module supports Magento v2.1 and higher.
 
-## Installation
+## :floppy_disk: Installation
 To install the module of Paga+Tarde in your Magento shop, you can use Composer:
 
 ```php
@@ -17,12 +17,12 @@ To install the module of Paga+Tarde in your Magento shop, you can use Composer:
     bin/magento setup:upgrade
 ```
 
-## Configuration
+## :gear: Configuration
 Configure the module in Magento admin panel using the information found in your [Paga+Tarde profile](https://bo.pagamastarde.com/shop). 
 
 For more information see our [configuration section](/Documentation/configuration.md).
 
-## Use
+## :arrow_forward: Use
 To use in a real environment you should enable your Paga+Tarde account.
 
 For more information see our [use section](/Documentation/use.md).
