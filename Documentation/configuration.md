@@ -1,4 +1,6 @@
-# Configuration
+# :floppy_disk: Configuration
+
+## :house: Access
 
 To access to Paga+Tarde admin panel, we need to open the Magento admin panel and follow the next steps:
 
@@ -11,8 +13,8 @@ To access to Paga+Tarde admin panel, we need to open the Magento admin panel and
 3 – Paga+Tarde
 ![Step 3](./magento21_step3.png?raw=true "Step 3")
 
+## ::clipboard:: Options
 In Paga+tarde panel we can set the fields below:
-
 | Field &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       | Description           | 
 | :------------- |:-------------| 
 | Enabled      | Yes => Module enabled
