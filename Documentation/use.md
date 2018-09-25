@@ -1,4 +1,6 @@
-# Configuration
+# Use
+
+## :eyes: Checkout
 
 If the module is enabled and configured rightly, you can see Paga+Tarde like new payment method in checkout.
 
