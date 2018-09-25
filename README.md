@@ -20,9 +20,9 @@ To install the module of Paga+Tarde in your Magento shop, you can use Composer:
 ## :gear: Configuration
 Configure the module in Magento admin panel using the information found in your [Paga+Tarde profile](https://bo.pagamastarde.com/shop). 
 
-For more information see our [configuration section](/Documentation/configuration.md).
++For more information about how to config the module, see our [configuration section](/Documentation/configuration.md).
 
 ## :arrow_forward: Use
 To use in a real environment you should enable your Paga+Tarde account.
 
-For more information see our [use section](/Documentation/use.md).
++For more information about how to use the module, see our [use section](/Documentation/use.md).
