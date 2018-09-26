@@ -14,7 +14,6 @@
     require( ["pmtSdk", "jquery" ],
         function (pmtClient, $) {
             if (typeof pmtClient !== 'undefined') {
-                console.log("pmtclient = DEFINED");
                 $(document).ready( function(){
                     pmtClient.modal.open(
                         "<?=$block->getOrderUrl(); ?>",
@@ -30,9 +29,6 @@
                 pmtClient.modal.onClose(function() {
                     window.location.href = "<?=$block->getCheckoutUrl(); ?>";
                 });
-            }
-            else {
-                console.log("pmtclient = UNDEFINED");
             }
         }
     );

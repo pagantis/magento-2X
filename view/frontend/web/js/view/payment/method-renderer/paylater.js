@@ -87,11 +87,9 @@ define(
                     var paymentUrl = url.build('paylater/Payment');
                     $.post(paymentUrl, { email: window.checkoutConfig.payment.paylater.guestEmail }, 'json')
                         .done(function (response) {
-                            console.log(response);
                             window.location.replace(response);
                         })
                         .fail(function (response) {
-                            console.log(response);
                             window.location.replace(response);
                         })
                 },
