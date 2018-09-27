@@ -43,7 +43,7 @@ class Log extends Action
             $secretKey = $this->getRequest()->getParam('secret');
             $privateKey = isset($this->config['secret_key']) ? $this->config['secret_key'] : null;
 
-            if ($secretKey!='' && $privateKey=='') {
+            if ($secretKey!='' && $privateKey!='') {
                 /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
                 $dbConnection = $this->dbObject->getConnection();
                 $tableName    = $this->dbObject->getTableName(self::LOGS_TABLE);
@@ -61,6 +61,7 @@ class Log extends Action
 
                 $limit = ($this->getRequest()->getParam('limit')) ? $this->getRequest()->getParam('limit') : 50;
                 $sql->limit($limit);
+                $sql->order('createdAt','desc');
 
                 $results = $dbConnection->fetchAll($sql);
                 if (isset($results) && $privateKey == $secretKey) {
