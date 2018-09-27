@@ -32,44 +32,52 @@ class Log extends Action
         return parent::__construct($context);
     }
 
+    /**
+     * Main function
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
+     */
     public function execute()
     {
         try {
+            $response = array();
             $secretKey = $this->getRequest()->getParam('secret');
             $privateKey = isset($this->config['secret_key']) ? $this->config['secret_key'] : null;
 
-            if ($secretKey=='' || $privateKey=='') {
-                die('ERROR');
-            }
-            
-            /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
-            $dbConnection = $this->dbObject->getConnection();
-            $tableName    = $this->dbObject->getTableName(self::LOGS_TABLE);
-            $sql = $dbConnection
-                ->select()
-                ->from($tableName, array('log'));
+            if ($secretKey!='' && $privateKey=='') {
+                /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
+                $dbConnection = $this->dbObject->getConnection();
+                $tableName    = $this->dbObject->getTableName(self::LOGS_TABLE);
+                $sql          = $dbConnection
+                    ->select()
+                    ->from($tableName, array('log', 'createdAt'));
 
-            $dateFrom = $this->getRequest()->getParam('from');
-            if ($dateFrom!='' && strtotime($dateFrom) === false) {
-                $sql->where('createdAt > ?', strtotime($dateFrom));
-            }
+                if ($dateFrom = $this->getRequest()->getParam('from')) {
+                    $sql->where('createdAt > ?', $dateFrom);
+                }
 
-            $dateTo = $this->getRequest()->getParam('to');
-            if ($dateTo!='' && strtotime($dateTo) === false) {
-                $sql->where('createdAt < ?', strtotime($dateTo));
-            }
+                if ($dateTo = $this->getRequest()->getParam('to')) {
+                    $sql->where('createdAt < ?', $dateTo);
+                }
 
-            $limit = ($this->getRequest()->getParam('limit'))?($this->getRequest()->getParam('limit')):50;
-            $sql->limit($limit);
+                $limit = ($this->getRequest()->getParam('limit')) ? $this->getRequest()->getParam('limit') : 50;
+                $sql->limit($limit);
 
-            $result = $dbConnection->fetchAll($sql);
+                $results = $dbConnection->fetchAll($sql);
+                if (isset($results) && $privateKey == $secretKey) {
+                    foreach ($results as $key => $result) {
+                        $response[$key]['timestamp'] = $result['createdAt'];
+                        $response[$key]['log']       = json_decode($result['log']);
+                    }
+                } else {
+                    $response['result'] = 'Error';
+                }
 
-            if (isset($result) && $privateKey == $secretKey) {
-                echo '<pre>';
-                print_r($result);
-                echo '</pre>';
-            } else {
-                die('ERROR');
+                $response = json_encode($response);
+                header("HTTP/1.1 200", true, 200);
+                header('Content-Type: application/json', true);
+                header('Content-Length: '.strlen($response));
+                echo($response);
+                exit();
             }
         } catch (\Exception $e) {
             die($e->getMessage());
