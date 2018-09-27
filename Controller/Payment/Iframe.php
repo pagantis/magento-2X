@@ -4,6 +4,7 @@ namespace DigitalOrigin\Pmt\Controller\Payment;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\View\Element\BlockInterface;
 use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\DB\Ddl\Table;
 
 class Iframe extends Action
 {
