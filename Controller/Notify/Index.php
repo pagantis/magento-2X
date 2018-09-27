@@ -14,6 +14,7 @@ use PagaMasTarde\OrdersApiClient\Client;
 use DigitalOrigin\Pmt\Helper\Config;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Checkout\Model\Session;
+use Magento\Framework\DB\Ddl\Table;
 
 /**
  * Class Index
@@ -364,7 +365,7 @@ class Index extends Action
                 ->newTable($tableName)
                 ->addColumn('id', Table::TYPE_SMALLINT, null, array('nullable'=>false, 'auto_increment'=>true, 'primary'=>true))
                 ->addColumn('log', Table::TYPE_TEXT, null, array('nullable'=>false))
-                ->addColumn('createdAt', Table::TYPE_TIMESTAMP, null, array('nullable'=>false, 'default'=>TIMESTAMP_INIT));
+                ->addColumn('createdAt', Table::TYPE_TIMESTAMP, null, array('nullable'=>false, 'default'=>Table::TIMESTAMP_INIT));
             return $dbConnection->createTable($table);
         }
 
