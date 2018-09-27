@@ -377,6 +377,11 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
+
+        $condition = WebDriverExpectedCondition::elementToBeClickable($continueElement);
+        $this->webDriver->wait()->until($condition);
+        $this->assertTrue((bool) $condition);
+
         $this->findByClass('continue')->click();
     }
 
