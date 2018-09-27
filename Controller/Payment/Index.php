@@ -8,11 +8,11 @@ use Magento\Quote\Model\QuoteRepository;
 use Magento\Sales\Model\ResourceModel\Order\Collection as OrderCollection;
 use Magento\Checkout\Model\Session;
 use DigitalOrigin\Pmt\Helper\Config;
-use DigitalOrigin\Pmt\Logger\Logger;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Module\ModuleList;
 use PagaMasTarde\OrdersApiClient\Model\Order\User\Address;
+use Magento\Framework\DB\Ddl\Table;
 
 /**
  * Class Index
@@ -22,6 +22,9 @@ class Index extends Action
 {
     /** Orders tablename */
     const ORDERS_TABLE = 'cart_process';
+
+    /** Concurrency tablename */
+    const LOGS_TABLE = 'pmt_logs';
 
     /** @var Context $context */
     protected $context;
@@ -38,9 +41,6 @@ class Index extends Action
     /** @var mixed $config */
     protected $config;
 
-    /** @var Logger $logger */
-    protected $logger;
-
     /** @var ResourceConnection $dbObject */
     protected $dbObject;
 
@@ -56,7 +56,6 @@ class Index extends Action
      * @param Context                  $context
      * @param Session                  $session
      * @param Config                   $config
-     * @param Logger                   $logger
      * @param QuoteRepository          $quoteRepository
      * @param OrderCollection          $orderCollection
      * @param ResourceConnection       $dbObject
@@ -70,7 +69,6 @@ class Index extends Action
         OrderCollection $orderCollection,
         Session $session,
         Config $config,
-        Logger $logger,
         ResourceConnection $dbObject,
         ProductMetadataInterface $productMetadataInterface,
         ModuleList $moduleList
@@ -79,7 +77,6 @@ class Index extends Action
         $this->session = $session;
         $this->context = $context;
         $this->config = $config->getConfig();
-        $this->logger = $logger;
         $this->quoteRepository = $quoteRepository;
         $this->orderCollection = $orderCollection;
         $this->dbObject = $dbObject;
@@ -238,13 +235,7 @@ class Index extends Action
                 ->setShoppingCart($orderShoppingCart)
                 ->setUser($orderUser)
             ;
-        } catch (\PagaMasTarde\OrdersApiClient\Exception\ValidationException $validationException) {
-            $this->logger->info(__METHOD__.'=>'.$validationException->getMessage());
-            echo $cancelUrl;
-            exit;
-        }
 
-        try {
             if ($this->config['public_key']=='' || $this->config['secret_key']=='') {
                 throw new \Exception('Public and Secret Key not found');
             }
@@ -265,7 +256,7 @@ class Index extends Action
                 throw new \Exception('Order not created');
             }
         } catch (\Exception $exception) {
-            $this->logger->info(__METHOD__.'=>'.$exception->getMessage());
+            $this->insertLog($exception);
             echo $cancelUrl;
             exit;
         }
@@ -305,16 +296,21 @@ class Index extends Action
         return $orderCollection;
     }
 
-    /**
-     * @return \Zend_Db_Statement_Interface
-     */
+
     private function checkDbTable()
     {
         $dbConnection = $this->dbObject->getConnection();
         $tableName = $this->dbObject->getTableName(self::ORDERS_TABLE);
-        $query = "CREATE TABLE IF NOT EXISTS `$tableName` ( `id` int, `order_id` varchar(50), `mg_order_id` varchar(50), 
-                  PRIMARY KEY (`id`))";
-        return $dbConnection->query($query);
+        if (!$dbConnection->isTableExists($tableName)) {
+            $table = $dbConnection
+                ->newTable($tableName)
+                ->addColumn('id', Table::TYPE_SMALLINT, null, array('identity'=>true))
+                ->addColumn('order_id', Table::TYPE_TEXT, 50)
+                ->addColumn('mg_order_id', Table::TYPE_TEXT, 50);
+            return $dbConnection->createTable($table);
+        }
+
+        return;
     }
 
     /**
@@ -348,5 +344,40 @@ class Index extends Action
                        'pmt' => $moduleInfo['setup_version'],
                        'php' => phpversion(),
                        'curl' => $curlVersion);
+    }
+
+    private function checkDbLogTable()
+    {
+        /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
+        $dbConnection = $this->dbObject->getConnection();
+        $tableName = $this->dbObject->getTableName(self::LOGS_TABLE);
+        if (!$dbConnection->isTableExists($tableName)) {
+            $table = $dbConnection
+                ->newTable($tableName)
+                ->addColumn('id', Table::TYPE_SMALLINT, null, array('nullable'=>false, 'auto_increment'=>true, 'primary'=>true))
+                ->addColumn('log', Table::TYPE_TEXT, null, array('nullable'=>false))
+                ->addColumn('createdAt', Table::TYPE_TIMESTAMP, null, array('nullable'=>false, 'default'=>Table::TIMESTAMP_INIT));
+            return $dbConnection->createTable($table);
+        }
+
+        return;
+    }
+
+    private function insertLog($exceptionMessage)
+    {
+        if ($exceptionMessage instanceof \Exception) {
+            $this->checkDbLogTable();
+            $logObject          = new \stdClass();
+            $logObject->message = $exceptionMessage->getMessage();
+            $logObject->code    = $exceptionMessage->getCode();
+            $logObject->line    = $exceptionMessage->getLine();
+            $logObject->file    = $exceptionMessage->getFile();
+            $logObject->trace   = $exceptionMessage->getTraceAsString();
+
+            /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
+            $dbConnection = $this->dbObject->getConnection();
+            $tableName    = $this->dbObject->getTableName(self::LOGS_TABLE);
+            $dbConnection->insert($tableName, array('log' => json_encode($logObject)));
+        }
     }
 }

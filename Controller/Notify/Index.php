@@ -11,7 +11,6 @@ use Magento\Quote\Model\QuoteRepository;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\Action;
 use PagaMasTarde\OrdersApiClient\Client;
-use DigitalOrigin\Pmt\Logger\Logger;
 use DigitalOrigin\Pmt\Helper\Config;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Checkout\Model\Session;
@@ -28,6 +27,9 @@ class Index extends Action
     /** Concurrency tablename */
     const CONCURRENCY_TABLE = 'pmt_orders';
 
+    /** Concurrency tablename */
+    const LOGS_TABLE = 'pmt_logs';
+
     /** Payment code */
     const PAYMENT_METHOD = 'paylater';
 
@@ -37,7 +39,6 @@ class Index extends Action
     const CC_ERR_MSG = 'Unable to block resource';
     const CC_NO_QUOTE = 'QuoteId not found';
     const CC_NO_VALIDATE ='Validation in progress, try again later';
-
     const GMO_ERR_MSG = 'Merchant Order Not Found';
     const GPOI_ERR_MSG = 'Pmt Order Not Found';
     const GPOI_NO_ORDERID = 'We can not get the PagaMasTarde identification in database.';
@@ -66,9 +67,6 @@ class Index extends Action
 
     /** @var QuoteRepository $quoteRepository */
     protected $quoteRepository;
-
-    /** @var Logger $logger */
-    protected $logger;
 
     /** @var mixed $config */
     protected $config;
@@ -105,7 +103,6 @@ class Index extends Action
      *
      * @param Context                  $context
      * @param Quote                    $quote
-     * @param Logger                   $logger
      * @param QuoteManagement          $quoteManagement
      * @param PaymentInterface         $paymentInterface
      * @param Config                   $config
@@ -117,7 +114,6 @@ class Index extends Action
     public function __construct(
         Context $context,
         Quote $quote,
-        Logger $logger,
         QuoteManagement $quoteManagement,
         PaymentInterface $paymentInterface,
         Config $config,
@@ -128,7 +124,6 @@ class Index extends Action
     ) {
         parent::__construct($context);
         $this->quote = $quote;
-        $this->logger = $logger;
         $this->quoteManagement = $quoteManagement;
         $this->paymentInterface = $paymentInterface;
         $this->config = $config->getConfig();
@@ -151,6 +146,7 @@ class Index extends Action
             $this->validateAmount();
             $this->processMerchantOrder();
         } catch (\Exception $exception) {
+            $this->insertLog($exception);
             $exception = unserialize($exception->getMessage());
             $status = $exception->status;
             $response = array();
@@ -159,7 +155,6 @@ class Index extends Action
             $response['result'] = $exception->result;
             $response['result_description'] = $exception->result_description;
             $response = json_encode($response);
-            $this->logger->info($exception->method.'=>'.$exception->result_description);
         }
 
         try {
@@ -167,6 +162,7 @@ class Index extends Action
                 $response = $this->confirmPmtOrder();
             }
         } catch (\Exception $exception) {
+            $this->insertLog($exception);
             $this->rollbackMerchantOrder();
             $exception = unserialize($exception->getMessage());
             $status = $exception->status;
@@ -176,7 +172,6 @@ class Index extends Action
             $response['result'] = self::CPO_ERR_MSG;
             $response['result_description'] = $exception->result_description;
             $response = json_encode($response);
-            $this->logger->info($exception->method.'=>'.$exception->result_description);
         }
 
         $this->unblockConcurrency(true);
@@ -352,15 +347,34 @@ class Index extends Action
 
     private function checkDbTable()
     {
+        /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
         $dbConnection = $this->dbObject->getConnection();
         $tableName    = $this->dbObject->getTableName(self::CONCURRENCY_TABLE);
         $query = "CREATE TABLE IF NOT EXISTS $tableName(`id` int not null,`timestamp` int not null,PRIMARY KEY (`id`))";
         return $dbConnection->query($query);
     }
 
+    private function checkDbLogTable()
+    {
+        /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
+        $dbConnection = $this->dbObject->getConnection();
+        $tableName = $this->dbObject->getTableName(self::LOGS_TABLE);
+        if (!$dbConnection->isTableExists($tableName)) {
+            $table = $dbConnection
+                ->newTable($tableName)
+                ->addColumn('id', Table::TYPE_SMALLINT, null, array('nullable'=>false, 'auto_increment'=>true, 'primary'=>true))
+                ->addColumn('log', Table::TYPE_TEXT, null, array('nullable'=>false))
+                ->addColumn('createdAt', Table::TYPE_TIMESTAMP, null, array('nullable'=>false, 'default'=>TIMESTAMP_INIT));
+            return $dbConnection->createTable($table);
+        }
+
+        return;
+    }
+
     private function unblockConcurrency($mode = false)
     {
         try {
+            /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
             $dbConnection = $this->dbObject->getConnection();
             $tableName    = $this->dbObject->getTableName(self::CONCURRENCY_TABLE);
             if ($mode == false) {
@@ -376,6 +390,7 @@ class Index extends Action
     private function blockConcurrency()
     {
         try {
+            /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
             $dbConnection = $this->dbObject->getConnection();
             $tableName    = $this->dbObject->getTableName(self::CONCURRENCY_TABLE);
             $dbConnection->insert($tableName, array('id'=>$this->quoteId, 'timestamp'=>time()));
@@ -388,6 +403,7 @@ class Index extends Action
     /** STEP 3 GPOI - Get Pmt OrderId */
     private function getPmtOrderIdDb()
     {
+        /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
         $dbConnection = $this->dbObject->getConnection();
         $tableName    = $this->dbObject->getTableName(self::ORDERS_TABLE);
         $query        = "select order_id from $tableName where id='$this->quoteId'";
@@ -424,6 +440,7 @@ class Index extends Action
 
     private function getMagentoOrderId()
     {
+        /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
         $dbConnection = $this->dbObject->getConnection();
         $tableName    = $this->dbObject->getTableName(self::ORDERS_TABLE);
         $pmtOrderId   = $this->pmtOrderId;
@@ -456,6 +473,7 @@ class Index extends Action
 
     private function updateBdInfo()
     {
+        /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
         $dbConnection = $this->dbObject->getConnection();
         $tableName    = $this->dbObject->getTableName(self::ORDERS_TABLE);
         $pmtOrderId   = $this->pmtOrder->getId();
@@ -471,6 +489,7 @@ class Index extends Action
     {
         $this->magentoOrder->setState(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT, true);
         $this->magentoOrder->setStatus(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
+        $this->magentoOrder->save();
     }
 
     private function getRedirectUrl()
@@ -490,8 +509,8 @@ class Index extends Action
 
             //Magento status flow => https://docs.magento.com/m2/ce/user_guide/sales/order-status-workflow.html
             //Order Workflow => https://docs.magento.com/m2/ce/user_guide/sales/order-workflow.html
-            $orderStatus       = strtolower($this->magentoOrder->getStatus());
-            $acceptedStatus     = array('processing', 'completed');
+            $orderStatus    = strtolower($this->magentoOrder->getStatus());
+            $acceptedStatus = array('processing', 'completed');
             if (in_array($orderStatus, $acceptedStatus)) {
                 if ($this->config['ok_url'] != '') {
                     $returnUrl = $this->config['ok_url'];
@@ -507,5 +526,23 @@ class Index extends Action
             }
         }
         return $returnUrl;
+    }
+
+    private function insertLog($exceptionMessage)
+    {
+        if ($exceptionMessage instanceof \Exception) {
+            $this->checkDbLogTable();
+            $logObject          = new \stdClass();
+            $logObject->message = $exceptionMessage->getMessage();
+            $logObject->code    = $exceptionMessage->getCode();
+            $logObject->line    = $exceptionMessage->getLine();
+            $logObject->file    = $exceptionMessage->getFile();
+            $logObject->trace   = $exceptionMessage->getTraceAsString();
+
+            /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
+            $dbConnection = $this->dbObject->getConnection();
+            $tableName    = $this->dbObject->getTableName(self::LOGS_TABLE);
+            $dbConnection->insert($tableName, array('log' => json_encode($logObject)));
+        }
     }
 }
