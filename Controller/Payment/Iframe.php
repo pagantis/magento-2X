@@ -8,6 +8,9 @@ use Magento\Framework\DB\Ddl\Table;
 
 class Iframe extends Action
 {
+    /** Concurrency tablename */
+    const LOGS_TABLE = 'pmt_logs';
+
     /**
      * @var \Magento\Framework\View\Result\PageFactory
      */

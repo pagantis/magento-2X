@@ -44,6 +44,7 @@ class Log extends Action
             $privateKey = isset($this->config['secret_key']) ? $this->config['secret_key'] : null;
 
             if ($secretKey!='' && $privateKey!='') {
+                $this->checkDbLogTable();
                 /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
                 $dbConnection = $this->dbObject->getConnection();
                 $tableName    = $this->dbObject->getTableName(self::LOGS_TABLE);
@@ -61,7 +62,7 @@ class Log extends Action
 
                 $limit = ($this->getRequest()->getParam('limit')) ? $this->getRequest()->getParam('limit') : 50;
                 $sql->limit($limit);
-                $sql->order('createdAt','desc');
+                $sql->order('createdAt', 'desc');
 
                 $results = $dbConnection->fetchAll($sql);
                 if (isset($results) && $privateKey == $secretKey) {
@@ -83,5 +84,26 @@ class Log extends Action
         } catch (\Exception $e) {
             die($e->getMessage());
         }
+    }
+
+    /**
+     * @return void|\Zend_Db_Statement_Interface
+     * @throws \Zend_Db_Exception
+     */
+    private function checkDbLogTable()
+    {
+        /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
+        $dbConnection = $this->dbObject->getConnection();
+        $tableName = $this->dbObject->getTableName(self::LOGS_TABLE);
+        if (!$dbConnection->isTableExists($tableName)) {
+            $table = $dbConnection
+                ->newTable($tableName)
+                ->addColumn('id', Table::TYPE_SMALLINT, null, array('nullable'=>false, 'auto_increment'=>true, 'primary'=>true))
+                ->addColumn('log', Table::TYPE_TEXT, null, array('nullable'=>false))
+                ->addColumn('createdAt', Table::TYPE_TIMESTAMP, null, array('nullable'=>false, 'default'=>Table::TIMESTAMP_INIT));
+            return $dbConnection->createTable($table);
+        }
+
+        return;
     }
 }

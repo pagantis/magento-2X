@@ -338,6 +338,9 @@ class Index extends Action
      */
 
     /** STEP 1 CC - Check concurrency */
+    /**
+     * @throws \Exception
+     */
     private function getQuoteId()
     {
         $this->quoteId = $this->getRequest()->getParam('quoteId');
@@ -346,6 +349,9 @@ class Index extends Action
         }
     }
 
+    /**
+     * @return \Zend_Db_Statement_Interface
+     */
     private function checkDbTable()
     {
         /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
@@ -355,6 +361,10 @@ class Index extends Action
         return $dbConnection->query($query);
     }
 
+    /**
+     * @return void|\Zend_Db_Statement_Interface
+     * @throws \Zend_Db_Exception
+     */
     private function checkDbLogTable()
     {
         /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
@@ -372,6 +382,11 @@ class Index extends Action
         return;
     }
 
+    /**
+     * @param bool $mode
+     *
+     * @throws \Exception
+     */
     private function unblockConcurrency($mode = false)
     {
         try {
@@ -388,6 +403,9 @@ class Index extends Action
         }
     }
 
+    /**
+     * @throws \Exception
+     */
     private function blockConcurrency()
     {
         try {
@@ -402,6 +420,9 @@ class Index extends Action
 
     /** STEP 2 GMO - Get Merchant Order */
     /** STEP 3 GPOI - Get Pmt OrderId */
+    /**
+     * @throws \Exception
+     */
     private function getPmtOrderIdDb()
     {
         /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
@@ -417,6 +438,11 @@ class Index extends Action
 
     /** STEP 4 GPO - Get Pmt Order */
     /** STEP 5 COS - Check Order Status */
+    /**
+     * @param $statusArray
+     *
+     * @throws \Exception
+     */
     private function checkPmtStatus($statusArray)
     {
         $pmtStatus = array();
@@ -431,6 +457,9 @@ class Index extends Action
     }
 
     /** STEP 6 CMOS - Check Merchant Order Status */
+    /**
+     * @throws \Exception
+     */
     private function checkCartStatus()
     {
         if ($this->quote->getIsActive()=='0') {
@@ -452,6 +481,9 @@ class Index extends Action
     }
 
     /** STEP 7 VA - Validate Amount */
+    /**
+     * @throws \Exception
+     */
     private function comparePrices()
     {
         $grandTotal = $this->quote->getGrandTotal();
@@ -459,7 +491,11 @@ class Index extends Action
             throw new \Exception(self::VA_ERR_MSG);
         }
     }
+
     /** STEP 8 PMO - Process Merchant Order */
+    /**
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     */
     private function saveOrder()
     {
         $this->paymentInterface->setMethod(self::PAYMENT_METHOD);
@@ -493,6 +529,9 @@ class Index extends Action
         $this->magentoOrder->save();
     }
 
+    /**
+     * @return string
+     */
     private function getRedirectUrl()
     {
         $returnUrl = 'checkout/#payment';
@@ -529,6 +568,11 @@ class Index extends Action
         return $returnUrl;
     }
 
+    /**
+     * @param $exceptionMessage
+     *
+     * @throws \Zend_Db_Exception
+     */
     private function insertLog($exceptionMessage)
     {
         if ($exceptionMessage instanceof \Exception) {

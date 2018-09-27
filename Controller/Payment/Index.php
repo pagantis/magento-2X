@@ -296,7 +296,10 @@ class Index extends Action
         return $orderCollection;
     }
 
-
+    /**
+     * @return void|\Zend_Db_Statement_Interface
+     * @throws \Zend_Db_Exception
+     */
     private function checkDbTable()
     {
         $dbConnection = $this->dbObject->getConnection();
@@ -314,10 +317,12 @@ class Index extends Action
     }
 
     /**
+     * Create relationship between quote_id & pmt_order_id
      * @param $quoteId
      * @param $pmtOrderId
      *
      * @return int
+     * @throws \Zend_Db_Exception
      */
     private function insertRow($quoteId, $pmtOrderId)
     {
@@ -346,6 +351,12 @@ class Index extends Action
                        'curl' => $curlVersion);
     }
 
+    /**
+     * Check if log table exists, otherwise create it
+     *
+     * @return void|\Zend_Db_Statement_Interface
+     * @throws \Zend_Db_Exception
+     */
     private function checkDbLogTable()
     {
         /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
@@ -363,6 +374,11 @@ class Index extends Action
         return;
     }
 
+    /**
+     * @param $exceptionMessage
+     *
+     * @throws \Zend_Db_Exception
+     */
     private function insertLog($exceptionMessage)
     {
         if ($exceptionMessage instanceof \Exception) {
