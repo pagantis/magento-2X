@@ -62,7 +62,6 @@ define(
 
                 getPmtTotal: function () {
                     return priceUtils.formatPrice(totals.totals().grand_total, quote.getPriceFormat());
-                    //return window.checkoutConfig.payment.paylater.pmtType
                 },
 
                 getPublicKey: function () {
