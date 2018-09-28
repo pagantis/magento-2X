@@ -3,6 +3,7 @@ namespace DigitalOrigin\Pmt\Controller\Payment;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\DB\Ddl\Table;
 
 class Log extends Action
 {
