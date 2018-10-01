@@ -228,7 +228,6 @@ class Index extends Action
     {
         try {
             $this->getPmtOrderIdDb();
-            $this->getMagentoOrderId();
         } catch (\Exception $e) {
             $exceptionObject = new \stdClass();
             $exceptionObject->method= __FUNCTION__;
@@ -259,11 +258,18 @@ class Index extends Action
         try {
             $this->checkPmtStatus(array('AUTHORIZED'));
         } catch (\Exception $e) {
+            $this->getMagentoOrderId();
             $exceptionObject = new \stdClass();
             $exceptionObject->method= __FUNCTION__;
-            $exceptionObject->status='403';
-            $exceptionObject->result= self::COS_ERR_MSG;
-            $exceptionObject->result_description = $e->getMessage();
+            if ($this->magentoOrderId!='') {
+                $exceptionObject->status='200';
+                $exceptionObject->result= self::CMOS_ALREADY_PROCESSED;
+                $exceptionObject->result_description = self::CMOS_ALREADY_PROCESSED;
+            } else {
+                $exceptionObject->status='403';
+                $exceptionObject->result= self::COS_ERR_MSG;
+                $exceptionObject->result_description = $e->getMessage();
+            }
             throw new \Exception(serialize($exceptionObject));
         }
     }
