@@ -118,8 +118,8 @@ abstract class PaylaterMagentoTest extends TestCase
         $this->webDriver = RemoteWebDriver::create(
             'http://localhost:4444/wd/hub',
             DesiredCapabilities::chrome(),
-            120000,
-            120000
+            240000,
+            240000
         );
     }
 

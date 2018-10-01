@@ -332,9 +332,9 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
                         ->findElement(WebDriverBy::cssSelector("option[value='139']"))
                         ->click();
 
+        $this->findByName('postcode')->clear()->sendKeys($this->configuration['zip']);
         $this->findByName('street[0]')->clear()->sendKeys($this->configuration['street']);
         $this->findByName('city')->clear()->sendKeys($this->configuration['city']);
-        $this->findByName('postcode')->clear()->sendKeys($this->configuration['zip']);
         $this->findById('customer-email')->clear()->sendKeys($this->configuration['email']);
         $this->findByName('firstname')->clear()->sendKeys($this->configuration['firstname']);
         $this->findByName('lastname')->clear()->sendKeys($this->configuration['lastname']);
@@ -349,20 +349,39 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function goToPayment()
     {
-        $continueElement = WebDriverBy::name('ko_unique_1');
+        try {
+            $continueElement = WebDriverBy::name('ko_unique_1');
+            $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
+            $this->webDriver->wait()->until($condition);
+            $this->assertTrue((bool) $condition);
+
+            $condition = WebDriverExpectedCondition::elementToBeClickable($continueElement);
+            $this->webDriver->wait()->until($condition);
+            $this->assertTrue((bool) $condition);
+
+            $this->findByName('ko_unique_1')->click();
+        } catch (\Exception $e) {
+            $continueElement = WebDriverBy::name('ko_unique_3');
+            $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
+            $this->webDriver->wait()->until($condition);
+            $this->assertTrue((bool) $condition);
+
+            $condition = WebDriverExpectedCondition::elementToBeClickable($continueElement);
+            $this->webDriver->wait()->until($condition);
+            $this->assertTrue((bool) $condition);
+
+            $this->findByName('ko_unique_3')->click();
+        }
+
+        $continueElement = WebDriverBy::className('continue');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
 
         $condition = WebDriverExpectedCondition::elementToBeClickable($continueElement);
         $this->webDriver->wait()->until($condition);
-
-        $this->findByName('ko_unique_1')->click();
-
-        $continueElement = WebDriverBy::className('continue');
-        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
-        $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
+
         $this->findByClass('continue')->click();
     }
 
@@ -381,8 +400,9 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
 
-        sleep(2);
+        sleep(5);
         $this->findById('paylater')->click();
+
         sleep(2);
 
         $paylaterElement = WebDriverBy::className('payment-group');
@@ -404,6 +424,12 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
 
         $this->assertNotEquals($price, 0, $price);
         $this->assertNotEmpty($price);
+
+        $simulatorElement = $this->findByClass('PmtSimulator');
+        $simulatorPrice = $simulatorElement->getAttribute('data-pmt-amount');
+        $simulatorPrice = preg_replace('/[^\x{20}-\x{7F}]/u', '', $simulatorPrice);
+        $price = preg_replace('/[^\x{20}-\x{7F}]/u', '', $price);
+        $this->assertContains($simulatorPrice, $price, json_encode(array($price,$simulatorPrice)));
 
         sleep(2);
         $checkoutButton = WebDriverBy::cssSelector("#checkout-payment-method-load > .payment-methods > .payment-group > ._active > .payment-method-content > .actions-toolbar > .primary");

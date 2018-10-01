@@ -9,33 +9,16 @@ define(
         'Magento_Checkout/js/model/quote',
         '//cdn.pagamastarde.com/pmt-js-client-sdk/3/js/client-sdk.min.js',
         'Magento_Checkout/js/action/select-payment-method',
-        'Magento_Checkout/js/checkout-data'
+        'Magento_Checkout/js/checkout-data',
+        'Magento_Checkout/js/model/totals',
+        'Magento_Catalog/js/price-utils'
     ],
-    function ($, Component, url, customerData, errorProcessor, fullScreenLoader, quote, pmtClient, selectPaymentMethodAction, checkoutData) {
+    function ($, Component, url, customerData, errorProcessor, fullScreenLoader, quote, pmtClient, selectPaymentMethodAction, checkoutData, totals, priceUtils) {
         'use strict';
 
         window.checkoutConfig.payment.paylater.guestEmail = quote.guestEmail;
 
         window.pmtClient = pmtClient;
-
-        require.config({
-            paths: { "pmtSdk": "https://cdn.pagamastarde.com/pmt-js-client-sdk/3/js/client-sdk.min"},
-            waitSeconds: 40
-        });
-
-        require( ["jquery","pmtSdk"],
-            function ($, pmtClient) {
-                $(document).ready(function() {
-                    if (window.checkoutConfig.payment.paylater.pmtType != '0' &&
-                        window.checkoutConfig.payment.paylater.publicKey!='') {
-                        if (typeof pmtClient !== 'undefined') {
-                            pmtClient.setPublicKey(window.checkoutConfig.payment.paylater.publicKey);
-                            pmtClient.simulator.reload();
-                        }
-                    }
-                })
-            }
-        );
 
         return Component.extend({
                 defaults: {
@@ -44,8 +27,9 @@ define(
 
                 redirectAfterPlaceOrder: false,
 
-                /*loadSimulator: function ()
+                loadSimulator: function ()
                 {
+                    setTimeout(function(){
                         if (window.checkoutConfig.payment.paylater.pmtType  !='0' &&
                             window.checkoutConfig.payment.paylater.publicKey!=''  &&
                             window.checkoutConfig.payment.paylater.secretKey!='')
@@ -57,7 +41,12 @@ define(
                                 return true;
                             }
                         }
-                },*/
+                    }, 3000);
+                },
+
+                getSubtitle: function () {
+                    return window.checkoutConfig.payment.paylater.subtitle
+                },
 
                 getPmtNumQuota: function () {
                     return window.checkoutConfig.payment.paylater.pmtNumQuota
@@ -72,7 +61,7 @@ define(
                 },
 
                 getPmtTotal: function () {
-                    return window.checkoutConfig.payment.paylater.total
+                    return priceUtils.formatPrice(totals.totals().grand_total, quote.getPriceFormat());
                 },
 
                 getPublicKey: function () {
@@ -97,11 +86,9 @@ define(
                     var paymentUrl = url.build('paylater/Payment');
                     $.post(paymentUrl, { email: window.checkoutConfig.payment.paylater.guestEmail }, 'json')
                         .done(function (response) {
-                            console.log(response);
                             window.location.replace(response);
                         })
                         .fail(function (response) {
-                            console.log(response);
                             window.location.replace(response);
                         })
                 },
