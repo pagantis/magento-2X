@@ -361,6 +361,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
 
+        sleep(5);
         $shippinhButton = $this->webDriver->findElement($shippingElement);
         $shippinhButton->click();
 
