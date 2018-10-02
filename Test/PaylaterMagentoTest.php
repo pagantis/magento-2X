@@ -74,6 +74,11 @@ abstract class PaylaterMagentoTest extends TestCase
     const ALREADY_TITLE = 'already processed';
 
     /**
+     * Wrong order
+     */
+    const NOORDER_TITLE = 'Merchant Order Not Found';
+
+    /**
      * Magento Logout URL
      */
     const NOTIFICATION_FOLDER = '/paylater/notify/';

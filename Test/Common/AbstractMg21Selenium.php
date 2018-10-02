@@ -42,6 +42,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $this->webDriver->get(self::MAGENTO_URL.self::BACKOFFICE_FOLDER);
         $this->findByLinkText('STORES')->click();
 
+        sleep(5);
         $elementSearch = WebDriverBy::linkText('Configuration');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($elementSearch);
         $this->webDriver->wait()->until($condition);
