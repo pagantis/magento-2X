@@ -455,9 +455,6 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
 
-        $refererUrl = $_SERVER['HTTP_REFERER'];
-        $this->assertNotNull($refererUrl, $refererUrl);
-
         $menuSearch = WebDriverBy::className("base");
         $menuElement = $this->webDriver->findElement($menuSearch);
         $actualString = $menuElement->getText();

@@ -64,13 +64,13 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $notifyUrl = self::MAGENTO_URL.self::NOTIFICATION_FOLDER.'?'.self::NOTIFICATION_PARAMETER.'='.$magentoOrderId;
         $response = Request::post($notifyUrl)->expects('json')->send();
         $this->assertNotEmpty($response->body->result);
-        $this->assertContains(self::ALREADY_TITLE, $response->body->result_description, "PR51=>".$magentoOrderId."=>".$response->body->result);
+        $this->assertContains(self::NOORDER_TITLE, $response->body->result_description, "PR51=>".$response->body->result_description);
 
         $magentoOrderId = 0;
         $notifyUrl = self::MAGENTO_URL.self::NOTIFICATION_FOLDER.'?'.self::NOTIFICATION_PARAMETER.'='.$magentoOrderId;
         $response = Request::post($notifyUrl)->expects('json')->send();
         $this->assertNotEmpty($response->body->result);
-        $this->assertContains(self::NOORDER_TITLE, $response->body->result, "PR53=>".$response->body->result);
+        $this->assertContains(self::NOTFOUND_TITLE, $response->body->result, "PR53=>".$response->body->result);
     }
 
     /**
