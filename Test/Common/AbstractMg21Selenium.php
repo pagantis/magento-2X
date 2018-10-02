@@ -3,6 +3,7 @@
 namespace DigitalOrigin\Pmt\Test\Common;
 
 use DigitalOrigin\Pmt\Test\PaylaterMagentoTest;
+use Facebook\WebDriver\WebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use PagaMasTarde\SeleniumFormUtils\SeleniumHelper;
@@ -354,37 +355,15 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function goToPayment()
     {
-        /*try {
-            $continueElement = WebDriverBy::name('ko_unique_1');
-            $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
-            $this->webDriver->wait()->until($condition);
-            $this->assertTrue((bool) $condition);
-
-            $condition = WebDriverExpectedCondition::elementToBeClickable($continueElement);
-            $this->webDriver->wait()->until($condition);
-            $this->assertTrue((bool) $condition);
-
-            $this->findByName('ko_unique_1')->click();
-        } catch (\Exception $e) {
-            $continueElement = WebDriverBy::name('ko_unique_3');
-            $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
-            $this->webDriver->wait()->until($condition);
-            $this->assertTrue((bool) $condition);
-
-            $condition = WebDriverExpectedCondition::elementToBeClickable($continueElement);
-            $this->webDriver->wait()->until($condition);
-            $this->assertTrue((bool) $condition);
-
-            $this->findByName('ko_unique_3')->click();
-        }*/
-
-        /*$shippingSearch = WebDriverBy::cssSelector("#li.opc-shipping_method > div.checkout-shipping-method > div#checkout-step-shipping_method > div#checkout-shipping-method-load > table.table-checkout-shipping-method > tbody > tr.row > td.col-method > input.radio");
-        $condition = WebDriverExpectedCondition::elementToBeClickable($shippingSearch);
+        $shippingElement = WebDriverBy::xpath("//input[@value='flatrate_flatrate']");
+        $condition = WebDriverExpectedCondition::elementToBeClickable($shippingElement);
         $this->webDriver->wait()->until($condition);
+        $this->assertTrue((bool) $condition);
 
-        $menuElement = $this->webDriver->findElement($shippingSearch);
-        $menuElement->click();*/
+        $shippinhButton = $this->webDriver->findElement($shippingElement);
+        $shippinhButton->click();
 
+        sleep(5);
         $continueElement = WebDriverBy::className('continue');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
         $this->webDriver->wait()->until($condition);

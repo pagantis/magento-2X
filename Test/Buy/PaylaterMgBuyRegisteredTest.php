@@ -44,7 +44,6 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $this->verifyOrder();
         $this->setConfirmationPrice($this->verifyOrderInformation());
         $this->comparePrices();
-        $this->checkPaymentMethod();
         $this->checkProcessed();
         $this->quit();
     }
@@ -60,8 +59,8 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $this->assertNotEmpty($orderUrl);
 
         $orderArray = explode('/', $orderUrl);
-        $this->assertEquals(0, count($orderArray), json_encode($orderArray));
-        $magentoOrderId = $orderArray['3'];
+        $magentoOrderId = $orderArray['8'];
+        $this->assertNotEmpty($magentoOrderId);
         $notifyUrl = self::MAGENTO_URL.self::NOTIFICATION_FOLDER.'?'.self::NOTIFICATION_PARAMETER.'='.$magentoOrderId;
         $response = Request::post($notifyUrl)->expects('json')->send();
         $this->assertNotEmpty($response->body->result);
