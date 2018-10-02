@@ -354,7 +354,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function goToPayment()
     {
-        try {
+        /*try {
             $continueElement = WebDriverBy::name('ko_unique_1');
             $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
             $this->webDriver->wait()->until($condition);
@@ -376,7 +376,14 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
             $this->assertTrue((bool) $condition);
 
             $this->findByName('ko_unique_3')->click();
-        }
+        }*/
+
+        /*$shippingSearch = WebDriverBy::cssSelector("#li.opc-shipping_method > div.checkout-shipping-method > div#checkout-step-shipping_method > div#checkout-shipping-method-load > table.table-checkout-shipping-method > tbody > tr.row > td.col-method > input.radio");
+        $condition = WebDriverExpectedCondition::elementToBeClickable($shippingSearch);
+        $this->webDriver->wait()->until($condition);
+
+        $menuElement = $this->webDriver->findElement($shippingSearch);
+        $menuElement->click();*/
 
         $continueElement = WebDriverBy::className('continue');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
@@ -405,7 +412,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
 
-        sleep(5);
+        sleep(8);
         $this->findById('paylater')->click();
 
         sleep(2);
@@ -427,8 +434,6 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $this->assertContains($this->configuration['checkoutDescription'], $actualString, "PR54");
 
         $this->checkSimulator();
-
-
 
         $priceSearch = WebDriverBy::className('price');
         $priceElements = $this->webDriver->findElements($priceSearch);
