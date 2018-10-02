@@ -76,7 +76,7 @@ abstract class PaylaterMagentoTest extends TestCase
     /**
      * Wrong order
      */
-    const NOORDER_TITLE = 'Merchant Order Not Found';
+    const NOORDER_TITLE = 'We can not get the PagaMasTarde identification in database';
 
     /**
      * Magento Logout URL
