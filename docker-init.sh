@@ -30,6 +30,13 @@ else
         echo "Esta es la rama del pull request" ${TRAVIS_PULL_REQUEST_BRANCH}
         package=${TRAVIS_PULL_REQUEST_BRANCH}'.x-dev'
     fi
+
+    if [ ! -z "$TRAVIS_TAG" ]
+    then
+        echo "Esta es la rama del tag" ${TRAVIS_TAG}
+        package=${TRAVIS_TAG}
+    fi
+
     echo 'Package: '$package
     docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/magento-2x:$package -d /var/www/html
     docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt
