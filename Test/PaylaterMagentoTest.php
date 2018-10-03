@@ -68,6 +68,25 @@ abstract class PaylaterMagentoTest extends TestCase
      */
     const PMT_TITLE = 'Paga+Tarde';
 
+    /**
+     * Already processed
+     */
+    const NOTFOUND_TITLE = 'Merchant Order Not Found';
+
+    /**
+     * Wrong order
+     */
+    const NOORDER_TITLE = 'We can not get the PagaMasTarde identification in database';
+
+    /**
+     * Magento Logout URL
+     */
+    const NOTIFICATION_FOLDER = '/paylater/notify/';
+
+    /**
+     * Magento Logout URL
+     */
+    const NOTIFICATION_PARAMETER = 'quoteId';
 
     /**
      * @var array
@@ -91,6 +110,7 @@ abstract class PaylaterMagentoTest extends TestCase
         'city'               => 'Barcelona',
         'street'             => 'Av Diagonal 585, planta 7',
         'phone'              => '600123123',
+        'checkoutDescription'=> 'Paga hasta en 12 cómodas cuotas con Paga+Tarde'
         //'dni'                => '09422447Z',
         //'company'            => 'Digital Origin SL',
     );

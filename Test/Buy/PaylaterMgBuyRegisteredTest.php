@@ -3,6 +3,7 @@
 namespace DigitalOrigin\Pmt\Test\Buy;
 
 use DigitalOrigin\Pmt\Test\Common\AbstractMg21Selenium;
+use Httpful\Request;
 
 /**
  * @requires magento-install
@@ -23,6 +24,11 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
     protected $confirmationPrice;
 
     /**
+     * @var string
+     */
+    protected $notifyUrl;
+
+    /**
      * @throws  \Exception
      */
     public function testBuy()
@@ -38,12 +44,33 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $this->verifyOrder();
         $this->setConfirmationPrice($this->verifyOrderInformation());
         $this->comparePrices();
+        $this->checkProcessed();
         $this->quit();
     }
 
     private function comparePrices()
     {
         $this->assertContains($this->getCheckoutPrice(), $this->getConfirmationPrice(), "PR46");
+    }
+
+    private function checkProcessed()
+    {
+        $orderUrl = $this->webDriver->getCurrentURL();
+        $this->assertNotEmpty($orderUrl);
+
+        $orderArray = explode('/', $orderUrl);
+        $magentoOrderId = (int)$orderArray['8'];
+        $this->assertNotEmpty($magentoOrderId);
+        $notifyUrl = self::MAGENTO_URL.self::NOTIFICATION_FOLDER.'?'.self::NOTIFICATION_PARAMETER.'='.$magentoOrderId;
+        $response = Request::post($notifyUrl)->expects('json')->send();
+        $this->assertNotEmpty($response->body->result);
+        $this->assertContains(self::NOORDER_TITLE, $response->body->result_description, "PR51=>".$response->body->result_description);
+
+        $magentoOrderId = 0;
+        $notifyUrl = self::MAGENTO_URL.self::NOTIFICATION_FOLDER.'?'.self::NOTIFICATION_PARAMETER.'='.$magentoOrderId;
+        $response = Request::post($notifyUrl)->expects('json')->send();
+        $this->assertNotEmpty($response->body->result);
+        $this->assertContains(self::NOTFOUND_TITLE, $response->body->result, "PR53=>".$response->body->result);
     }
 
     /**
@@ -76,5 +103,21 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
     public function setConfirmationPrice($confirmationPrice)
     {
         $this->confirmationPrice = $confirmationPrice;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNotifyUrl()
+    {
+        return $this->notifyUrl;
+    }
+
+    /**
+     * @param string $notifyUrl
+     */
+    public function setNotifyUrl($notifyUrl)
+    {
+        $this->notifyUrl = $notifyUrl;
     }
 }

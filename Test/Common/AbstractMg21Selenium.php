@@ -3,6 +3,7 @@
 namespace DigitalOrigin\Pmt\Test\Common;
 
 use DigitalOrigin\Pmt\Test\PaylaterMagentoTest;
+use Facebook\WebDriver\WebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use PagaMasTarde\SeleniumFormUtils\SeleniumHelper;
@@ -39,8 +40,13 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
     public function getPaylaterBackOffice()
     {
         $this->webDriver->get(self::MAGENTO_URL.self::BACKOFFICE_FOLDER);
+
+        $elementSearch = WebDriverBy::linkText('STORES');
+        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($elementSearch);
+        $this->webDriver->wait()->until($condition);
         $this->findByLinkText('STORES')->click();
 
+        sleep(5);
         $elementSearch = WebDriverBy::linkText('Configuration');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($elementSearch);
         $this->webDriver->wait()->until($condition);
@@ -123,15 +129,19 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $condition = WebDriverExpectedCondition::presenceOfElementLocated($addressLink);
         $this->webDriver->wait()->until($condition);
 
+        $this->webDriver->findElement(WebDriverBy::id('country'))
+                        ->findElement(WebDriverBy::cssSelector("option[value='ES']"))
+                        ->click();
+
         $this->findById('telephone')->clear()->sendKeys($this->configuration['phone']);
         $this->findById('street_1')->sendKeys($this->configuration['street']);
         $this->findById('city')->sendKeys($this->configuration['city']);
         $this->findById('zip')->sendKeys($this->configuration['zip']);
 
-        $this->webDriver->findElement(WebDriverBy::id('country'))
-                        ->findElement(WebDriverBy::cssSelector("option[value='ES']"))
-                        ->click();
-        sleep(1);
+        $regionLink = WebDriverBy::id('region_id');
+        $condition = WebDriverExpectedCondition::presenceOfElementLocated($regionLink);
+        $this->webDriver->wait()->until($condition);
+
         $this->webDriver->findElement(WebDriverBy::id('region_id'))
                         ->findElement(WebDriverBy::cssSelector("option[value='161']"))
                         ->click();
@@ -305,7 +315,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
     {
         $condition = WebDriverExpectedCondition::titleContains(self::PMT_TITLE);
         $this->webDriver->wait(300)->until($condition, $this->webDriver->getCurrentURL());
-        $this->assertTrue((bool)$condition, $this->webDriver->getCurrentURL());
+        $this->assertTrue((bool)$condition, "PR32");
 
         SeleniumHelper::finishForm($this->webDriver);
     }
@@ -320,16 +330,13 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $this->webDriver->wait(200)->until($condition);
         $this->assertTrue((bool) $condition);
 
+        sleep(5);
         $countryElement = WebDriverBy::name('country_id');
         $condition = WebDriverExpectedCondition::elementToBeClickable($countryElement);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
         $this->webDriver->findElement(WebDriverBy::name('country_id'))
                         ->findElement(WebDriverBy::cssSelector("option[value='ES']"))
-                        ->click();
-        sleep(1);
-        $this->webDriver->findElement(WebDriverBy::name('region_id'))
-                        ->findElement(WebDriverBy::cssSelector("option[value='139']"))
                         ->click();
 
         $this->findByName('postcode')->clear()->sendKeys($this->configuration['zip']);
@@ -340,6 +347,10 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $this->findByName('lastname')->clear()->sendKeys($this->configuration['lastname']);
         $this->findByName('telephone')->clear()->sendKeys($this->configuration['phone']);
 
+        $this->webDriver->findElement(WebDriverBy::name('region_id'))
+                        ->findElement(WebDriverBy::cssSelector("option[value='139']"))
+                        ->click();
+
         $this->goToPayment();
     }
 
@@ -349,30 +360,18 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function goToPayment()
     {
-        try {
-            $continueElement = WebDriverBy::name('ko_unique_1');
-            $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
-            $this->webDriver->wait()->until($condition);
-            $this->assertTrue((bool) $condition);
+        $shippingElement = WebDriverBy::xpath("//input[@value='flatrate_flatrate']");
+        $condition = WebDriverExpectedCondition::elementToBeClickable($shippingElement);
+        $this->webDriver->wait()->until($condition);
+        $this->assertTrue((bool) $condition);
 
-            $condition = WebDriverExpectedCondition::elementToBeClickable($continueElement);
-            $this->webDriver->wait()->until($condition);
-            $this->assertTrue((bool) $condition);
-
-            $this->findByName('ko_unique_1')->click();
-        } catch (\Exception $e) {
-            $continueElement = WebDriverBy::name('ko_unique_3');
-            $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
-            $this->webDriver->wait()->until($condition);
-            $this->assertTrue((bool) $condition);
-
-            $condition = WebDriverExpectedCondition::elementToBeClickable($continueElement);
-            $this->webDriver->wait()->until($condition);
-            $this->assertTrue((bool) $condition);
-
-            $this->findByName('ko_unique_3')->click();
+        sleep(5);
+        $shippingButton = $this->webDriver->findElement($shippingElement);
+        if (!$shippingButton->isSelected()) {
+            $shippingButton->click();
         }
 
+        sleep(5);
         $continueElement = WebDriverBy::className('continue');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($continueElement);
         $this->webDriver->wait()->until($condition);
@@ -400,7 +399,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
 
-        sleep(5);
+        sleep(10);
         $this->findById('paylater')->click();
 
         sleep(2);
@@ -415,6 +414,11 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $actualString = $menuElement->getText();
         $compareString = (strstr($actualString, $this->configuration['methodName'])) === false ? false : true;
         $this->assertTrue($compareString, $actualString, "PR25,PR26");
+
+        $descriptionSearch = WebDriverBy::cssSelector("#checkout-payment-method-load > .payment-methods > .payment-group > ._active > .payment-method-content");
+        $descriptionElement = $this->webDriver->findElement($descriptionSearch);
+        $actualString = $descriptionElement->getText();
+        $this->assertContains($this->configuration['checkoutDescription'], $actualString, "PR54");
 
         $this->checkSimulator();
 
@@ -468,6 +472,12 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $condition = WebDriverExpectedCondition::titleContains(self::ORDER_TITLE);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
+
+        $menuSearch = WebDriverBy::cssSelector("div.block-order-details-view > div.block-content > div.box-order-billing-method > div.box-content > dl.payment-method");
+        $menuElement = $this->webDriver->findElement($menuSearch);
+        $actualString = $menuElement->getText();
+        $compareString = (strstr($actualString, $this->configuration['methodName'])) === false ? false : true;
+        $this->assertTrue($compareString, $actualString, "PR49");
 
         $menuSearch = WebDriverBy::cssSelector("#my-orders-table > tfoot > .grand_total > .amount > strong > .price");
         $menuElement = $this->webDriver->findElement($menuSearch);
