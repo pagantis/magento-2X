@@ -17,23 +17,26 @@ then
     docker-compose exec magento2-${ENVIROMENT} chown -R www-data. /var/www/paylater
     docker-compose exec -u www-data magento2-${ENVIROMENT} composer install -d /var/www/paylater
 else
-    version=$(git describe --all HEAD)
-    versionParsed=$(sed  -e 's/heads\///' -e 's/-.*//' <<< $version)
-    package=$versionParsed'.x-dev'
-    if [ $package == 'master.x-dev' ]
-    then
-        package='dev-master'
-    fi
-
-    if [[ $package = *"tags"* ]]
-    then
-        package=$(sed -e 's/tags\///' <<< $version)
-    fi
-
     if [ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]
     then
         echo "Esta es la rama del pull request" ${TRAVIS_PULL_REQUEST_BRANCH}
         package=${TRAVIS_PULL_REQUEST_BRANCH}'.x-dev'
+    fi
+
+    if [ ! -z "$TRAVIS_TAG" ]
+    then
+        echo "Esta es la rama del tag:" ${TRAVIS_TAG}
+        package=${TRAVIS_TAG}
+    fi
+    if [ ! -z "$TRAVIS_BRANCH" ]
+    then
+        echo "Esta es la rama del branch:" ${TRAVIS_BRANCH}
+        package=${TRAVIS_BRANCH}'.x-dev'
+    fi
+    if [ -z "$package" ]
+    then
+        echo "Esta es la rama master:" ${TRAVIS_TAG}
+        package='dev-master'
     fi
 
     echo 'Package: '$package
