@@ -25,16 +25,15 @@ else
         package='dev-master'
     fi
 
+    if [[ $package = *"tags"* ]]
+    then
+        package=$(sed -e 's/tags\///' <<< $version)
+    fi
+
     if [ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]
     then
         echo "Esta es la rama del pull request" ${TRAVIS_PULL_REQUEST_BRANCH}
         package=${TRAVIS_PULL_REQUEST_BRANCH}'.x-dev'
-    fi
-
-    if [ ! -z "$TRAVIS_TAG" ]
-    then
-        echo "Esta es la rama del tag" ${TRAVIS_TAG}
-        package=${TRAVIS_TAG}
     fi
 
     echo 'Package: '$package
