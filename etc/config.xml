@@ -5,7 +5,7 @@
             <paylater>
                 <active>0</active>
                 <title>Instant financing</title>
-                <checkout_description>Paga hasta en 12 servicios con Paga + Tarde. Solicitud totalmente online y sinpapeleos, ¡y la respuesta es inmediata!</checkout_description>
+                <checkout_description>Pay up to 12 comfortable installments with Paga + Tarde. Completely online and sympathetic request, and the answer is immediate!</checkout_description>
                 <currency>EUR</currency>
                 <is_gateway>1</is_gateway>
                 <model>PaylaterFacade</model>

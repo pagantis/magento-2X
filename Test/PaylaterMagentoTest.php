@@ -110,7 +110,7 @@ abstract class PaylaterMagentoTest extends TestCase
         'city'               => 'Barcelona',
         'street'             => 'Av Diagonal 585, planta 7',
         'phone'              => '600123123',
-        'checkoutDescription'=> 'Paga hasta en 12 cómodas cuotas con Paga+Tarde.'
+        'checkoutDescription'=> 'Pay up to 12 comfortable installments with Paga + Tarde'
     );
 
     /**
