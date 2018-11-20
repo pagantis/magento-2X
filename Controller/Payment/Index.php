@@ -207,7 +207,8 @@ class Index extends Action
             $orderConfigurationUrls
                 ->setCancel($cancelUrl)
                 ->setKo($okUrl)
-                ->setNotificationCallback($okUrl)
+                ->setAuthorizedNotificationCallback($okUrl)
+                ->setRejectedNotificationCallback($okUrl)
                 ->setOk($okUrl)
             ;
 
