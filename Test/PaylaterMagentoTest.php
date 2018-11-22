@@ -110,9 +110,7 @@ abstract class PaylaterMagentoTest extends TestCase
         'city'               => 'Barcelona',
         'street'             => 'Av Diagonal 585, planta 7',
         'phone'              => '600123123',
-        'checkoutDescription'=> 'Paga hasta en 12 cómodas cuotas con Paga+Tarde'
-        //'dni'                => '09422447Z',
-        //'company'            => 'Digital Origin SL',
+        'checkoutDescription'=> 'Pay up to 12 comfortable installments with Paga + Tarde'
     );
 
     /**
@@ -135,11 +133,11 @@ abstract class PaylaterMagentoTest extends TestCase
      */
     protected function setUp()
     {
-        $this->webDriver = RemoteWebDriver::create(
+        $this->webDriver = PmtWebDriver::create(
             'http://localhost:4444/wd/hub',
             DesiredCapabilities::chrome(),
-            240000,
-            240000
+            90000,
+            90000
         );
     }
 
