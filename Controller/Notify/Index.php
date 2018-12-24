@@ -10,11 +10,17 @@ use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\QuoteRepository;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\Action;
+use PagaMasTarde\ModuleUtils\Exception\ConcurrencyException;
+use PagaMasTarde\ModuleUtils\Exception\UnknownException;
+use PagaMasTarde\ModuleUtils\Model\Response\JsonExceptionResponse;
 use PagaMasTarde\OrdersApiClient\Client;
 use DigitalOrigin\Pmt\Helper\Config;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\DB\Ddl\Table;
+use PagaMasTarde\ModuleUtils\Exception\NoQuoteFoundException;
+use PagaMasTarde\ModuleUtils\Model\Response\JsonSuccessResponse;
+use PagaMasTarde\ModuleUtils\Model\Log\LogEntry;
 
 /**
  * Class Index
@@ -133,23 +139,29 @@ class Index extends Action
             $this->validateAmount();
             $this->processMerchantOrder();
         } catch (\Exception $exception) {
-            $this->insertLog($exception);
-            $jsonResponse = new JsonResponse($exception);
-            $jsonResponse->setOrderId($this->magentoOrderId);
+            $jsonResponse = new JsonExceptionResponse();
+            $jsonResponse->setMerchantOrderId($this->woocommerceOrderId);
+            $jsonResponse->setPmtOrderId($this->pmtOrderId);
+            $jsonResponse->setException($exception);
             $response = $jsonResponse->toJson();
+            $this->insertLog($exception);
         }
 
         try {
             if (!isset($response)) {
-                $response = $this->confirmPmtOrder();
+                $this->confirmPmtOrder();
+                $jsonResponse = new JsonSuccessResponse();
+                $jsonResponse->setMerchantOrderId($this->magentoOrderId);
+                $jsonResponse->setPmtOrderId($this->pmtOrderId);
             }
         } catch (\Exception $exception) {
-            $this->insertLog($exception);
             $this->rollbackMerchantOrder();
-            $jsonResponse = new JsonResponse();
-            $jsonResponse->setStatus($exception->getStatus());
-            $jsonResponse->setOrderId($this->magentoOrderId);
-            $jsonResponse->setResult($exception->getResult);
+            $jsonResponse = new JsonExceptionResponse();
+            $jsonResponse->setMerchantOrderId($this->woocommerceOrderId);
+            $jsonResponse->setPmtOrderId($this->pmtOrderId);
+            $jsonResponse->setException($exception);
+            $jsonResponse->toJson();
+            $this->insertLog($exception);
         }
 
         $this->unblockConcurrency(true);
@@ -185,14 +197,18 @@ class Index extends Action
 
     private function getPmtOrderId()
     {
-        /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
-        $dbConnection = $this->dbObject->getConnection();
-        $tableName    = $this->dbObject->getTableName(self::ORDERS_TABLE);
-        $query        = "select order_id from $tableName where id='$this->quoteId'";
-        $queryResult  = $dbConnection->fetchRow($query);
-        $this->pmtOrderId = $queryResult['order_id'];
-        if ($this->pmtOrderId == '') {
-            throw new NoIdentificationException();
+        try {
+            /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
+            $dbConnection     = $this->dbObject->getConnection();
+            $tableName        = $this->dbObject->getTableName(self::ORDERS_TABLE);
+            $query            = "select order_id from $tableName where id='$this->quoteId'";
+            $queryResult      = $dbConnection->fetchRow($query);
+            $this->pmtOrderId = $queryResult['order_id'];
+            if ($this->pmtOrderId == '') {
+                throw new NoIdentificationException();
+            }
+        } catch (\Exception $e) {
+            throw new UnknownException($e->getMessage());
         }
     }
 
@@ -230,19 +246,21 @@ class Index extends Action
 
     private function validateAmount()
     {
-        $grandTotal = $this->quote->getGrandTotal();
-        if ($this->pmtOrder->getShoppingCart()->getTotalAmount() != intval(strval(100 * $grandTotal))) {
-            throw new AmountMismatchException(
-                $this->pmtOrder->getShoppingCart()->getTotalAmount(),
-                intval(strval(100 * $grandTotal))
-            );
+        $pmtAmount = $this->pmtOrder->getShoppingCart()->getTotalAmount();
+        $merchantAmount = intval(strval(100 * $this->quote->getGrandTotal()));
+        if ($pmtAmount != $merchantAmount) {
+            throw new AmountMismatchException($pmtAmount, $merchantAmount);
         }
     }
 
     private function processMerchantOrder()
     {
-        $this->saveOrder();
-        $this->updateBdInfo();
+        try {
+            $this->saveOrder();
+            $this->updateBdInfo();
+        } catch (\Exception $e) {
+            throw new UnknownException($e->getMessage());
+        }
     }
 
     private function confirmPmtOrder()
@@ -266,7 +284,7 @@ class Index extends Action
 
     /** STEP 1 CC - Check concurrency */
     /**
-     * @throws \Exception
+     * @throws NoQuoteFoundException
      */
     private function getQuoteId()
     {
@@ -278,35 +296,45 @@ class Index extends Action
 
     /**
      * @return \Zend_Db_Statement_Interface
+     * @throws UnknownException
      */
     private function checkDbTable()
     {
-        /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
-        $dbConnection = $this->dbObject->getConnection();
-        $tableName    = $this->dbObject->getTableName(self::CONCURRENCY_TABLE);
-        $query = "CREATE TABLE IF NOT EXISTS $tableName(`id` int not null,`timestamp` int not null,PRIMARY KEY (`id`))";
-        return $dbConnection->query($query);
+        try {
+            /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
+            $dbConnection = $this->dbObject->getConnection();
+            $tableName    = $this->dbObject->getTableName(self::CONCURRENCY_TABLE);
+            $query        = "CREATE TABLE IF NOT EXISTS $tableName(`id` int not null,`timestamp` int not null,PRIMARY KEY (`id`))";
+
+            return $dbConnection->query($query);
+        } catch (\Exception $e) {
+            throw new UnknownException($e->getMessage());
+        }
     }
 
     /**
      * @return void|\Zend_Db_Statement_Interface
-     * @throws \Zend_Db_Exception
+     * @throws UnknownException
      */
     private function checkDbLogTable()
     {
-        /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
-        $dbConnection = $this->dbObject->getConnection();
-        $tableName = $this->dbObject->getTableName(self::LOGS_TABLE);
-        if (!$dbConnection->isTableExists($tableName)) {
-            $table = $dbConnection
-                ->newTable($tableName)
-                ->addColumn('id', Table::TYPE_SMALLINT, null, array('nullable'=>false, 'auto_increment'=>true, 'primary'=>true))
-                ->addColumn('log', Table::TYPE_TEXT, null, array('nullable'=>false))
-                ->addColumn('createdAt', Table::TYPE_TIMESTAMP, null, array('nullable'=>false, 'default'=>Table::TIMESTAMP_INIT));
-            return $dbConnection->createTable($table);
-        }
+        try {
+            /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
+            $dbConnection = $this->dbObject->getConnection();
+            $tableName = $this->dbObject->getTableName(self::LOGS_TABLE);
+            if (!$dbConnection->isTableExists($tableName)) {
+                $table = $dbConnection
+                    ->newTable($tableName)
+                    ->addColumn('id', Table::TYPE_SMALLINT, null, array('nullable'=>false, 'auto_increment'=>true, 'primary'=>true))
+                    ->addColumn('log', Table::TYPE_TEXT, null, array('nullable'=>false))
+                    ->addColumn('createdAt', Table::TYPE_TIMESTAMP, null, array('nullable'=>false, 'default'=>Table::TIMESTAMP_INIT));
+                return $dbConnection->createTable($table);
+            }
 
-        return;
+            return;
+        } catch (\Exception $e) {
+            throw new UnknownException($e->getMessage());
+        }
     }
 
     /**
@@ -373,52 +401,74 @@ class Index extends Action
      */
     private function getMagentoOrderId()
     {
-        /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
-        $dbConnection = $this->dbObject->getConnection();
-        $tableName    = $this->dbObject->getTableName(self::ORDERS_TABLE);
-        $pmtOrderId   = $this->pmtOrderId;
+        try {
+            /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
+            $dbConnection = $this->dbObject->getConnection();
+            $tableName    = $this->dbObject->getTableName(self::ORDERS_TABLE);
+            $pmtOrderId   = $this->pmtOrderId;
 
-        $query        = "select mg_order_id from $tableName where id='$this->quoteId' and order_id='$pmtOrderId'";
-        $queryResult  = $dbConnection->fetchRow($query);
-        $this->magentoOrderId = $queryResult['mg_order_id'];
+            $query        = "select mg_order_id from $tableName where id='$this->quoteId' and order_id='$pmtOrderId'";
+            $queryResult  = $dbConnection->fetchRow($query);
+            $this->magentoOrderId = $queryResult['mg_order_id'];
+        } catch (\Exception $e) {
+            throw new UnknownException($e->getMessage());
+        }
     }
 
     /** STEP 7 VA - Validate Amount */
     /** STEP 8 PMO - Process Merchant Order */
     /**
-     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @throws UnknownException
      */
     private function saveOrder()
     {
-        $this->paymentInterface->setMethod(self::PAYMENT_METHOD);
-        $this->magentoOrderId = $this->quoteManagement->placeOrder($this->quoteId, $this->paymentInterface);
-        /** @var \Magento\Sales\Api\Data\OrderInterface magentoOrder */
-        $this->magentoOrder = $this->orderRepositoryInterface->get($this->magentoOrderId);
+        try {
+            $this->paymentInterface->setMethod(self::PAYMENT_METHOD);
+            $this->magentoOrderId = $this->quoteManagement->placeOrder($this->quoteId, $this->paymentInterface);
+            /** @var \Magento\Sales\Api\Data\OrderInterface magentoOrder */
+            $this->magentoOrder = $this->orderRepositoryInterface->get($this->magentoOrderId);
 
-        if ($this->magentoOrderId == '') {
-            throw new UnkownException('Order can not be saved');
+            if ($this->magentoOrderId == '') {
+                throw new UnkownException('Order can not be saved');
+            }
+        } catch (\Exception $e) {
+            throw new UnknownException($e->getMessage());
         }
     }
 
+    /**
+     * @throws UnknownException
+     */
     private function updateBdInfo()
     {
-        /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
-        $dbConnection = $this->dbObject->getConnection();
-        $tableName    = $this->dbObject->getTableName(self::ORDERS_TABLE);
-        $pmtOrderId   = $this->pmtOrder->getId();
-        $dbConnection->update(
-            $tableName,
-            array('mg_order_id'=>$this->magentoOrderId),
-            "order_id='$pmtOrderId' and id='$this->quoteId'"
-        );
+        try {
+            /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
+            $dbConnection = $this->dbObject->getConnection();
+            $tableName    = $this->dbObject->getTableName(self::ORDERS_TABLE);
+            $pmtOrderId   = $this->pmtOrder->getId();
+            $dbConnection->update(
+                $tableName,
+                array('mg_order_id' => $this->magentoOrderId),
+                "order_id='$pmtOrderId' and id='$this->quoteId'"
+            );
+        } catch (\Exception $e) {
+            throw new UnknownException($e->getMessage());
+        }
     }
 
     /** STEP 9 CPO - Confirmation Pmt Order */
+    /**
+     * @throws UnknownException
+     */
     private function rollbackMerchantOrder()
     {
-        $this->magentoOrder->setState(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT, true);
-        $this->magentoOrder->setStatus(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
-        $this->magentoOrder->save();
+        try {
+            $this->magentoOrder->setState(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT, true);
+            $this->magentoOrder->setStatus(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
+            $this->magentoOrder->save();
+        } catch (\Exception $e) {
+            throw new UnknownException($e->getMessage());
+        }
     }
 
     /**
@@ -463,18 +513,23 @@ class Index extends Action
     /**
      * @param $exceptionMessage
      *
-     * @throws \Zend_Db_Exception
+     * @throws UnknownException
      */
     private function insertLog($exceptionMessage)
     {
-        if ($exceptionMessage instanceof \Exception) {
-            $this->checkDbLogTable();
-            $logEntry = new LogEntry($exceptionMessage);
+        try {
+            if ($exceptionMessage instanceof \Exception) {
+                $this->checkDbLogTable();
+                $logEntry = new LogEntry();
+                $logEntryJson = $logEntry->error($exceptionMessage)->toJson();
 
-            /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
-            $dbConnection = $this->dbObject->getConnection();
-            $tableName    = $this->dbObject->getTableName(self::LOGS_TABLE);
-            $dbConnection->insert($tableName, array('log' => $logEntry->toJson()));
+                /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
+                $dbConnection = $this->dbObject->getConnection();
+                $tableName    = $this->dbObject->getTableName(self::LOGS_TABLE);
+                $dbConnection->insert($tableName, array('log' => $logEntryJson));
+            }
+        } catch (\Exception $e) {
+            throw new UnknownException($e->getMessage());
         }
     }
 }
