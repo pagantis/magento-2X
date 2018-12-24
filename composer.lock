@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e19047882bf8a83056c65deccae6ab0e",
+    "content-hash": "16d041663cc6e5beb353ece763a6a28e",
     "packages": [
         {
             "name": "colinmollenhour/credis",
@@ -2845,6 +2845,50 @@
                 "stylesheet"
             ],
             "time": "2017-03-28T22:19:25+00:00"
+        },
+        {
+            "name": "pagamastarde/module-utils",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PagaMasTarde/module-utils.git",
+                "reference": "3e5103843eabd08f7697ae3d2459116db5e5fe89"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PagaMasTarde/module-utils/zipball/3e5103843eabd08f7697ae3d2459116db5e5fe89",
+                "reference": "3e5103843eabd08f7697ae3d2459116db5e5fe89",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=5.3"
+            },
+            "require-dev": {
+                "facebook/webdriver": "^1.1",
+                "fzaninotto/faker": "^1.7",
+                "nayjest/str-case-converter": "^1.0",
+                "phpunit/phpunit": "^4.8",
+                "phpunit/phpunit-selenium": "^2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PagaMasTarde\\ModuleUtils\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "DigitalOrigin",
+                    "email": "cromero@digitalorigin.com"
+                }
+            ],
+            "description": "Paga+Tarde PHP Library. Module utils",
+            "time": "2018-12-17T18:51:05+00:00"
         },
         {
             "name": "pagamastarde/orders-api-client",
