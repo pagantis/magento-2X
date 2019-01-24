@@ -6,6 +6,8 @@ docker-compose up -d --build magento2-${ENVIROMENT}
 docker-compose up -d selenium
 sleep 10
 
+docker-compose exec magento2-${ENVIROMENT} docker-php-ext-install bcmath
+
 echo 'Install Magento'
 docker-compose exec magento2-${ENVIROMENT} install-magento
 echo 'Install DigitalOrigin_Pmt'
@@ -44,12 +46,17 @@ else
     docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento deploy:mode:set production
     docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/magento-2x:$package -d /var/www/html
     docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt
-    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:upgrade
 fi
 
+
 echo 'Sample Data + DI + SetupUpgrade + Clear Cache'
-docker-compose exec magento2-${ENVIROMENT} install-sampledata
-docker-compose exec -u www-data magento2-${ENVIROMENT} /var/www/html/bin/magento cron:run
+docker-compose exec -u www-data magento2-${ENVIROMENT} composer config http-basic.repo.magento.com \
+    5310458a34d580de1700dfe826ff19a1 \
+    255059b03eb9d30604d5ef52fca7465d
+docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento sampledata:deploy
+docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento cron:run
+docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:upgrade
+docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:di:compile
 
 containerPort=$(docker container port magento2${ENVIROMENT})
 PORT=$(sed  -e 's/.*://' <<< $containerPort)
