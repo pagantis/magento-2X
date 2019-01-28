@@ -42,10 +42,7 @@ else
     fi
 
     echo 'Package: '$package
-    echo 'Running: cache:enable'
-    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento cache:enable
-    #echo 'Running: cache:deploy:mode:set production'
-    #docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento deploy:mode:set production
+
     echo 'Running: composer requiere pagamastarde/magento-2x:'$package' -d /var/www/html'
     docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/magento-2x:$package -d /var/www/html
     echo 'Running: module:enable DigitalOrigin_Pmt'
@@ -68,6 +65,11 @@ echo 'Running: cron:run'
     docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:upgrade
     echo 'Running: setup:di:compile'
     docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:di:compile
+
+    echo 'Running: cache:enable'
+    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento cache:enable
+    echo 'Running: cache:deploy:mode:set production'
+    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento deploy:mode:set production
 fi
 
 containerPort=$(docker container port magento2${ENVIROMENT})
