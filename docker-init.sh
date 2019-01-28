@@ -3,10 +3,11 @@ ENVIROMENT=$1
 echo 'Build docker images'
 docker-compose down
 docker-compose up -d --build magento2-${ENVIROMENT}
-docker-compose up -d selenium
+#docker-compose up -d selenium
 sleep 10
 
 docker-compose exec magento2-${ENVIROMENT} docker-php-ext-install bcmath
+docker-compose exec magento2-${ENVIROMENT} docker-php-ext-install mcrypt
 
 echo 'Install Magento'
 docker-compose exec magento2-${ENVIROMENT} install-magento
@@ -41,9 +42,11 @@ else
         package='dev-master'
     fi
 
+    package='v7.0.7.x-dev'
+
     echo 'Package: '$package
     docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento cache:enable
-    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento deploy:mode:set production
+    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento deploy:mode:set developer
     docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/magento-2x:$package -d /var/www/html
     docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt
 fi
