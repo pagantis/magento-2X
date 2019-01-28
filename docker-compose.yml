@@ -2,7 +2,7 @@ version: '3.0'
 services:
   magento2-dev:
     container_name: magento2dev
-    image: alexcheng/magento2:2.2.1
+    image: alexcheng/magento2:latest
     environment:
       - MYSQL_HOST=db-dev
       - MYSQL_ROOT_PASSWORD=password123

@@ -19,7 +19,6 @@ then
     docker-compose exec magento2-${ENVIROMENT} chown -R www-data. /var/www/paylater
     docker-compose exec -u www-data magento2-${ENVIROMENT} composer install -d /var/www/paylater
     docker-compose exec magento2-${ENVIROMENT} chown -R www-data. var/cache
-    git com
 else
     if [ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]
     then
