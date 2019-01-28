@@ -32,7 +32,7 @@
     }
   ],
   "require": {
-    "php": "~5.5|~5.6|~7.0|~7.1|~7.2|~7.3",
+    "php": "~7.0|~7.1|~7.2|~7.3",
     "pagamastarde/orders-api-client": "^1.0",
     "pagamastarde/selenium-form-utils": "^1.0",
     "pagamastarde/module-utils": "^1.0",
