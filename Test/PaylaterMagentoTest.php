@@ -76,7 +76,7 @@ abstract class PaylaterMagentoTest extends TestCase
     /**
      * Wrong order
      */
-    const NOORDER_TITLE = 'We can not get the PagaMasTarde identification in database';
+    const NOORDER_TITLE = 'Cart already processed';
 
     /**
      * Magento Logout URL
