@@ -146,7 +146,7 @@ class Index extends Action
             $this->processMerchantOrder();
         } catch (\Exception $exception) {
             $jsonResponse = new JsonExceptionResponse();
-            $jsonResponse->setMerchantOrderId($this->woocommerceOrderId);
+            $jsonResponse->setMerchantOrderId($this->magentoOrderId);
             $jsonResponse->setPmtOrderId($this->pmtOrderId);
             $jsonResponse->setException($exception);
             $response = $jsonResponse->toJson();
@@ -163,7 +163,7 @@ class Index extends Action
         } catch (\Exception $exception) {
             $this->rollbackMerchantOrder();
             $jsonResponse = new JsonExceptionResponse();
-            $jsonResponse->setMerchantOrderId($this->woocommerceOrderId);
+            $jsonResponse->setMerchantOrderId($this->magentoOrderId);
             $jsonResponse->setPmtOrderId($this->pmtOrderId);
             $jsonResponse->setException($exception);
             $jsonResponse->toJson();
