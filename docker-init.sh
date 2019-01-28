@@ -21,33 +21,31 @@ then
 else
     if [ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]
     then
-        echo "Esta es la rama del pull request" ${TRAVIS_PULL_REQUEST_BRANCH}
+        echo "This is the branch of the pull request" ${TRAVIS_PULL_REQUEST_BRANCH}
         package=${TRAVIS_PULL_REQUEST_BRANCH}'.x-dev'
     fi
 
     if [ ! -z "$TRAVIS_TAG" ]
     then
-        echo "Esta es la rama del tag:" ${TRAVIS_TAG}
+        echo "This is the branch of the tag:" ${TRAVIS_TAG}
         package=${TRAVIS_TAG}
     fi
     if [ ! -z "$TRAVIS_BRANCH" ]
     then
-        echo "Esta es la rama del branch:" ${TRAVIS_BRANCH}
+        echo "This is the branch of the branch:" ${TRAVIS_BRANCH}
         package=${TRAVIS_BRANCH}'.x-dev'
     fi
     if [ -z "$package" ]
     then
-        echo "Esta es la rama master:" ${TRAVIS_TAG}
+        echo "This is the branch master:" ${TRAVIS_TAG}
         package='dev-master'
     fi
-
-    package='v7.0.7.x-dev'
 
     echo 'Package: '$package
     echo 'Running: cache:enable'
     docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento cache:enable
-    echo 'Running: cache:deploy:mode:set developer @todo change to prod value'
-    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento deploy:mode:set developer
+    echo 'Running: cache:deploy:mode:set production'
+    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento deploy:mode:set production
     echo 'Running: composer requiere pagamastarde/magento-2x:'$package' -d /var/www/html'
     docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/magento-2x:$package -d /var/www/html
     echo 'Running: module:enable DigitalOrigin_Pmt'
