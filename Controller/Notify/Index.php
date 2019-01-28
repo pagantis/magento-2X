@@ -25,6 +25,8 @@ use PagaMasTarde\ModuleUtils\Exception\UnknownException;
 use PagaMasTarde\ModuleUtils\Exception\WrongStatusException;
 use PagaMasTarde\ModuleUtils\Model\Response\JsonSuccessResponse;
 use PagaMasTarde\ModuleUtils\Model\Response\JsonExceptionResponse;
+use PagaMasTarde\ModuleUtils\Exception\AlreadyProcessedException;
+use PagaMasTarde\ModuleUtils\Model\Log\LogEntry;
 
 /**
  * Class Index
@@ -434,7 +436,7 @@ class Index extends Action
             $this->magentoOrder = $this->orderRepositoryInterface->get($this->magentoOrderId);
 
             if ($this->magentoOrderId == '') {
-                throw new UnkownException('Order can not be saved');
+                throw new UnknownException('Order can not be saved');
             }
         } catch (\Exception $e) {
             throw new UnknownException($e->getMessage());
