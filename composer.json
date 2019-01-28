@@ -3,6 +3,7 @@
   "description": "Paga+Tarde Magento 2 module",
   "type": "magento2-module",
   "minimum-stability": "dev",
+  "prefer-stable": true,
   "keywords": [
     "api",
     "rest",
@@ -22,7 +23,7 @@
   "authors": [
     {
       "name": "Digital Origin",
-      "email": "cromero@digitalorigin.com"
+      "email": "integration@pagamastarde.com"
     }
   ],
   "repositories": [

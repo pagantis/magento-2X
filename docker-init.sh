@@ -46,7 +46,7 @@ else
 
     echo 'Package: '$package
     echo 'Running: cache:enable'
-    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento -
+    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento cache:enable
     echo 'Running: cache:deploy:mode:set developer @todo change to prod value'
     docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento deploy:mode:set developer
     echo 'Running: pagamastarde/magento-2x:'$package' -d /var/www/html'
