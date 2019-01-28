@@ -71,7 +71,7 @@ abstract class PaylaterMagentoTest extends TestCase
     /**
      * Already processed
      */
-    const NOTFOUND_TITLE = 'Merchant Order Not Found';
+    const NOTFOUND_TITLE = 'Merchant order not found';
 
     /**
      * Wrong order
