@@ -73,7 +73,7 @@ class Index extends Action
     /** @var mixed $quoteId */
     protected $quoteId;
 
-    /** @var Array_ $notifyResult */
+    /** @var array $notifyResult */
     protected $notifyResult;
 
     /** @var mixed $magentoOrderId */
