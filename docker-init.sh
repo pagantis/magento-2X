@@ -45,9 +45,13 @@ else
     package='v7.0.7.x-dev'
 
     echo 'Package: '$package
-    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento cache:enable
+    echo 'Running: cache:enable'
+    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento -
+    echo 'Running: cache:deploy:mode:set developer @todo change to prod value'
     docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento deploy:mode:set developer
+    echo 'Running: pagamastarde/magento-2x:'$package' -d /var/www/html'
     docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/magento-2x:$package -d /var/www/html
+    echo 'Running: module:enable DigitalOrigin_Pmt'
     docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt
 fi
 
@@ -56,9 +60,13 @@ echo 'Sample Data + DI + SetupUpgrade + Clear Cache'
 docker-compose exec -u www-data magento2-${ENVIROMENT} composer config http-basic.repo.magento.com \
     5310458a34d580de1700dfe826ff19a1 \
     255059b03eb9d30604d5ef52fca7465d
+echo 'Running: sampledata:deploy'
 docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento sampledata:deploy
+echo 'Running: cron:run'
 docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento cron:run
+echo 'Running: setup:upgrade'
 docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:upgrade
+echo 'Running: setup:di:compile'
 docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:di:compile
 
 containerPort=$(docker container port magento2${ENVIROMENT})
