@@ -18,6 +18,8 @@ then
     docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt && \
     docker-compose exec magento2-${ENVIROMENT} chown -R www-data. /var/www/paylater
     docker-compose exec -u www-data magento2-${ENVIROMENT} composer install -d /var/www/paylater
+    docker-compose exec magento2-${ENVIROMENT} chown -R www-data. var/cache
+    git com
 else
     if [ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]
     then
@@ -57,15 +59,15 @@ docker-compose exec -u www-data magento2-${ENVIROMENT} composer config http-basi
 echo 'Running: sampledata:deploy'
 docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento sampledata:deploy
 
+echo 'Running: cron:run'
+docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento cron:run
+echo 'Running: setup:upgrade'
+docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:upgrade
+
 if [ $1 == 'test' ]
 then
-echo 'Running: cron:run'
-    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento cron:run
-    echo 'Running: setup:upgrade'
-    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:upgrade
     echo 'Running: setup:di:compile'
     docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:di:compile
-
     echo 'Running: cache:enable'
     docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento cache:enable
     echo 'Running: cache:deploy:mode:set production'
