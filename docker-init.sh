@@ -4,7 +4,7 @@ echo 'Build docker images'
 docker-compose down
 docker-compose up -d --build magento2-${ENVIROMENT}
 docker-compose up -d selenium
-sleep 30
+sleep 15
 
 docker-compose exec magento2-${ENVIROMENT} docker-php-ext-install bcmath
 
@@ -44,8 +44,8 @@ else
     echo 'Package: '$package
     echo 'Running: cache:enable'
     docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento cache:enable
-    echo 'Running: cache:deploy:mode:set production'
-    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento deploy:mode:set production
+    #echo 'Running: cache:deploy:mode:set production'
+    #docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento deploy:mode:set production
     echo 'Running: composer requiere pagamastarde/magento-2x:'$package' -d /var/www/html'
     docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/magento-2x:$package -d /var/www/html
     echo 'Running: module:enable DigitalOrigin_Pmt'
@@ -59,12 +59,16 @@ docker-compose exec -u www-data magento2-${ENVIROMENT} composer config http-basi
     255059b03eb9d30604d5ef52fca7465d
 echo 'Running: sampledata:deploy'
 docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento sampledata:deploy
+
+if [ $1 == 'test' ]
+then
 echo 'Running: cron:run'
-docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento cron:run
-echo 'Running: setup:upgrade'
-docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:upgrade
-echo 'Running: setup:di:compile'
-docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:di:compile
+    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento cron:run
+    echo 'Running: setup:upgrade'
+    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:upgrade
+    echo 'Running: setup:di:compile'
+    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:di:compile
+fi
 
 containerPort=$(docker container port magento2${ENVIROMENT})
 PORT=$(sed  -e 's/.*://' <<< $containerPort)
