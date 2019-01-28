@@ -10,17 +10,21 @@ use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\QuoteRepository;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\Action;
-use PagaMasTarde\ModuleUtils\Exception\ConcurrencyException;
-use PagaMasTarde\ModuleUtils\Exception\UnknownException;
-use PagaMasTarde\ModuleUtils\Model\Response\JsonExceptionResponse;
 use PagaMasTarde\OrdersApiClient\Client;
 use DigitalOrigin\Pmt\Helper\Config;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\DB\Ddl\Table;
-use PagaMasTarde\ModuleUtils\Exception\NoQuoteFoundException;
+use PagaMasTarde\ModuleUtils\Exception\AmountMismatchException;
+use PagaMasTarde\ModuleUtils\Exception\ConcurrencyException;
+use PagaMasTarde\ModuleUtils\Exception\MerchantOrderNotFoundException;
+use PagaMasTarde\ModuleUtils\Exception\NoIdentificationException;
+use PagaMasTarde\ModuleUtils\Exception\OrderNotFoundException;
+use PagaMasTarde\ModuleUtils\Exception\QuoteNotFoundException;
+use PagaMasTarde\ModuleUtils\Exception\UnknownException;
+use PagaMasTarde\ModuleUtils\Exception\WrongStatusException;
 use PagaMasTarde\ModuleUtils\Model\Response\JsonSuccessResponse;
-use PagaMasTarde\ModuleUtils\Model\Log\LogEntry;
+use PagaMasTarde\ModuleUtils\Model\Response\JsonExceptionResponse;
 
 /**
  * Class Index
@@ -218,7 +222,7 @@ class Index extends Action
             $this->orderClient = new Client($this->config['public_key'], $this->config['secret_key']);
             $this->pmtOrder = $this->orderClient->getOrder($this->pmtOrderId);
         } catch (\Exception $e) {
-            throw new NoOrderFoundException();
+            throw new OrderNotFoundException();
         }
     }
 
@@ -271,9 +275,10 @@ class Index extends Action
             throw new UnknownException($e->getMessage());
         }
 
-        $jsonResponse = new JsonResponse();
-        $jsonResponse->setStatus(200);
-        $jsonResponse->setOrderId($this->magentoOrderId);
+        $jsonResponse = new JsonSuccessResponse();
+        $jsonResponse->setStatusCode(200);
+        $jsonResponse->setMerchantOrderId($this->magentoOrderId);
+        $jsonResponse->setPmtOrderId($this->pmtOrderId);
         $jsonResponse->setResult(self::CPO_OK_MSG);
         return $jsonResponse->toJson();
     }
@@ -284,13 +289,13 @@ class Index extends Action
 
     /** STEP 1 CC - Check concurrency */
     /**
-     * @throws NoQuoteFoundException
+     * @throws QuoteNotFoundException
      */
     private function getQuoteId()
     {
         $this->quoteId = $this->getRequest()->getParam('quoteId');
         if ($this->quoteId == '') {
-            throw new NoQuoteFoundException();
+            throw new QuoteNotFoundException();
         }
     }
 
