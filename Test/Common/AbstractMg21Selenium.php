@@ -82,8 +82,6 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
             $otherElement->click();
         }
 
-        sleep(10);
-
         $verify = WebDriverBy::id('payment_us_paylater-head');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($verify);
         $this->webDriver->wait()->until($condition);
