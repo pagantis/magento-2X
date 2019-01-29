@@ -61,7 +61,7 @@ define(
                 },
 
                 getPmtTotal: function () {
-                    return priceUtils.formatPrice(totals.totals().grand_total, quote.getPriceFormat());
+                    return totals.totals().base_grand_total;
                 },
 
                 getPublicKey: function () {
