@@ -20,6 +20,7 @@ then
     docker-compose exec -u www-data magento2-${ENVIROMENT} composer install -d /var/www/paylater
     docker-compose exec magento2-${ENVIROMENT} chown -R www-data. var/cache
 else
+    package='dev-master'
     if [ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]
     then
         echo "This is the branch of the pull request" ${TRAVIS_PULL_REQUEST_BRANCH}
@@ -35,11 +36,6 @@ else
     then
         echo "This is the branch of the branch:" ${TRAVIS_BRANCH}
         package=${TRAVIS_BRANCH}'.x-dev'
-    fi
-    if [ -z "$package" ]
-    then
-        echo "This is the branch master:" ${TRAVIS_TAG}
-        package='dev-master'
     fi
 
     echo 'Package: '$package
