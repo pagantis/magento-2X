@@ -71,6 +71,9 @@ then
     docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento cache:enable
     echo 'Running: cache:deploy:mode:set production'
     docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento deploy:mode:set production
+else
+    echo 'Running: cache:deploy:mode:set developer'
+    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento deploy:mode:set developer
 fi
 
 containerPort=$(docker container port magento2${ENVIROMENT})
