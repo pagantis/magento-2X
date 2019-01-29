@@ -1,9 +1,15 @@
 #!/bin/bash
 ENVIROMENT=$1
+
 echo 'Build docker images'
-docker-compose down
+
+if [ $1 == 'test' ]
+then
+    docker-compose down
+    docker-compose up -d selenium
+fi
 docker-compose up -d --build magento2-${ENVIROMENT}
-docker-compose up -d selenium
+
 sleep 15
 
 docker-compose exec magento2-${ENVIROMENT} docker-php-ext-install bcmath
@@ -11,14 +17,14 @@ docker-compose exec magento2-${ENVIROMENT} docker-php-ext-install bcmath
 echo 'Install Magento'
 docker-compose exec magento2-${ENVIROMENT} install-magento
 echo 'Install DigitalOrigin_Pmt'
-if [ $1 == 'dev' ]
+if [ $1 != 'test' ]
 then
-    docker-compose exec -u www-data magento2-${ENVIROMENT} mkdir -p /var/www/html/app/code/DigitalOrigin && \
-    docker-compose exec -u www-data magento2-${ENVIROMENT} ln -s /var/www/paylater /var/www/html/app/code/DigitalOrigin/Pmt && \
-    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt && \
+    docker-compose exec -u www-data magento2-${ENVIROMENT} mkdir -p /var/www/html/app/code/DigitalOrigin
+    docker-compose exec -u www-data magento2-${ENVIROMENT} ln -s /var/www/paylater /var/www/html/app/code/DigitalOrigin/Pmt
+    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento \
+        module:enable DigitalOrigin_Pmt --clear-static-content
     docker-compose exec magento2-${ENVIROMENT} chown -R www-data. /var/www/paylater
     docker-compose exec -u www-data magento2-${ENVIROMENT} composer install -d /var/www/paylater
-    docker-compose exec magento2-${ENVIROMENT} chown -R www-data. var/cache
 else
     if [ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]
     then
@@ -42,12 +48,13 @@ else
         package='dev-master'
     fi
 
-    echo 'Package: '$package
 
     echo 'Running: composer requiere pagamastarde/magento-2x:'$package' -d /var/www/html'
     docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/magento-2x:$package -d /var/www/html
     echo 'Running: module:enable DigitalOrigin_Pmt'
-    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt
+    docker-compose exec -u www-data magento2-${ENVIROMENT} \
+        php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt \
+        --clear-static-content
 fi
 
 
@@ -57,11 +64,10 @@ docker-compose exec -u www-data magento2-${ENVIROMENT} composer config http-basi
     255059b03eb9d30604d5ef52fca7465d
 echo 'Running: sampledata:deploy'
 docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento sampledata:deploy
-
-echo 'Running: cron:run'
-docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento cron:run
 echo 'Running: setup:upgrade'
 docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:upgrade
+echo 'Running: cron:run'
+docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento cron:run
 
 if [ $1 == 'test' ]
 then
