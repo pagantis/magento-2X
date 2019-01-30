@@ -41,8 +41,6 @@ else
         package=${TRAVIS_BRANCH}'.x-dev'
     fi
 
-    package='dev-v7.0.8-beta1'
-
     echo 'Package: '$package
 
     echo 'Running: composer requiere pagamastarde/magento-2x:'$package' -d /var/www/html'
