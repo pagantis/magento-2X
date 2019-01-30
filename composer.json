@@ -39,7 +39,6 @@
     "facebook/webdriver": "^1.6"
   },
   "autoload": {
-    "files": [ "registration.php" ],
     "psr-4": {
       "DigitalOrigin\\Pmt\\": ""
     }
