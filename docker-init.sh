@@ -52,6 +52,8 @@ else
         package=${TRAVIS_BRANCH}'.x-dev'
     fi
 
+    echo 'Package: '$package
+
     echo 'Running: composer requiere pagamastarde/magento-2x:'$package' -d /var/www/html'
     docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/magento-2x:$package -d /var/www/html
     echo 'Running: module:enable DigitalOrigin_Pmt'
@@ -62,10 +64,6 @@ fi
 
 echo 'Running: cron:run'
 docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento cron:run
-#echo 'Running: chmod 777 -R generated'
-#docker-compose exec magento2-${ENVIROMENT} chmod 777 -R generated
-#echo 'Running: chmod 777 -R var/cache'
-#docker-compose exec magento2-${ENVIROMENT} chmod 777 -R var/cache
 
 if [ $1 == 'test' ]
 then
