@@ -27,11 +27,8 @@ docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/mag
 echo 'Install DigitalOrigin_Pmt'
 if [ $1 != 'test' ]
 then
-#    docker-compose exec -u www-data magento2-${ENVIROMENT} mkdir -p /var/www/html/app/code/DigitalOrigin
-#    docker-compose exec -u www-data magento2-${ENVIROMENT} ln -s /var/www/paylater /var/www/html/app/code/DigitalOrigin/Pmt
     docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento \
         module:enable DigitalOrigin_Pmt --clear-static-content
-#    docker-compose exec magento2-${ENVIROMENT} chown -R www-data. /var/www/paylater
     docker-compose exec -u www-data magento2-${ENVIROMENT} composer install -d /var/www/html/app/code/Digita:lOrigin/Pmt
 else
     package='dev-master'
@@ -51,22 +48,27 @@ else
         echo "This is the branch of the branch:" ${TRAVIS_BRANCH}
         package=${TRAVIS_BRANCH}'.x-dev'
     fi
-
+    package='v7.0.8.x-dev'
     echo 'Package: '$package
 
     echo 'Running: composer requiere pagamastarde/magento-2x:'$package' -d /var/www/html'
-    docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/magento-2x:$package -d /var/www/html
+    docker-compose exec -u www-data magento2-${ENVIROMENT} composer require pagamastarde/magento-2x:$package \
+        -d /var/www/html
     echo 'Running: module:enable DigitalOrigin_Pmt'
     docker-compose exec -u www-data magento2-${ENVIROMENT} \
         php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt \
         --clear-static-content
 fi
 
-echo 'Running: cron:run'
-docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento cron:run
 
 if [ $1 == 'test' ]
 then
+    echo 'Running: cron:run'
+    docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento cron:run
+    echo 'Running: chmod 777 -R generated'
+    docker-compose exec magento2-${ENVIROMENT} chmod 777 -R generated
+    echo 'Running: chmod 777 -R var/cache'
+    docker-compose exec magento2-${ENVIROMENT} chmod 777 -R var/cache
     echo 'Running: setup:di:compile'
     docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento setup:di:compile
     echo 'Running: cache:enable'

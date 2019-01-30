@@ -86,7 +86,7 @@ services:
 
   magento2-test:
     container_name: magento2test
-    image: alexcheng/magento2:latest
+    image: alexcheng/magento2:2.2.1
     environment:
       - MYSQL_HOST=db-test
       - MYSQL_ROOT_PASSWORD=password123
