@@ -3,10 +3,11 @@ sudo: required
 services:
 - docker
 php:
-- '7.1'
+- '7.2'
 addons:
   hosts:
-  - magento2-test.docker
+  - magento22-test.docker
+  - magento23-test.docker
 env:
   matrix:
   - DOCKER_COMPOSE_VERSION=1.14.0
@@ -28,5 +29,13 @@ before_install:
     export DOCKERHOST=$(ifconfig | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1)
   - echo ${DOCKERHOST}
   - echo $(git describe --all HEAD)
+
+matrix:
+  include:
+    - name: "Magento 2.2.x"
+      env: MAGENTO=2.2.1
+    - name: "Magento 3.x"
+      env: MAGENTO=latest
+
 script:
-- './generate.sh'
+- './generate.sh' MAGENTO

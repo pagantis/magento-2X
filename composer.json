@@ -38,10 +38,18 @@
     "phpunit/phpunit-selenium": "^4.1",
     "facebook/webdriver": "^1.6"
   },
+  "require-dev": {
+    "magento/module-sales": "102.0.*",
+    "magento/module-checkout": "100.3.*",
+    "magento/module-payment": "100.3.*",
+    "magento/framework": "102.0.*"
+  },
   "autoload": {
+    "files": [ "registration.php" ],
     "psr-4": {
       "DigitalOrigin\\Pmt\\": ""
     }
   },
   "minimum-stability": "dev"
 }
+

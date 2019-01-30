@@ -14,11 +14,6 @@ use PHPUnit\Framework\TestCase;
 abstract class PaylaterMagentoTest extends TestCase
 {
     /**
-     * Magento URL
-     */
-    const MAGENTO_URL = 'http://magento2-test.docker:8085/index.php';
-
-    /**
      * Magento Backoffice URL
      */
     const BACKOFFICE_FOLDER = '/admin';
@@ -119,10 +114,40 @@ abstract class PaylaterMagentoTest extends TestCase
     protected $webDriver;
 
     /**
+     * Magento version provided for tests in commandline as an argument.
+     *
+     * @var String
+     */
+    protected $version;
+
+    /**
+     * Magento version testing url port based on magento version
+     *
+     * @var array
+     */
+    protected $versionsPort = array(
+        '22' => '8085',
+        '33' => '8084',
+    );
+
+    /**
      * PaylaterMagentoTest constructor.
      */
     public function __construct()
     {
+        if (!isset($_SERVER['argv']) ||
+            !isset($_SERVER['argv'][4]) ||
+            $_SERVER['argv'][4] != 'magentoVersion' ||
+            !isset($_SERVER['argv'][6]) ||
+            !isset($this->versionsPort[$_SERVER['argv'][6]])
+        ) {
+            var_dump($_SERVER);
+            throw new \Exception("No magentoVersion param provided or not valid for phpunit testing");
+        }
+
+        $this->version = $_SERVER['argv'][6];
+        $this->configuration['magentoUrl'] = 'http://magento'.$this->version.'-test.docker:'.
+            $this->versionsPort[$this->version].'/index.php';
         $this->configuration['email'] = "john.doe+".microtime(true)."@digitalorigin.com";
 
         return parent::__construct();

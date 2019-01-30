@@ -61,7 +61,7 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $orderArray = explode('/', $orderUrl);
         $magentoOrderId = (int)$orderArray['8'];
         $this->assertNotEmpty($magentoOrderId);
-        $notifyUrl = self::MAGENTO_URL.self::NOTIFICATION_FOLDER.'?'.self::NOTIFICATION_PARAMETER.'='.$magentoOrderId;
+        $notifyUrl = $this->configuration['magentoUrl'].self::NOTIFICATION_FOLDER.'?'.self::NOTIFICATION_PARAMETER.'='.$magentoOrderId;
         $response = Request::post($notifyUrl)->expects('json')->send();
         $this->assertNotEmpty($response->body->result);
         $this->assertContains(
@@ -71,7 +71,7 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         );
 
         $magentoOrderId = 0;
-        $notifyUrl = self::MAGENTO_URL.self::NOTIFICATION_FOLDER.'?'.self::NOTIFICATION_PARAMETER.'='.$magentoOrderId;
+        $notifyUrl = $this->configuration['magentoUrl'].self::NOTIFICATION_FOLDER.'?'.self::NOTIFICATION_PARAMETER.'='.$magentoOrderId;
         $response = Request::post($notifyUrl)->expects('json')->send();
         $this->assertNotEmpty($response->body->result);
         $this->assertContains(

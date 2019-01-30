@@ -28,7 +28,7 @@ class PaylaterMgBasicTest extends AbstractMg21Selenium
     */
     public function testPaylaterMg21BasicTest()
     {
-        $this->webDriver->get(self::MAGENTO_URL);
+        $this->webDriver->get($this->configuration['magentoUrl']);
         $condition = WebDriverExpectedCondition::titleContains(self::TITLE);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
@@ -40,7 +40,7 @@ class PaylaterMgBasicTest extends AbstractMg21Selenium
      */
     public function testBackofficeOpen()
     {
-        $this->webDriver->get(self::MAGENTO_URL.self::BACKOFFICE_FOLDER);
+        $this->webDriver->get($this->configuration['magentoUrl'].self::BACKOFFICE_FOLDER);
         $condition = WebDriverExpectedCondition::titleContains(self::BACKOFFICE_TITLE);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);

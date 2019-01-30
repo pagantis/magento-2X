@@ -1,15 +1,14 @@
 #!/bin/bash
 
 # Prepare environment and build package
-./docker-init.sh test
+./docker-init.sh test $1
 sleep 15
-docker cp magento2test:/var/www/.composer/auth.json .
 composer install --ignore-platform-reqs
 set -e
 
 # Run test
-vendor/bin/phpunit --group magento-basic
-vendor/bin/phpunit --group magento-install
-vendor/bin/phpunit --group magento-buy-unregistered
-vendor/bin/phpunit --group magento-register
-vendor/bin/phpunit --group magento-buy-registered
+vendor/bin/phpunit --group magento-basic -d magentoVersion -d $1
+vendor/bin/phpunit --group magento-install  -d magentoVersion -d $1
+vendor/bin/phpunit --group magento-buy-unregistered  -d magentoVersion -d $1
+vendor/bin/phpunit --group magento-register  -d magentoVersion -d $1
+vendor/bin/phpunit --group magento-buy-registered  -d magentoVersion -d $1

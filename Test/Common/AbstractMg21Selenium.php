@@ -19,7 +19,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function loginToBackOffice()
     {
-        $this->webDriver->get(self::MAGENTO_URL.self::BACKOFFICE_FOLDER);
+        $this->webDriver->get($this->configuration['magentoUrl'].self::BACKOFFICE_FOLDER);
         $emailElementSearch = WebDriverBy::id('username');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($emailElementSearch);
         $this->webDriver->wait()->until($condition);
@@ -39,7 +39,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function getPaylaterBackOffice()
     {
-        $this->webDriver->get(self::MAGENTO_URL.self::BACKOFFICE_FOLDER);
+        $this->webDriver->get($this->configuration['magentoUrl'].self::BACKOFFICE_FOLDER);
 
         $elementSearch = WebDriverBy::linkText('STORES');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($elementSearch);
@@ -101,7 +101,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function createAccount()
     {
-        $this->webDriver->get(self::MAGENTO_URL);
+        $this->webDriver->get($this->configuration['magentoUrl']);
         $loginButtonSearch = WebDriverBy::linkText('Create an Account');
         $condition = WebDriverExpectedCondition::elementToBeClickable($loginButtonSearch);
         $this->webDriver->wait()->until($condition);
@@ -155,7 +155,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function loginToFrontend()
     {
-        $this->webDriver->get(self::MAGENTO_URL);
+        $this->webDriver->get($this->configuration['magentoUrl']);
         $loginButton = WebDriverBy::partialLinkText('Sign In');
         $condition = WebDriverExpectedCondition::elementToBeClickable($loginButton);
         $this->webDriver->wait()->until($condition);
@@ -178,7 +178,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function logoutFromFrontend()
     {
-        $this->webDriver->get(self::MAGENTO_URL.self::LOGOUT_FOLDER);
+        $this->webDriver->get($this->configuration['magentoUrl'].self::LOGOUT_FOLDER);
 
         $validatorSearch = WebDriverBy::className('base');
         $actualString = $this->webDriver->findElement($validatorSearch)->getText();
@@ -222,7 +222,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function goToProduct($verifySimulator = true)
     {
-        $this->webDriver->get(self::MAGENTO_URL);
+        $this->webDriver->get($this->configuration['magentoUrl']);
         $this->findByLinkText(self::PRODUCT_NAME)->click();
         $condition = WebDriverExpectedCondition::titleContains(self::PRODUCT_NAME);
         $this->webDriver->wait()->until($condition);
@@ -259,7 +259,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
 
     public function goToCart()
     {
-        $this->webDriver->get(self::MAGENTO_URL.self::CART_FOLDER);
+        $this->webDriver->get($this->configuration['magentoUrl'].self::CART_FOLDER);
         $this->findByLinkText(self::PRODUCT_NAME)->click();
         $condition = WebDriverExpectedCondition::titleContains(self::CART_TITLE);
         $this->webDriver->wait()->until($condition);
@@ -285,10 +285,10 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function goToCheckout()
     {
-        $this->webDriver->get(self::MAGENTO_URL.self::CHECKOUT_FOLDER);
+        $this->webDriver->get($this->configuration['magentoUrl'].self::CHECKOUT_FOLDER);
         $condition = WebDriverExpectedCondition::titleContains(self::CHECKOUT_TITLE);
         $this->webDriver->wait()->until($condition);
-        $this->assertTrue((bool)$condition, self::MAGENTO_URL.self::CHECKOUT_FOLDER);
+        $this->assertTrue((bool)$condition, $this->configuration['magentoUrl'].self::CHECKOUT_FOLDER);
     }
 
     /**
