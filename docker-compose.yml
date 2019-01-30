@@ -65,7 +65,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./:/var/www/paylater
+      - ./:/var/www/html/app/code/DigitalOrigin/Pmt
     working_dir: /var/www/html/
 
   db-dev:
@@ -86,7 +86,7 @@ services:
 
   magento2-test:
     container_name: magento2test
-    image: alexcheng/magento2:2.2.1
+    image: alexcheng/magento2:latest
     environment:
       - MYSQL_HOST=db-test
       - MYSQL_ROOT_PASSWORD=password123
