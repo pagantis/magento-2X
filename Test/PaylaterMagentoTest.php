@@ -141,7 +141,6 @@ abstract class PaylaterMagentoTest extends TestCase
             !isset($_SERVER['argv'][6]) ||
             !isset($this->versionsPort[$_SERVER['argv'][6]])
         ) {
-            var_dump($_SERVER);
             throw new \Exception("No magentoVersion param provided or not valid for phpunit testing");
         }
 

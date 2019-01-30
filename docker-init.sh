@@ -76,5 +76,5 @@ fi
 
 containerPort=$(docker container port magento${VERSION}${ENVIROMENT})
 PORT=$(sed  -e 's/.*://' <<< $containerPort)
-echo 'Build of Magento2 complete: http://magento$'{VERSION}'-'${ENVIROMENT}'.docker:'${PORT}
+echo 'Build of Magento2 complete: http://magento'${VERSION}'-'${ENVIROMENT}'.docker:'${PORT}
 
