@@ -31,7 +31,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./:/var/www/paylater
+      - ./:/var/www/html/app/code/DigitalOrigin/Pmt
     working_dir: /var/www/html/
 
   magento2-3dev:

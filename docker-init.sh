@@ -29,7 +29,7 @@ if [ $1 != 'test' ]
 then
     docker-compose exec -u www-data magento2-${ENVIROMENT} php /var/www/html/bin/magento \
         module:enable DigitalOrigin_Pmt --clear-static-content
-    docker-compose exec -u www-data magento2-${ENVIROMENT} composer install -d /var/www/html/app/code/Digita:lOrigin/Pmt
+    docker-compose exec -u www-data magento2-${ENVIROMENT} composer install -d /var/www/html/app/code/DigitalOrigin/Pmt
 else
     package='dev-master'
     if [ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]
@@ -48,7 +48,7 @@ else
         echo "This is the branch of the branch:" ${TRAVIS_BRANCH}
         package=${TRAVIS_BRANCH}'.x-dev'
     fi
-    package='v7.0.8.x-dev'
+
     echo 'Package: '$package
 
     echo 'Running: composer requiere pagamastarde/magento-2x:'$package' -d /var/www/html'
