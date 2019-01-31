@@ -33,7 +33,7 @@ matrix:
   include:
     - name: "Magento 2.2.x"
       env: MAGENTO=22
-    - name: "Magento 3.x"
+    - name: "Magento 2.3.x"
       env: MAGENTO=23
 
 script:
