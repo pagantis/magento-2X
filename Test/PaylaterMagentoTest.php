@@ -127,7 +127,7 @@ abstract class PaylaterMagentoTest extends TestCase
      */
     protected $versionsPort = array(
         '22' => '8085',
-        '33' => '8084',
+        '23' => '8084',
     );
 
     /**
