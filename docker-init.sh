@@ -59,11 +59,8 @@ echo 'Running: sampledata:deploy'
 docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} php /var/www/html/bin/magento sampledata:deploy
 echo 'Running: setup:upgrade'
 docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} php /var/www/html/bin/magento setup:upgrade
-
 echo 'Running: cron:run'
 docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} php /var/www/html/bin/magento cron:run
-echo 'Running: setup:upgrade'
-docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} php /var/www/html/bin/magento setup:upgrade
 
 if [ $1 == 'test' ]
 then
