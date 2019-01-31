@@ -12,7 +12,6 @@ before_install:
   - echo -e "MAGENTO_PUBLIC_KEY=${MAGENTO_PUBLIC_KEY}\nMAGENTO_PRIVATE_KEY=${MAGENTO_PRIVATE_KEY}" > .env
   - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/1.21.0/docker-compose-`uname -s`-`uname -m` > docker-compose
-    -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
   - sudo apt-get update
@@ -32,4 +31,4 @@ matrix:
       env: MAGENTO=23
 
 script:
-- ./generate.sh $MAGENTO
+  - ./generate.sh $MAGENTO
