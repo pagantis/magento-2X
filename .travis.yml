@@ -37,4 +37,4 @@ matrix:
       env: MAGENTO=23
 
 script:
-  - ./generate.sh ${DOCKERHOST}
+  - ./generate.sh ${MAGENTO}
