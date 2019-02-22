@@ -99,12 +99,22 @@ class Log extends Action
         if (!$dbConnection->isTableExists($tableName)) {
             $table = $dbConnection
                 ->newTable($tableName)
-                ->addColumn('id', Table::TYPE_SMALLINT, null, array('nullable'=>false, 'auto_increment'=>true, 'primary'=>true))
+                ->addColumn(
+                    'id',
+                    Table::TYPE_SMALLINT,
+                    null,
+                    array('nullable'=>false, 'auto_increment'=>true, 'primary'=>true)
+                )
                 ->addColumn('log', Table::TYPE_TEXT, null, array('nullable'=>false))
-                ->addColumn('createdAt', Table::TYPE_TIMESTAMP, null, array('nullable'=>false, 'default'=>Table::TIMESTAMP_INIT));
+                ->addColumn(
+                    'createdAt',
+                    Table::TYPE_TIMESTAMP,
+                    null,
+                    array('nullable'=>false,
+                          'default'=>Table::TIMESTAMP_INIT)
+                );
             return $dbConnection->createTable($table);
         }
-
         return;
     }
 }
