@@ -53,7 +53,6 @@ class PaylaterMgInstallTest extends AbstractMg21Selenium
         $this->findById('payment_us_paylater_pmt_public_key')->clear()->sendKeys($this->configuration['publicKey']);
         $this->findById('payment_us_paylater_pmt_private_key')->clear()->sendKeys($this->configuration['secretKey']);
 
-        $this->findById('payment_us_paylater_title')->clear()->sendKeys($this->configuration['methodName']);
         $simulatorCss = "option[value='".$this->configuration['defaultSimulatorOpt']."']";
         $this->webDriver->findElement(WebDriverBy::id('payment_us_paylater_product_simulator'))
                         ->findElement(WebDriverBy::cssSelector($simulatorCss))
