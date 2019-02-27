@@ -2,6 +2,7 @@
 
 # Prepare environment and build package
 echo "Starting environment ./docker-init.sh test" $1
+docker-compose down
 ./docker-init.sh test $1
 sleep 15
 composer install --ignore-platform-reqs
