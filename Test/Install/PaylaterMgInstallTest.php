@@ -32,12 +32,12 @@ class PaylaterMgInstallTest extends AbstractMg21Selenium
      */
     private function configurePaylater()
     {
-        $verify = WebDriverBy::id('payment_us_paylater_public_key');
+        $verify = WebDriverBy::id('payment_us_paylater_pmt_public_key');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($verify);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition, "PR5");
 
-        $verify = WebDriverBy::id('payment_us_paylater_secret_key');
+        $verify = WebDriverBy::id('payment_us_paylater_pmt_private_key');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($verify);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition, "PR5");
@@ -50,17 +50,15 @@ class PaylaterMgInstallTest extends AbstractMg21Selenium
                 break;
             }
         }
-        $this->findById('payment_us_paylater_public_key')->clear()->sendKeys($this->configuration['publicKey']);
-        $this->findById('payment_us_paylater_secret_key')->clear()->sendKeys($this->configuration['secretKey']);
-        //$this->findById('payment_us_paylater_min_amount')->clear()->sendKeys($this->configuration['minAmount']);
+        $this->findById('payment_us_paylater_pmt_public_key')->clear()->sendKeys($this->configuration['publicKey']);
+        $this->findById('payment_us_paylater_pmt_private_key')->clear()->sendKeys($this->configuration['secretKey']);
 
         $this->findById('payment_us_paylater_title')->clear()->sendKeys($this->configuration['methodName']);
+        $simulatorCss = "option[value='".$this->configuration['defaultSimulatorOpt']."']";
         $this->webDriver->findElement(WebDriverBy::id('payment_us_paylater_product_simulator'))
-                        ->findElement(WebDriverBy::cssSelector("option[value='".$this->configuration['defaultSimulatorOpt']."']"))
+                        ->findElement(WebDriverBy::cssSelector($simulatorCss))
                         ->click();
-        $this->webDriver->findElement(WebDriverBy::id('payment_us_paylater_checkout_simulator'))
-                        ->findElement(WebDriverBy::cssSelector("option[value='".$this->configuration['defaultSimulatorOpt']."']"))
-                        ->click();
+
         $this->findById('config-edit-form')->submit();
 
         $validatorSearch = WebDriverBy::className('message-success');
@@ -75,56 +73,5 @@ class PaylaterMgInstallTest extends AbstractMg21Selenium
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($verify);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition, "PR7");
-
-        $verify = WebDriverBy::id('payment_us_paylater_display_mode');
-        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($verify);
-        $this->webDriver->wait()->until($condition);
-        $this->assertTrue((bool) $condition, "PR8");
-
-        $verify = WebDriverBy::id('payment_us_paylater_product_simulator');
-        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($verify);
-        $this->webDriver->wait()->until($condition);
-        $this->assertTrue((bool) $condition, "PR9");
-
-        $verify = WebDriverBy::id('payment_us_paylater_checkout_simulator');
-        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($verify);
-        $this->webDriver->wait()->until($condition);
-        $this->assertTrue((bool) $condition, "PR10");
-
-        $verify = WebDriverBy::id('payment_us_paylater_min_installments');
-        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($verify);
-        $this->webDriver->wait()->until($condition);
-        $this->assertTrue((bool) $condition, "PR11");
-        $simulatorElement = $this->findById('payment_us_paylater_min_installments');
-        $minInstallments = $simulatorElement->getAttribute('value');
-        $this->assertEquals($minInstallments, $this->configuration['defaultMinIns'], "PR11");
-
-        $verify = WebDriverBy::id('payment_us_paylater_max_installments');
-        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($verify);
-        $this->webDriver->wait()->until($condition);
-        $this->assertTrue((bool) $condition, "PR11");
-        $simulatorElement = $this->findById('payment_us_paylater_max_installments');
-        $maxInstallments = $simulatorElement->getAttribute('value');
-        $this->assertEquals($maxInstallments, $this->configuration['defaultMaxIns'], "PR11");
-
-        $verify = WebDriverBy::id('payment_us_paylater_min_amount');
-        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($verify);
-        $this->webDriver->wait()->until($condition);
-        $this->assertTrue((bool) $condition, "PR12");
-
-        $verify = WebDriverBy::id('payment_us_paylater_title');
-        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($verify);
-        $this->webDriver->wait()->until($condition);
-        $this->assertTrue((bool) $condition, "PR14");
-
-        $verify = WebDriverBy::id('payment_us_paylater_ok_url');
-        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($verify);
-        $this->webDriver->wait()->until($condition);
-        $this->assertTrue((bool) $condition, "PR15");
-
-        $verify = WebDriverBy::id('payment_us_paylater_ko_url');
-        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($verify);
-        $this->webDriver->wait()->until($condition);
-        $this->assertTrue((bool) $condition, "PR15");
     }
 }
