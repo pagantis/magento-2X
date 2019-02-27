@@ -10,14 +10,16 @@ use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\QuoteRepository;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\Action;
+use PagaMasTarde\ModuleUtils\Exception\MerchantOrderNotFoundException;
 use PagaMasTarde\OrdersApiClient\Client;
 use DigitalOrigin\Pmt\Helper\Config;
+use DigitalOrigin\Pmt\Helper\ExtraConfig;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\DB\Ddl\Table;
 use PagaMasTarde\ModuleUtils\Exception\AmountMismatchException;
 use PagaMasTarde\ModuleUtils\Exception\ConcurrencyException;
-use PagaMasTarde\ModuleUtils\Exception\MerchantOrderNotFoundException;
+use PagaMasTarde\ModuleUtils\Exception\MerchantNoOrderFoundException;
 use PagaMasTarde\ModuleUtils\Exception\NoIdentificationException;
 use PagaMasTarde\ModuleUtils\Exception\OrderNotFoundException;
 use PagaMasTarde\ModuleUtils\Exception\QuoteNotFoundException;
@@ -97,6 +99,9 @@ class Index extends Action
     /** @var  OrderInterface $magentoOrder */
     protected $magentoOrder;
 
+    /** @var ExtraConfig $extraConfig */
+    protected $extraConfig;
+
     /**
      * Index constructor.
      *
@@ -109,6 +114,7 @@ class Index extends Action
      * @param OrderRepositoryInterface $orderRepositoryInterface
      * @param ResourceConnection       $dbObject
      * @param Session                  $checkoutSession
+     * @param ExtraConfig              $extraConfig
      */
     public function __construct(
         Context $context,
@@ -119,12 +125,14 @@ class Index extends Action
         QuoteRepository $quoteRepository,
         OrderRepositoryInterface $orderRepositoryInterface,
         ResourceConnection $dbObject,
-        Session $checkoutSession
+        Session $checkoutSession,
+        ExtraConfig $extraConfig
     ) {
         parent::__construct($context);
         $this->quote = $quote;
         $this->quoteManagement = $quoteManagement;
         $this->paymentInterface = $paymentInterface;
+        $this->extraConfig = $extraConfig->getExtraConfig();
         $this->config = $config->getConfig();
         $this->quoteRepository = $quoteRepository;
         $this->orderRepositoryInterface = $orderRepositoryInterface;
@@ -137,7 +145,6 @@ class Index extends Action
     {
         try {
             $this->checkConcurrency();
-            $this->getMerchantOrder();
             $this->getPmtOrderId();
             $this->getPmtOrder();
             $this->checkOrderStatus();
@@ -221,7 +228,7 @@ class Index extends Action
     private function getPmtOrder()
     {
         try {
-            $this->orderClient = new Client($this->config['public_key'], $this->config['secret_key']);
+            $this->orderClient = new Client($this->config['pmt_public_key'], $this->config['pmt_private_key']);
             $this->pmtOrder = $this->orderClient->getOrder($this->pmtOrderId);
         } catch (\Exception $e) {
             throw new OrderNotFoundException();
@@ -289,8 +296,7 @@ class Index extends Action
      * UTILS FUNCTIONS
      */
 
-    /** STEP 1 CC - Check concurrency */
-    /**
+    /** STEP 1 CC - Check concurrency
      * @throws QuoteNotFoundException
      */
     private function getQuoteId()
@@ -501,14 +507,14 @@ class Index extends Action
             $orderStatus    = strtolower($this->magentoOrder->getStatus());
             $acceptedStatus = array('processing', 'completed');
             if (in_array($orderStatus, $acceptedStatus)) {
-                if ($this->config['ok_url'] != '') {
-                    $returnUrl = $this->config['ok_url'];
+                if ($this->extraConfig['PMT_OK_URL'] != '') {
+                    $returnUrl = $this->extraConfig['PMT_OK_URL'];
                 } else {
                     $returnUrl = 'checkout/onepage/success';
                 }
             } else {
-                if ($this->config['ko_url'] != '') {
-                    $returnUrl = $this->config['ko_url'];
+                if ($this->extraConfig['PMT_KO_URL'] != '') {
+                    $returnUrl = $this->extraConfig['PMT_KO_URL'];
                 } else {
                     $returnUrl = 'checkout/#payment';
                 }

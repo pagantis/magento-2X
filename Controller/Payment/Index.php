@@ -8,6 +8,7 @@ use Magento\Quote\Model\QuoteRepository;
 use Magento\Sales\Model\ResourceModel\Order\Collection as OrderCollection;
 use Magento\Checkout\Model\Session;
 use DigitalOrigin\Pmt\Helper\Config;
+use DigitalOrigin\Pmt\Helper\ExtraConfig;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Module\ModuleList;
@@ -50,18 +51,21 @@ class Index extends Action
     /** @var ModuleList $moduleList */
     protected $moduleList;
 
+    /** @var ExtraConfig $extraConfig */
+    protected $extraConfig;
+
     /**
      * Index constructor.
      *
      * @param Context                  $context
-     * @param Session                  $session
-     * @param Config                   $config
      * @param QuoteRepository          $quoteRepository
      * @param OrderCollection          $orderCollection
+     * @param Session                  $session
+     * @param Config                   $config
      * @param ResourceConnection       $dbObject
-     * @param ModuleList               $moduleList
      * @param ProductMetadataInterface $productMetadataInterface
-     *
+     * @param ModuleList               $moduleList
+     * @param ExtraConfig              $extraConfig
      */
     public function __construct(
         Context $context,
@@ -71,7 +75,8 @@ class Index extends Action
         Config $config,
         ResourceConnection $dbObject,
         ProductMetadataInterface $productMetadataInterface,
-        ModuleList $moduleList
+        ModuleList $moduleList,
+        ExtraConfig $extraConfig
     ) {
         parent::__construct($context);
         $this->session = $session;
@@ -82,13 +87,14 @@ class Index extends Action
         $this->dbObject = $dbObject;
         $this->moduleList = $moduleList;
         $this->productMetadataInterface = $productMetadataInterface;
+        $this->extraConfig = $extraConfig;
     }
 
     /**
      * Main function
      *
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Zend_Db_Exception
      */
     public function execute()
     {
@@ -237,13 +243,13 @@ class Index extends Action
                 ->setUser($orderUser)
             ;
 
-            if ($this->config['public_key']=='' || $this->config['secret_key']=='') {
+            if ($this->config['pmt_public_key']=='' || $this->config['pmt_private_key']=='') {
                 throw new \Exception('Public and Secret Key not found');
             }
 
             $orderClient = new \PagaMasTarde\OrdersApiClient\Client(
-                $this->config['public_key'],
-                $this->config['secret_key']
+                $this->config['pmt_public_key'],
+                $this->config['pmt_private_key']
             );
 
             $order = $orderClient->createOrder($order);
@@ -262,7 +268,7 @@ class Index extends Action
             exit;
         }
 
-        $displayMode = $this->config['display_mode'];
+        $displayMode = $this->extraConfig['PMT_FORM_DISPLAY_TYPE'];
         if (!$displayMode) {
             echo $url;
             exit;

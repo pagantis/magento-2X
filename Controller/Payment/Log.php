@@ -42,7 +42,7 @@ class Log extends Action
         try {
             $response = array();
             $secretKey = $this->getRequest()->getParam('secret');
-            $privateKey = isset($this->config['secret_key']) ? $this->config['secret_key'] : null;
+            $privateKey = isset($this->config['pmt_private_key']) ? $this->config['pmt_private_key'] : null;
 
             if ($secretKey!='' && $privateKey!='') {
                 $this->checkDbLogTable();

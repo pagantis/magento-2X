@@ -7,7 +7,7 @@ use Magento\Framework\DB\Ddl\Table;
 
 class Config extends Action
 {
-    /** Concurrency tablename */
+    /** Config tablename */
     const CONFIG_TABLE = 'pmt_config';
 
     /** @var ResourceConnection $dbObject */

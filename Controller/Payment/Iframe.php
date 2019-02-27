@@ -43,13 +43,13 @@ class Iframe extends Action
                 throw new \Exception('Empty orderId');
             }
 
-            if ($this->config['public_key'] == '' || $this->config['secret_key'] == '') {
+            if ($this->config['pmt_public_key'] == '' || $this->config['pmt_private_key'] == '') {
                 throw new \Exception('Public and Secret Key not found');
             }
 
             $orderClient = new \PagaMasTarde\OrdersApiClient\Client(
-                $this->config['public_key'],
-                $this->config['secret_key']
+                $this->config['pmt_public_key'],
+                $this->config['pmt_private_key']
             );
 
             $order = $orderClient->getOrder($orderId);
