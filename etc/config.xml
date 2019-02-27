@@ -4,8 +4,6 @@
         <payment>
             <paylater>
                 <active>0</active>
-                <title>Instant financing</title>
-                <checkout_description>Pay up to 12 comfortable installments with Paga + Tarde. Completely online and sympathetic request, and the answer is immediate!</checkout_description>
                 <currency>EUR</currency>
                 <is_gateway>1</is_gateway>
                 <model>PaylaterFacade</model>
@@ -19,16 +17,7 @@
                 <can_void>0</can_void>
                 <can_cancel>0</can_cancel>
                 <allowspecific>0</allowspecific>
-                <checkout_simulator>6</checkout_simulator>
                 <product_simulator>6</product_simulator>
-                <min_amount>0</min_amount>
-                <max_amount>10000</max_amount>
-                <min_installments>3</min_installments>
-                <max_installments>12</max_installments>
-                <price_selector>div.price-final_price span.price-wrapper span.price</price_selector>
-                <quantity_selector>div.fieldset div.qty div.control input.qty</quantity_selector>
-                <ok_url>checkout/onepage/success</ok_url>
-                <ko_url>checkout/#payment</ko_url>
             </paylater>
         </payment>
     </default>
