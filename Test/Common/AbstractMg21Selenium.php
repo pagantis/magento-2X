@@ -410,8 +410,6 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $actualString = $descriptionElement->getText();
         $this->assertContains($this->configuration['checkoutDescription'], $actualString, "PR54");
 
-        $this->checkSimulator();
-
         $priceSearch = WebDriverBy::className('price');
         $priceElements = $this->webDriver->findElements($priceSearch);
         $price = $priceElements['6']->getText();
@@ -495,6 +493,5 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($simulatorElementSearch);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition, "PR19//PR28");
-        $simulatorElement = $this->webDriver->findElement(WebDriverBy::className('PmtSimulator'));
     }
 }
