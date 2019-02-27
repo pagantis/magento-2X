@@ -21,16 +21,34 @@ In Paga+tarde admin panel, we can set the following options:
 | Enabled      | - Yes => Module enabled<br/> - No => Módule disabled (Por defecto)
 | Public API Key(*) |  String you can get from your [Paga+Tarde profile](https://bo.pagamastarde.com/shop).
 | Secret API Key(*) |  String you can get from your [Paga+Tarde profile](https://bo.pagamastarde.com/shop). 
-| Title      |  Payment title to show in checkout page. By default:"Financiación instantanea" 
-| Checkout description | Description to show in checkout page after payment title. <br/>Leave blank to disabled. By default:"Paga hasta en 12 cómodas cuotas con Paga+Tarde. Solicitud totalmente online y sinpapeleos, ¡y la respuesta es inmediata!".
-| Minimum cart amount | Minimum amount to use the module and show the payment method to checkout       
-| Maximum cart amount | Maximum amount to use the module and show the payment method to checkout       
-| Number of installments by default | Number of installments by default to use in simulator
-| Maximum number of installments   | Maximum number of installments by default to use in simulator   
-| How to open payment  |  - Redirect => After checkout, the user will be redirected to Paga+Tarde side to fill the form. Recommended option. <br/> - Iframe => After checkout, the user will watch a pop-up with Paga+Tarde side to fill the form without leave the current page
-| Product Simulator    |  Choose if we want to use installments simulator inside product page, in positive case, you can chose the simulator type. Recommended option: MINI
-| Checkout Simulator  |   Choose if we want to use installments simulator inside checkout page, in positive case, you can chose the simulator type. Recommended option: MINI
-| Price selector   |  Html selector to get the product price inside product page. It will be the amount to use in product simulator (if enabled). <br/> By default: "div.price-final_price span.price-wrapper span.price"
-| Quantity selector  | Html selector to get the number of products to buy inside product page. This amount will be multiplied by product price, the resultant amount will be used in checkout simulator (if enabled). <br/> Leave blank to disabled. By default: "div.fieldset div.qty div.control input.qty"   
-| Ok url | Location where user will be redirected after a succesful payment. This string will be concatenated to the base url to build the full url
-| Ko url | Location where user will be redirected after a wrong payment. This string will be concatenated to the base url to build the full url 
+| Product Simulator    |  Choose if we want to use installments simulator inside product page.
+
+## :clipboard: Advanced configuration:
+The module has many configuration options you can set, but we recommend use it as is.
+
+If you want to manage it, you have a way to update the values via HTTP, you only need to make a post to:
+
+<strong>{your-domain-url}/index.php?fc=module&module=paylater&controller=config&secret={your-secret-key}</strong>
+
+sending in the form data the key of the config you want to change and the new value.
+
+
+Here you have a complete list of configurations you can change and it's explanation. 
+
+
+| Field | Description<br/><br/>
+| :------------- |:-------------| 
+| PMT_TITLE                           | Payment title to show in checkout page. By default:"Instant financing".
+| PMT_SIMULATOR_DISPLAY_TYPE          | Installments simulator skin inside product page, in positive case. Recommended value: 'pmtSDK.simulator.types.SIMPLE'.
+| PMT_SIMULATOR_DISPLAY_SKIN          | Skin of the product page simulator. Recommended value: 'pmtSDK.simulator.skins.BLUE'.
+| PMT_SIMULATOR_DISPLAY_POSITION      | Choose the place where you want to watch the simulator.
+| PMT_SIMULATOR_START_INSTALLMENTS    | Number of installments by default to use in simulator.
+| PMT_SIMULATOR_DISPLAY_CSS_POSITION  | he position where the simulator widget will be injected. Recommended value: 'pmtSDK.simulator.positions.INNER'.
+| PMT_SIMULATOR_CSS_PRICE_SELECTOR    | CSS selector with DOM element having totalAmount value.
+| PMT_SIMULATOR_CSS_POSITION_SELECTOR | CSS Selector to inject the widget. (Example: '#simulator', '.PmtSimulator')
+| PMT_SIMULATOR_CSS_QUANTITY_SELECTOR | CSS selector with DOM element having the quantity selector value.
+| PMT_FORM_DISPLAY_TYPE               | Allow you to select the way to show the payment form in your site
+| PMT_DISPLAY_MIN_AMOUNT              | Minimum amount to use the module and show the payment method in the checkout page.
+| PMT_URL_OK                          | Location where user will be redirected after a successful payment. This string will be concatenated to the base url to build the full url
+| PMT_URL_KO                          | Location where user will be redirected after a wrong payment. This string will be concatenated to the base url to build the full url 
+ 
