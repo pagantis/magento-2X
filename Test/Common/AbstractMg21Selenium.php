@@ -506,9 +506,5 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition, "PR19//PR28");
         $simulatorElement = $this->webDriver->findElement(WebDriverBy::className('PmtSimulator'));
-        $minInstallments = $simulatorElement->getAttribute('data-pmt-num-quota');
-        $this->assertEquals($minInstallments, $this->configuration['defaultMinIns'], "PR20//PR29");
-        $maxInstallments = $simulatorElement->getAttribute('data-pmt-max-ins');
-        $this->assertEquals($maxInstallments, $this->configuration['defaultMaxIns'], "PR20//PR29");
     }
 }
