@@ -4,6 +4,10 @@ namespace DigitalOrigin\Pmt\Test\Buy;
 
 use DigitalOrigin\Pmt\Test\Common\AbstractMg21Selenium;
 use Httpful\Request;
+use PagaMasTarde\ModuleUtils\Exception\AlreadyProcessedException;
+use PagaMasTarde\ModuleUtils\Exception\MerchantOrderNotFoundException;
+use PagaMasTarde\ModuleUtils\Exception\NoIdentificationException;
+use PagaMasTarde\ModuleUtils\Exception\QuoteNotFoundException;
 
 /**
  * @requires magento-install
@@ -65,19 +69,27 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $response = Request::post($notifyUrl)->expects('json')->send();
         $this->assertNotEmpty($response->body->result);
         $this->assertContains(
-            self::NOORDER_TITLE,
+            NoIdentificationException::ERROR_MESSAGE,
             $response->body->result,
             "PR51=>".$response->body->result
         );
 
-        $magentoOrderId = 0;
-        $notifyUrl = $this->configuration['magentoUrl'].self::NOTIFICATION_FOLDER.'?'.self::NOTIFICATION_PARAMETER.'='.$magentoOrderId;
+        $notifyUrl = $this->configuration['magentoUrl'].self::NOTIFICATION_FOLDER.'?'.self::NOTIFICATION_PARAMETER.'=';
         $response = Request::post($notifyUrl)->expects('json')->send();
         $this->assertNotEmpty($response->body->result);
         $this->assertContains(
-            self::NOTFOUND_TITLE,
+            QuoteNotFoundException::ERROR_MESSAGE,
             $response->body->result,
-            "PR53=>".$response->body->result
+            "PR58=>".$response->body->result
+        );
+
+        $notifyUrl = $this->configuration['magentoUrl'].self::NOTIFICATION_FOLDER.'?'.self::NOTIFICATION_PARAMETER.'=0';
+        $response = Request::post($notifyUrl)->expects('json')->send();
+        $this->assertNotEmpty($response->body->result);
+        $this->assertContains(
+            MerchantOrderNotFoundException::ERROR_MESSAGE,
+            $response->body->result,
+            "PR59=>".$response->body->result
         );
     }
 
