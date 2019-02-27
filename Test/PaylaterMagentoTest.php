@@ -91,7 +91,7 @@ abstract class PaylaterMagentoTest extends TestCase
         'backofficePassword' => 'password123',
         'publicKey'          => 'tk_fd53cd467ba49022e4f8215e',
         'secretKey'          => '21e57baa97459f6a',
-        'methodName'         => 'Financiación instantánea',
+        'methodName'         => 'Instant financing',
         'defaultSimulatorOpt'=> 6,
         'defaultMinIns'      => 3,
         'defaultMaxIns'      => 12,
