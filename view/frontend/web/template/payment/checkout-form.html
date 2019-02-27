@@ -9,11 +9,6 @@
     </div>
     <div class="payment-method-content">
         <p class="js-pmt-payment-type"  data-bind="text: getSubtitle()"></p>
-        <div class="PmtSimulator"
-             data-pmt-style="blue" data-pmt-discount="0" data-pmt-expanded="no"
-             data-bind="attr: {'data-pmt-amount': getPmtTotal(), 'data-pmt-type': getPmtType(),
-             'data-pmt-num-quota': getPmtNumQuota(), 'data-pmt-max-ins': dataPmtMaxIns(), 'data-trash': loadSimulator() }">
-        </div>
         <!-- ko foreach: getRegion('messages') -->
         <!-- ko template: getTemplate() --><!-- /ko -->
         <!--/ko-->
