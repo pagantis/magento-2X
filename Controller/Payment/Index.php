@@ -87,7 +87,7 @@ class Index extends Action
         $this->dbObject = $dbObject;
         $this->moduleList = $moduleList;
         $this->productMetadataInterface = $productMetadataInterface;
-        $this->extraConfig = $extraConfig;
+        $this->extraConfig = $extraConfig->getExtraConfig();
     }
 
     /**
