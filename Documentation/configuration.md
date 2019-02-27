@@ -28,7 +28,7 @@ The module has many configuration options you can set, but we recommend use it a
 
 If you want to manage it, you have a way to update the values via HTTP, you only need to make a post to:
 
-<strong>{your-domain-url}/index.php?fc=module&module=paylater&controller=config&secret={your-secret-key}</strong>
+<strong>{your-domain-url}/paylater/Payment/Config?secret={your-secret-key}</strong>
 
 sending in the form data the key of the config you want to change and the new value.
 
