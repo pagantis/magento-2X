@@ -23,14 +23,14 @@ class ExtraConfig
     }
 
     /**
-     * @return \Zend_Db_Statement_Interface
+     * @return array
      */
     public function getExtraConfig()
     {
+        $data = array();
         $dbConnection = $this->dbObject->getConnection();
         $result = $dbConnection->fetchAll("select * from ".self::CONFIG_TABLE);
         if (count($result)) {
-            $data = array();
             foreach ($result as $value) {
                 $data[$value['config']] = $value['value'];
             }
