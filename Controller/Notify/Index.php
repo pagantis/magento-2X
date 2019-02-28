@@ -509,13 +509,13 @@ class Index extends Action
             $orderStatus    = strtolower($this->magentoOrder->getStatus());
             $acceptedStatus = array('processing', 'completed');
             if (in_array($orderStatus, $acceptedStatus)) {
-                if ($this->extraConfig['PMT_OK_URL'] != '') {
+                if (isset($this->extraConfig['PMT_OK_URL']) &&  $this->extraConfig['PMT_OK_URL']!= '') {
                     $returnUrl = $this->extraConfig['PMT_OK_URL'];
                 } else {
                     $returnUrl = 'checkout/onepage/success';
                 }
             } else {
-                if ($this->extraConfig['PMT_KO_URL'] != '') {
+                if (isset($this->extraConfig['PMT_KO_URL']) && $this->extraConfig['PMT_KO_URL'] != '') {
                     $returnUrl = $this->extraConfig['PMT_KO_URL'];
                 } else {
                     //$returnUrl = 'checkout/#payment';
