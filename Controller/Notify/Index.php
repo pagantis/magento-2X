@@ -19,7 +19,6 @@ use Magento\Checkout\Model\Session;
 use Magento\Framework\DB\Ddl\Table;
 use PagaMasTarde\ModuleUtils\Exception\AmountMismatchException;
 use PagaMasTarde\ModuleUtils\Exception\ConcurrencyException;
-use PagaMasTarde\ModuleUtils\Exception\MerchantNoOrderFoundException;
 use PagaMasTarde\ModuleUtils\Exception\NoIdentificationException;
 use PagaMasTarde\ModuleUtils\Exception\OrderNotFoundException;
 use PagaMasTarde\ModuleUtils\Exception\QuoteNotFoundException;
@@ -145,6 +144,7 @@ class Index extends Action
     {
         try {
             $this->checkConcurrency();
+            $this->getMerchantOrder();
             $this->getPmtOrderId();
             $this->getPmtOrder();
             $this->checkOrderStatus();
@@ -202,6 +202,7 @@ class Index extends Action
     private function getMerchantOrder()
     {
         try {
+            /** @var Quote quote */
             $this->quote = $this->quoteRepository->get($this->quoteId);
         } catch (\Exception $e) {
             throw new MerchantOrderNotFoundException();
@@ -489,7 +490,8 @@ class Index extends Action
      */
     private function getRedirectUrl()
     {
-        $returnUrl = 'checkout/#payment';
+        //$returnUrl = 'checkout/#payment';
+        $returnUrl = $this->_url->getUrl('checkout', ['_fragment' => 'payment']);
         if ($this->magentoOrderId!='') {
             /** @var Order $this->magentoOrder */
             $this->magentoOrder = $this->orderRepositoryInterface->get($this->magentoOrderId);
@@ -516,7 +518,8 @@ class Index extends Action
                 if ($this->extraConfig['PMT_KO_URL'] != '') {
                     $returnUrl = $this->extraConfig['PMT_KO_URL'];
                 } else {
-                    $returnUrl = 'checkout/#payment';
+                    //$returnUrl = 'checkout/#payment';
+                    $returnUrl = $this->_url->getUrl('checkout', ['_fragment' => 'payment']);
                 }
             }
         }
