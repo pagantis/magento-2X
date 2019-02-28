@@ -139,7 +139,10 @@ class Index extends Action
         $this->checkoutSession = $checkoutSession;
     }
 
-    //MAIN FUNCTION
+    /**
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
+     * @throws UnknownException
+     */
     public function execute()
     {
         try {
@@ -191,6 +194,10 @@ class Index extends Action
      * COMMON FUNCTIONS
      */
 
+    /**
+     * @throws QuoteNotFoundException
+     * @throws UnknownException
+     */
     private function checkConcurrency()
     {
         $this->getQuoteId();
@@ -199,6 +206,9 @@ class Index extends Action
         $this->blockConcurrency();
     }
 
+    /**
+     * @throws MerchantOrderNotFoundException
+     */
     private function getMerchantOrder()
     {
         try {
@@ -209,6 +219,9 @@ class Index extends Action
         }
     }
 
+    /**
+     * @throws UnknownException
+     */
     private function getPmtOrderId()
     {
         try {
@@ -226,6 +239,9 @@ class Index extends Action
         }
     }
 
+    /**
+     * @throws OrderNotFoundException
+     */
     private function getPmtOrder()
     {
         try {
@@ -236,6 +252,10 @@ class Index extends Action
         }
     }
 
+    /**
+     * @throws AlreadyProcessedException
+     * @throws WrongStatusException
+     */
     private function checkOrderStatus()
     {
         try {
@@ -250,6 +270,9 @@ class Index extends Action
         }
     }
 
+    /**
+     * @throws AlreadyProcessedException
+     */
     private function checkMerchantOrderStatus()
     {
         if ($this->quote->getIsActive()=='0') {
@@ -258,6 +281,9 @@ class Index extends Action
         }
     }
 
+    /**
+     * @throws AmountMismatchException
+     */
     private function validateAmount()
     {
         $pmtAmount = $this->pmtOrder->getShoppingCart()->getTotalAmount();
@@ -267,6 +293,9 @@ class Index extends Action
         }
     }
 
+    /**
+     * @throws UnknownException
+     */
     private function processMerchantOrder()
     {
         try {
@@ -277,6 +306,10 @@ class Index extends Action
         }
     }
 
+    /**
+     * @return false|string
+     * @throws UnknownException
+     */
     private function confirmPmtOrder()
     {
         try {
