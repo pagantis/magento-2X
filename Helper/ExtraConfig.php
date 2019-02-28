@@ -4,6 +4,10 @@ namespace DigitalOrigin\Pmt\Helper;
 
 use Magento\Framework\App\ResourceConnection;
 
+/**
+ * Class ExtraConfig
+ * @package DigitalOrigin\Pmt\Helper
+ */
 class ExtraConfig
 {
     /** Config tablename */

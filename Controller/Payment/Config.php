@@ -14,6 +14,28 @@ class Config extends Action
     protected $dbObject;
 
     /**
+     * Variable which contains extra configuration.
+     * @var array $defaultConfigs
+     */
+    public $defaultConfigs = array('PMT_TITLE'=>'Instant Financing',
+                                   'PMT_SIMULATOR_DISPLAY_TYPE'=>'pmtSDK.simulator.types.SIMPLE',
+                                   'PMT_SIMULATOR_DISPLAY_SKIN'=>'pmtSDK.simulator.skins.BLUE',
+                                   'PMT_SIMULATOR_DISPLAY_POSITION'=>'hookDisplayProductButtons',
+                                   'PMT_SIMULATOR_START_INSTALLMENTS'=>3,
+                                   'PMT_SIMULATOR_MAX_INSTALLMENTS'=>12,
+                                   'PMT_SIMULATOR_CSS_POSITION_SELECTOR'=>'default',
+                                   'PMT_SIMULATOR_DISPLAY_CSS_POSITION'=>'pmtSDK.simulator.positions.INNER',
+                                   'PMT_SIMULATOR_CSS_PRICE_SELECTOR'=>'default',
+                                   'PMT_SIMULATOR_CSS_QUANTITY_SELECTOR'=>'default',
+                                   'PMT_FORM_DISPLAY_TYPE'=>0,
+                                   'PMT_DISPLAY_MIN_AMOUNT'=>1,
+                                   'PMT_URL_OK'=>'',
+                                   'PMT_URL_KO'=>'',
+                                   'PMT_TITLE_EXTRA' => 'Paga hasta en 12 cómodas cuotas con Paga+Tarde. Solicitud totalmente 
+                            online y sin papeleos,¡y la respuesta es inmediata!'
+    );
+
+    /**
      * Log constructor.
      *
      * @param \Magento\Framework\App\Action\Context $context
@@ -54,7 +76,7 @@ class Config extends Action
                             $dbConnection->update(
                                 $tableName,
                                 array('value' => $value),
-                                "config='$$config'"
+                                "config='$config'"
                             );
                         } else {
                             $response['status'] = 400;
@@ -67,10 +89,9 @@ class Config extends Action
                 }
             }
 
+            $formattedResult = array();
             if ($response['status']==null) {
-                $dbResult = $dbConnection
-                    ->select()
-                    ->from($tableName, array('config', 'value'));
+                $dbResult = $dbConnection->fetchAll("select * from $tableName");
                 foreach ($dbResult as $value) {
                     $formattedResult[$value['config']] = $value['value'];
                 }
