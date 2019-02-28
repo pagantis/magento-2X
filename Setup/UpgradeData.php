@@ -28,10 +28,10 @@ class UpgradeData implements UpgradeDataInterface
     {
         $setup->startSetup();
 
-        //Any version lower than 7.2.0: public_key => pmt_public_key, secret_key => pmt_private_key
-        if (version_compare($context->getVersion(), '7.2.0') > 0) {
+        //Any version lower than 7.2.0: public_key => pmt_public_key, secret_key => pmt_private_key //TODO
+        /*if (version_compare($context->getVersion(), '7.2.0') > 0) {
             print_r($this->config, true);
-        }
+        }*/
 
         if (version_compare($context->getVersion(), '7.2.0') < 0) {
             $newConfigs = array(
