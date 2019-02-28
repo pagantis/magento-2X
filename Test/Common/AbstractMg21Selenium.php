@@ -7,6 +7,7 @@ use Facebook\WebDriver\WebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use PagaMasTarde\SeleniumFormUtils\SeleniumHelper;
+use Httpful\Request;
 
 /**
  * Class AbstractMg21Selenium
