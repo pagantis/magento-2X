@@ -269,7 +269,7 @@ class Index extends Action
         }
 
         $displayMode = $this->extraConfig['PMT_FORM_DISPLAY_TYPE'];
-        if (!$displayMode) {
+        if ($displayMode==='0') {
             echo $url;
             exit;
         } else {
