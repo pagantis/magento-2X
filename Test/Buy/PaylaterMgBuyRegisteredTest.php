@@ -44,6 +44,11 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $this->goToCheckout();
         $this->goToPayment();
         $this->setCheckoutPrice($this->preparePaymentMethod());
+
+        $logUrl = "http://magento22-test.docker:8085/paylater/Payment/Log?secret=21e57baa97459f6a&from=20180927&to=20200928&limit=20";
+        $response = Request::post($logUrl)->expects('json')->send();
+        $this->assertEmpty($response->body->result, $response->body->result);
+
         $this->verifyPaylater();
         $this->verifyOrder();
         $this->setConfirmationPrice($this->verifyOrderInformation());
