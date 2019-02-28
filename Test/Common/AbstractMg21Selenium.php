@@ -303,6 +303,10 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function verifyPaylater()
     {
+        $logUrl = "http://magento22-test.docker:8085/paylater/Payment/Log?secret=21e57baa97459f6a&from=20180927&to=20200928&limit=20";
+        $response = Request::post($logUrl)->expects('json')->send();
+        $this->assertEmpty($response->body->result, $response->body->result);
+
         $condition = WebDriverExpectedCondition::titleContains(self::PMT_TITLE);
         $this->webDriver->wait(300)->until($condition, $this->webDriver->getCurrentURL());
         $this->assertTrue((bool)$condition, "PR32");
@@ -417,7 +421,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $this->assertNotEquals($price, 0, $price);
         $this->assertNotEmpty($price);
 
-        sleep(2);
+        sleep(10);
         $checkoutButton = WebDriverBy::cssSelector("#checkout-payment-method-load > .payment-methods > .payment-group > ._active > .payment-method-content > .actions-toolbar > .primary");
         $condition = WebDriverExpectedCondition::elementToBeClickable($checkoutButton);
         $this->webDriver->wait()->until($condition);
