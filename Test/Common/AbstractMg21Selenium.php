@@ -483,6 +483,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     private function checkSimulator()
     {
+        sleep(20);
         $simulatorElementSearch = WebDriverBy::className('PmtSimulator');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($simulatorElementSearch);
         $this->webDriver->wait()->until($condition);
