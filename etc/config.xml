@@ -18,7 +18,7 @@
                 <can_void>0</can_void>
                 <can_cancel>0</can_cancel>
                 <allowspecific>0</allowspecific>
-                <product_simulator>6</product_simulator>
+                <product_simulator>1</product_simulator>
             </paylater>
         </payment>
     </default>
