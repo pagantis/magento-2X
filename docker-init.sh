@@ -23,7 +23,7 @@ then
         module:enable DigitalOrigin_Pmt --clear-static-content
     docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} composer install -d /var/www/html/app/code/DigitalOrigin/Pmt
 else
-    package='dev-master'
+    package='v7.0.8.x-dev'
     if [ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]
     then
         echo "This is the branch of the pull request" ${TRAVIS_PULL_REQUEST_BRANCH}
@@ -43,7 +43,7 @@ else
 
     echo 'Package: '$package
 
-    echo 'Running: composer requiere pagamastarde/magento-2x:'$package' -d /var/www/html'
+    echo 'Running: composer require pagamastarde/magento-2x:'$package' -d /var/www/html'
     docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} composer require pagamastarde/magento-2x:$package -d /var/www/html
     echo 'Running: module:enable DigitalOrigin_Pmt'
     docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} \
