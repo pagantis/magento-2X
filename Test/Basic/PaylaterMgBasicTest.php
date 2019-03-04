@@ -31,7 +31,7 @@ class PaylaterMgBasicTest extends AbstractMg21Selenium
         $this->webDriver->get($this->configuration['magentoUrl']);
         $condition = WebDriverExpectedCondition::titleContains(self::TITLE);
         $this->webDriver->wait()->until($condition);
-        $this->assertTrue((bool) $condition);
+        $this->assertTrue((bool) $condition, $this->configuration['magentoUrl']);
         $this->quit();
     }
 
