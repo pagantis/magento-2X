@@ -417,7 +417,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $this->assertNotEquals($price, 0, $price);
         $this->assertNotEmpty($price);
 
-        sleep(10);
+        sleep(20);
         $checkoutButton = WebDriverBy::cssSelector("#checkout-payment-method-load > .payment-methods > .payment-group > ._active > .payment-method-content > .actions-toolbar > .primary");
         $condition = WebDriverExpectedCondition::elementToBeClickable($checkoutButton);
         $this->webDriver->wait()->until($condition);
