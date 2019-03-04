@@ -40,6 +40,10 @@ class UpgradeData implements UpgradeDataInterface
                 $setup->getConnection()->insert(self::CONFIG_TABLE, array('config'=>$config, 'value'=>$value));
             }
         }
+        $setup->getConnection()->insert(
+            'core_config_data',
+            array('value'=>1, 'path'=>'dev/template/allow_symlink','scope'=>'default')
+        );
 
         $setup->endSetup();
     }
