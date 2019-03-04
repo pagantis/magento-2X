@@ -40,6 +40,8 @@ class UpgradeData implements UpgradeDataInterface
                 $setup->getConnection()->insert(self::CONFIG_TABLE, array('config'=>$config, 'value'=>$value));
             }
         }
+
+        //Allow symlinks for product simulator. Admin menu: Stores->Configuration->Advanced->Developer -> Template //TODO
         $setup->getConnection()->insert(
             'core_config_data',
             array('value'=>1, 'path'=>'dev/template/allow_symlink','scope'=>'default')
