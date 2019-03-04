@@ -67,7 +67,7 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $this->assertNotEmpty($magentoOrderId);
         $notifyUrl = $this->configuration['magentoUrl'].self::NOTIFICATION_FOLDER.'?'.self::NOTIFICATION_PARAMETER.'='.$magentoOrderId;
         $response = Request::post($notifyUrl)->expects('json')->send();
-        $this->assertNotEmpty($response->body->result, $response);
+        $this->assertNotEmpty($response->body, print_r($response, true));
         $this->assertContains(
             NoIdentificationException::ERROR_MESSAGE,
             $response->body->result,
@@ -76,7 +76,7 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
 
         $notifyUrl = $this->configuration['magentoUrl'].self::NOTIFICATION_FOLDER.'?'.self::NOTIFICATION_PARAMETER.'=';
         $response = Request::post($notifyUrl)->expects('json')->send();
-        $this->assertNotEmpty($response->body->result);
+        $this->assertNotEmpty($response->body->result, print_r($response, true));
         $this->assertContains(
             QuoteNotFoundException::ERROR_MESSAGE,
             $response->body->result,
@@ -85,7 +85,7 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
 
         $notifyUrl = $this->configuration['magentoUrl'].self::NOTIFICATION_FOLDER.'?'.self::NOTIFICATION_PARAMETER.'=0';
         $response = Request::post($notifyUrl)->expects('json')->send();
-        $this->assertNotEmpty($response->body->result);
+        $this->assertNotEmpty($response->body->result, print_r($response, true));
         $this->assertContains(
             MerchantOrderNotFoundException::ERROR_MESSAGE,
             $response->body->result,
