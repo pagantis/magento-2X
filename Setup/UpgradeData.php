@@ -41,7 +41,7 @@ class UpgradeData implements UpgradeDataInterface
             }
         }
 
-        //Allow symlinks for product simulator. Admin menu: Stores->Configuration->Advanced->Developer -> Template //TODO
+        //Allow symlinks for product simulator. Admin menu: Stores->Configuration->Advanced->Developer->Template
         $setup->getConnection()->insert(
             'core_config_data',
             array('value'=>1, 'path'=>'dev/template/allow_symlink','scope'=>'default')
