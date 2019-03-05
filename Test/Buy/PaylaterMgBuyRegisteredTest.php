@@ -65,9 +65,17 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $orderArray = explode('/', $orderUrl);
         $magentoOrderId = (int)$orderArray['8'];
         $this->assertNotEmpty($magentoOrderId);
-        $notifyUrl = $this->configuration['magentoUrl'].self::NOTIFICATION_FOLDER.'?'.self::NOTIFICATION_PARAMETER.'='.$magentoOrderId;
+        $notifyUrl = sprintf(
+            "%s%s%s%s%s%s",
+            $this->configuration['magentoUrl'],
+            self::NOTIFICATION_FOLDER,
+            '?',
+            self::NOTIFICATION_PARAMETER,
+            '=',
+            $magentoOrderId
+        );
         $response = Request::post($notifyUrl)->expects('json')->send();
-        $this->assertNotEmpty($response->body, print_r($response, true));
+        $this->assertNotEmpty($response->body->result, print_r($response, true));
         $this->assertContains(
             NoIdentificationException::ERROR_MESSAGE,
             $response->body->result,
