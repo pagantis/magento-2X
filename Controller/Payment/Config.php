@@ -4,8 +4,11 @@ namespace DigitalOrigin\Pmt\Controller\Payment;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Ddl\Table;
+use Magento\Framework\App\CsrfAwareActionInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\Request\InvalidRequestException;
 
-class Config extends Action
+class Config extends Action implements CsrfAwareActionInterface
 {
     /** Config tablename */
     const CONFIG_TABLE = 'pmt_config';
@@ -106,5 +109,25 @@ class Config extends Action
         } catch (\Exception $e) {
             die($e->getMessage());
         }
+    }
+
+    /**
+     * @param RequestInterface $request
+     *
+     * @return InvalidRequestException|null
+     */
+    public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
+    {
+        return null;
+    }
+
+    /**
+     * @param RequestInterface $request
+     *
+     * @return bool|null
+     */
+    public function validateForCsrf(RequestInterface $request): ?bool
+    {
+        return true;
     }
 }

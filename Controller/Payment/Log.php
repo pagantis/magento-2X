@@ -4,8 +4,11 @@ namespace DigitalOrigin\Pmt\Controller\Payment;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Ddl\Table;
+use Magento\Framework\App\CsrfAwareActionInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\Request\InvalidRequestException;
 
-class Log extends Action
+class Log extends Action implements CsrfAwareActionInterface
 {
     /** Concurrency tablename */
     const LOGS_TABLE = 'pmt_logs';
@@ -116,5 +119,25 @@ class Log extends Action
             return $dbConnection->createTable($table);
         }
         return;
+    }
+
+    /**
+     * @param RequestInterface $request
+     *
+     * @return InvalidRequestException|null
+     */
+    public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
+    {
+        return null;
+    }
+
+    /**
+     * @param RequestInterface $request
+     *
+     * @return bool|null
+     */
+    public function validateForCsrf(RequestInterface $request): ?bool
+    {
+        return true;
     }
 }

@@ -28,12 +28,15 @@ use PagaMasTarde\ModuleUtils\Model\Response\JsonSuccessResponse;
 use PagaMasTarde\ModuleUtils\Model\Response\JsonExceptionResponse;
 use PagaMasTarde\ModuleUtils\Exception\AlreadyProcessedException;
 use PagaMasTarde\ModuleUtils\Model\Log\LogEntry;
+use Magento\Framework\App\CsrfAwareActionInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\Request\InvalidRequestException;
 
 /**
  * Class Index
  * @package DigitalOrigin\Pmt\Controller\Notify
  */
-class Index extends Action
+class Index extends Action implements CsrfAwareActionInterface
 {
     /** Orders tablename */
     const ORDERS_TABLE = 'cart_process';
@@ -580,5 +583,25 @@ class Index extends Action
         } catch (\Exception $e) {
             throw new UnknownException($e->getMessage());
         }
+    }
+
+    /**
+     * @param RequestInterface $request
+     *
+     * @return InvalidRequestException|null
+     */
+    public function createCsrfValidationException(RequestInterface $request): ? InvalidRequestException
+    {
+        return null;
+    }
+
+    /**
+     * @param RequestInterface $request
+     *
+     * @return bool|null
+     */
+    public function validateForCsrf(RequestInterface $request): ? bool
+    {
+        return true;
     }
 }
