@@ -36,7 +36,7 @@ use Magento\Framework\App\Request\InvalidRequestException;
  * Class Index
  * @package DigitalOrigin\Pmt\Controller\Notify
  */
-class Index extends Action implements CsrfAwareActionInterface
+class Index extends Action
 {
     /** Orders tablename */
     const ORDERS_TABLE = 'cart_process';
@@ -140,6 +140,15 @@ class Index extends Action implements CsrfAwareActionInterface
         $this->orderRepositoryInterface = $orderRepositoryInterface;
         $this->dbObject = $dbObject;
         $this->checkoutSession = $checkoutSession;
+
+        // CsrfAwareAction Magento2.3 compatibility
+        if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
+            $request = $this->getRequest();
+            if ($request instanceof HttpRequest && $request->isPost() && empty($request->getParam('form_key'))) {
+                $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
+                $request->setParam('form_key', $formKey->getFormKey());
+            }
+        }
     }
 
     /**

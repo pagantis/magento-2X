@@ -8,7 +8,7 @@ use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 
-class Config extends Action implements CsrfAwareActionInterface
+class Config extends Action
 {
     /** Config tablename */
     const CONFIG_TABLE = 'pmt_config';
@@ -52,6 +52,16 @@ class Config extends Action implements CsrfAwareActionInterface
     ) {
         $this->config = $pmtConfig->getConfig();
         $this->dbObject = $dbObject;
+
+        // CsrfAwareAction Magento2.3 compatibility
+        if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
+            $request = $this->getRequest();
+            if ($request instanceof HttpRequest && $request->isPost() && empty($request->getParam('form_key'))) {
+                $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
+                $request->setParam('form_key', $formKey->getFormKey());
+            }
+        }
+
         return parent::__construct($context);
     }
 
