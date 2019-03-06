@@ -8,7 +8,7 @@ use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 
-class Config extends Action
+class Config extends Action implements CsrfAwareActionInterface
 {
     /** Config tablename */
     const CONFIG_TABLE = 'pmt_config';
