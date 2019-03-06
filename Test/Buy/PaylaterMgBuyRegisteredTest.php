@@ -69,17 +69,19 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         if (version_compare($this->version, '23') >= 0) {
             $notifyFile = 'indexV2/';
         }
+
         $notifyUrl = sprintf(
-            "%s%s%s%s%s%s%s",
+            "%s%s%s%s%s%s",
             $this->configuration['magentoUrl'],
             self::NOTIFICATION_FOLDER,
             $notifyFile,
             '?',
             self::NOTIFICATION_PARAMETER,
-            '=',
-            $magentoOrderId
+            '='
         );
-        $response = Request::post($notifyUrl)->expects('json')->send();
+
+        $quoteId=$magentoOrderId;
+        $response = Request::post($notifyUrl.$quoteId)->expects('json')->send();
         $this->assertNotEmpty($response->body->result, print_r($response, true));
         $this->assertContains(
             NoIdentificationException::ERROR_MESSAGE,
@@ -87,7 +89,6 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
             "PR51=>".$response->body->result
         );
 
-        $notifyUrl = $this->configuration['magentoUrl'].self::NOTIFICATION_FOLDER.'?'.self::NOTIFICATION_PARAMETER.'=';
         $response = Request::post($notifyUrl)->expects('json')->send();
         $this->assertNotEmpty($response->body->result, print_r($response, true));
         $this->assertContains(
@@ -96,8 +97,8 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
             "PR58=>".$response->body->result
         );
 
-        $notifyUrl = $this->configuration['magentoUrl'].self::NOTIFICATION_FOLDER.'?'.self::NOTIFICATION_PARAMETER.'=0';
-        $response = Request::post($notifyUrl)->expects('json')->send();
+        $quoteId=0;
+        $response = Request::post($notifyUrl.$quoteId)->expects('json')->send();
         $this->assertNotEmpty($response->body->result, print_r($response, true));
         $this->assertContains(
             MerchantOrderNotFoundException::ERROR_MESSAGE,
