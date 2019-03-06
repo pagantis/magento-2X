@@ -142,6 +142,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $condition = WebDriverExpectedCondition::presenceOfElementLocated($regionLink);
         $this->webDriver->wait()->until($condition);
 
+        sleep(5);
         $this->webDriver->findElement(WebDriverBy::id('region_id'))
                         ->findElement(WebDriverBy::cssSelector("option[value='161']"))
                         ->click();
@@ -191,11 +192,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function checkProductPage()
     {
-        $this->checkSimulator();
-        $pmtSimElement = WebDriverBy::className('PmtSimulator');
-        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($pmtSimElement);
-        $this->webDriver->wait()->until($condition);
-        sleep(2);
+        //$this->checkSimulator();
 
         $paymentFormElement = WebDriverBy::id('product-addtocart-button');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($paymentFormElement);
