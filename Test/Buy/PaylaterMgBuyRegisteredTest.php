@@ -65,9 +65,9 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $orderArray = explode('/', $orderUrl);
         $magentoOrderId = (int)$orderArray['8'];
         $this->assertNotEmpty($magentoOrderId);
-        $notifyFile = 'index.php';
+        $notifyFile = 'index/';
         if (version_compare($this->version, '23') >= 0) {
-            $notifyFile = 'index2.php';
+            $notifyFile = 'indexV2/';
         }
         $notifyUrl = sprintf(
             "%s%s%s%s%s%s%s",
