@@ -28,24 +28,13 @@ class UpgradeData implements UpgradeDataInterface
     {
         $setup->startSetup();
 
-        //Any version lower than 7.2.0: public_key => pmt_public_key, secret_key => pmt_private_key //TODO
-        /*if (version_compare($context->getVersion(), '7.2.0') > 0) {
-            print_r($this->config, true);
-        }*/
-
         if (version_compare($context->getVersion(), '7.2.0') < 0) {
             $newConfigs = array(
-                /* INSERT NEW CONFIGS PARAMS HERE:config=>'<config>','value'=>'<value>'*/);
+                /* INSERT NEW CONFIGS PARAMS HERE:'config'=>'<config>','value'=>'<value>'*/);
             foreach ($newConfigs as $config => $value) {
                 $setup->getConnection()->insert(self::CONFIG_TABLE, array('config'=>$config, 'value'=>$value));
             }
         }
-
-        //Allow symlinks for product simulator. Admin menu: Stores->Configuration->Advanced->Developer->Template
-        $setup->getConnection()->insert(
-            'core_config_data',
-            array('value'=>1, 'path'=>'dev/template/allow_symlink','scope'=>'default')
-        );
 
         $setup->endSetup();
     }
