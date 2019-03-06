@@ -84,7 +84,7 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $response = Request::post($notifyUrl.$quoteId)->expects('json')->send();
         $this->assertNotEmpty($response->body->result, print_r($response, true));
         $this->assertContains(
-            NoIdentificationException::ERROR_MESSAGE,
+            AlreadyProcessedException::ERROR_MESSAGE,
             $response->body->result,
             "PR51=>".$response->body->result
         );
