@@ -84,7 +84,7 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $response = Request::post($notifyUrl.$quoteId)->expects('json')->send();
         $this->assertNotEmpty($response->body->result, print_r($response, true));
         $this->assertContains(
-            AlreadyProcessedException::ERROR_MESSAGE,
+            NoIdentificationException::ERROR_MESSAGE,
             $response->body->result,
             "PR51=>".$notifyUrl.$quoteId." = ".$response->body->result
         );
@@ -103,7 +103,7 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $this->assertContains(
             MerchantOrderNotFoundException::ERROR_MESSAGE,
             $response->body->result,
-            "PR59=>".$notifyUrl.$quoteId." = ".$response->body->result
+            "PR51=>".$notifyUrl.$quoteId." = ".$response->body->result
         );
     }
 
