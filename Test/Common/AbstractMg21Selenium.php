@@ -194,6 +194,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
     {
         //$this->checkSimulator();
 
+        sleep(10);
         $paymentFormElement = WebDriverBy::id('product-addtocart-button');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($paymentFormElement);
         $this->webDriver->wait()->until($condition);
