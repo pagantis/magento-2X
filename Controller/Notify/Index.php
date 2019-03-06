@@ -28,7 +28,6 @@ use PagaMasTarde\ModuleUtils\Model\Response\JsonSuccessResponse;
 use PagaMasTarde\ModuleUtils\Model\Response\JsonExceptionResponse;
 use PagaMasTarde\ModuleUtils\Exception\AlreadyProcessedException;
 use PagaMasTarde\ModuleUtils\Model\Log\LogEntry;
-use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 
@@ -140,15 +139,6 @@ class Index extends Action
         $this->orderRepositoryInterface = $orderRepositoryInterface;
         $this->dbObject = $dbObject;
         $this->checkoutSession = $checkoutSession;
-
-        // CsrfAwareAction Magento2.3 compatibility
-        if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
-            $request = $this->getRequest();
-            if ($request instanceof HttpRequest && $request->isPost() && empty($request->getParam('form_key'))) {
-                $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
-                $request->setParam('form_key', $formKey->getFormKey());
-            }
-        }
     }
 
     /**
@@ -592,25 +582,5 @@ class Index extends Action
         } catch (\Exception $e) {
             throw new UnknownException($e->getMessage());
         }
-    }
-
-    /**
-     * @param RequestInterface $request
-     *
-     * @return InvalidRequestException|null
-     */
-    public function createCsrfValidationException(RequestInterface $request): ? InvalidRequestException
-    {
-        return null;
-    }
-
-    /**
-     * @param RequestInterface $request
-     *
-     * @return bool|null
-     */
-    public function validateForCsrf(RequestInterface $request): ? bool
-    {
-        return true;
     }
 }
