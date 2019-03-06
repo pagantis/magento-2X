@@ -272,6 +272,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function goToCheckout()
     {
+        sleep(15);
         $this->webDriver->get($this->configuration['magentoUrl'].self::CHECKOUT_FOLDER);
         $condition = WebDriverExpectedCondition::titleContains(self::CHECKOUT_TITLE);
         $this->webDriver->wait()->until($condition);
