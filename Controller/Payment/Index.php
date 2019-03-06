@@ -207,9 +207,19 @@ class Index extends Action
                 ->setTotalAmount(intval(strval(100 * $quote->getGrandTotal())))
             ;
 
+            $metadataOrder = new \PagaMasTarde\OrdersApiClient\Model\Order\Metadata();
+            $metadata = $this->getMetadata();
+            foreach ($metadata as $key => $metadatum) {
+                $metadataOrder->addMetadata($key, $metadatum);
+            }
+
             $orderConfigurationUrls = new \PagaMasTarde\OrdersApiClient\Model\Order\Configuration\Urls();
             $quoteId = $quote->getId();
-            $okUrl = $this->_url->getUrl('paylater/notify', ['_query' => ['quoteId'=>$quoteId]]);
+            $okUrl = $this->_url->getUrl('paylater/notify/index', ['_query' => ['quoteId'=>$quoteId]]);
+            if (version_compare($metadata['magento'], '2.3.0') >= 0) {
+                $okUrl = $this->_url->getUrl('paylater/notify/indexV2', ['_query' => ['quoteId'=>$quoteId]]);
+            }
+
             $orderConfigurationUrls
                 ->setCancel($cancelUrl)
                 ->setKo($okUrl)
@@ -228,12 +238,6 @@ class Index extends Action
                 ->setChannel($orderChannel)
                 ->setUrls($orderConfigurationUrls)
             ;
-
-            $metadataOrder = new \PagaMasTarde\OrdersApiClient\Model\Order\Metadata();
-            $metadata = $this->getMetadata();
-            foreach ($metadata as $key => $metadatum) {
-                $metadataOrder->addMetadata($key, $metadatum);
-            }
 
             $order = new \PagaMasTarde\OrdersApiClient\Model\Order();
             $order
