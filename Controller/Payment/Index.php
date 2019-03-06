@@ -14,7 +14,6 @@ use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Module\ModuleList;
 use PagaMasTarde\OrdersApiClient\Model\Order\User\Address;
 use Magento\Framework\DB\Ddl\Table;
-use Magento\Framework\Data\Form\FormKey;
 
 /**
  * Class Index
@@ -55,9 +54,6 @@ class Index extends Action
     /** @var ExtraConfig $extraConfig */
     protected $extraConfig;
 
-    /** @var FormKey $formKey */
-    protected $formKey;
-
     /**
      * Index constructor.
      *
@@ -70,7 +66,6 @@ class Index extends Action
      * @param ProductMetadataInterface $productMetadataInterface
      * @param ModuleList               $moduleList
      * @param ExtraConfig              $extraConfig
-     * @param FormKey                  $formKey
      */
     public function __construct(
         Context $context,
@@ -81,8 +76,7 @@ class Index extends Action
         ResourceConnection $dbObject,
         ProductMetadataInterface $productMetadataInterface,
         ModuleList $moduleList,
-        ExtraConfig $extraConfig,
-        FormKey $formKey
+        ExtraConfig $extraConfig
     ) {
         parent::__construct($context);
         $this->session = $session;
@@ -94,7 +88,6 @@ class Index extends Action
         $this->moduleList = $moduleList;
         $this->productMetadataInterface = $productMetadataInterface;
         $this->extraConfig = $extraConfig->getExtraConfig();
-        $this->formKey = $formKey;
     }
 
     /**
@@ -224,7 +217,7 @@ class Index extends Action
             $quoteId = $quote->getId();
             $okUrl = $this->_url->getUrl(
                 'paylater/notify/index',
-                ['_query' => ['quoteId'=>$quoteId, 'form_key'=>$this->formKey->getFormKey()]]
+                ['_query' => ['quoteId'=>$quoteId]]
             );
             /*if (version_compare($metadata['magento'], '2.3.0') >= 0) {
                 $okUrl = $this->_url->getUrl('paylater/notify/indexV2', ['_query' => ['quoteId'=>$quoteId]]);
