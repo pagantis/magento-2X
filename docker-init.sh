@@ -16,14 +16,14 @@ docker-compose exec magento${VERSION}-${ENVIROMENT} docker-php-ext-install bcmat
 echo 'Install Magento'
 docker-compose exec magento${VERSION}-${ENVIROMENT} install-magento
 
-echo 'Install DigitalOrigin_Pmt'
+echo "Install DigitalOrigin_Pmt"
 if [ $1 != 'test' ]
 then
     docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} php /var/www/html/bin/magento \
         module:enable DigitalOrigin_Pmt --clear-static-content
     docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} composer install -d /var/www/html/app/code/DigitalOrigin/Pmt
 else
-    package='v7.0.8.x-dev'
+    package="v7.0.8.x-dev"
     if [ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]
     then
         echo "This is the branch of the pull request" ${TRAVIS_PULL_REQUEST_BRANCH}
@@ -57,6 +57,13 @@ docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} composer config 
     255059b03eb9d30604d5ef52fca7465d
 echo 'Running: sampledata:deploy'
 docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} php /var/www/html/bin/magento sampledata:deploy
+
+if [ "$2" == "23" ] && [ "$1" == "test" ]
+then
+    echo "Enabling symlinks"
+    docker exec -i magento${VERSION}DB${ENVIROMENT} mysql -uroot -ppassword123 <<< "use magento23-test;insert into core_config_data (value,path,scope) values (1,'dev/template/allow_symlink','default');"
+fi
+
 echo 'Running: setup:upgrade'
 docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} php /var/www/html/bin/magento setup:upgrade
 echo 'Running: cron:run'
