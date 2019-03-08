@@ -1,58 +1,52 @@
-<?php
-/**
- * @var \DigitalOrigin\Pmt\Block\Product\Simulator $block
- */
+<script>// <![CDATA[
+    require([
+        'jquery',
+        'https://cdn.pagamastarde.com/js/pmt-v2/sdk.js'
+    ], function ($, pmtSdk) {
+        var moduleEnabled = '<? echo $block->isEnabled();?>';
+        var simulatorEnabled = '<? echo $block->getProductSimulator();?>';
+        var publicKey = '<? echo $block->getPublicKey();?>';
+        var positionSelector = '<? echo $block->getPositionSelector();?>';
+        var priceSelector = '<? echo $block->getPriceSelector();?>';
+        var quantitySelector = '<? echo $block->getQuantitySelector();?>';
+        var simulatorType = '<? echo $block->getSimulatorType();?>';
 
-if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->getPublicKey()) {
-?>
-    <script type="text/javascript">
-        require.config({
-            paths: { "pmtSdkVar": "https://cdn.pagamastarde.com/js/pmt-v2/sdk"},
-            waitSeconds: 40
-        });
-    </script>
-
-    <script>
-        require( ["pmtSdkVar"],
-            function (pmtSdk) {
-                var simulatorId = null;
-                function loadSimulator()
-                {
-                    var positionSelector = '<? echo $block->getPositionSelector();?>';
-                    if (positionSelector === 'default' || positionSelector === '') {
-                        positionSelector = '.PmtSimulator';
-                    }
-                    var priceSelector = '<? echo $block->getPriceSelector();?>';
-                    if (priceSelector === 'default' || priceSelector === '') {
-                        priceSelector = 'div.price-final_price span.price-wrapper span.price';
-                    }
-                    var quantitySelector = '<? echo $block->getQuantitySelector();?>';
-                    if (quantitySelector === 'default' || quantitySelector === '') {
-                        quantitySelector = 'div.fieldset div.qty div.control input.qty';
-                    }
-                    var simulatorType = '<? echo $block->getSimulatorType();?>';
-                    if (simulatorType === 'default' || simulatorType === '') {
-                        simulatorType = 'div.fieldset div.qty div.control input.qty';
-                    }
-
-                    if (typeof pmtSdk != 'undefined') {
-                        pmtSdk.simulator.init({
-                            publicKey: '<?php echo $block->getPublicKey(); ?>',
-                            type: simulatorType,
-                            selector: positionSelector,
-                            itemQuantitySelector: quantitySelector,
-                            itemAmountSelector: priceSelector
-                        });
-                        clearInterval(simulatorId);
-                    }
+        if(moduleEnabled=='1' && simulatorEnabled=='1' && publicKey!='') {
+            var simulatorId = null;
+console.log(simulatorEnabled);
+            function loadSimulator() {
+                var positionSelector = '<? echo $block->getPositionSelector();?>';
+                if (positionSelector === 'default' || positionSelector === '') {
+                    positionSelector = '.PmtSimulator';
                 }
-
-                simulatorId = setInterval(function () {
-                    loadSimulator();
-                }, 2000);
-            });
-    </script>
-    <div class="PmtSimulator"></div>
-<?php
-}
-?>
+                var priceSelector = '<? echo $block->getPriceSelector();?>';
+                if (priceSelector === 'default' || priceSelector === '') {
+                    priceSelector = 'div.price-final_price span.price-wrapper span.price';
+                }
+                var quantitySelector = '<? echo $block->getQuantitySelector();?>';
+                if (quantitySelector === 'default' || quantitySelector === '') {
+                    quantitySelector = 'div.fieldset div.qty div.control input.qty';
+                }
+                var simulatorType = '<? echo $block->getSimulatorType();?>';
+                if (simulatorType === 'default' || simulatorType === '') {
+                    simulatorType = 'div.fieldset div.qty div.control input.qty';
+                }
+                if (typeof pmtSdk != 'undefined') {
+                    pmtSdk.simulator.init({
+                        publicKey: '<?php echo $block->getPublicKey(); ?>',
+                        type: simulatorType,
+                        selector: positionSelector,
+                        itemQuantitySelector: quantitySelector,
+                        itemAmountSelector: priceSelector
+                    });
+                    clearInterval(simulatorId);
+                }
+            }
+            simulatorId = setInterval(function () {
+                loadSimulator();
+            }, 2000);
+        } //END IF
+    });
+    // ]]>
+</script>
+<div class="PmtSimulator"></div>
