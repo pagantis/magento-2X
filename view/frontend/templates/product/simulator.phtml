@@ -1,3 +1,9 @@
+<?php
+/**
+ * @var \DigitalOrigin\Pmt\Block\Product\Simulator $block
+ */
+if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->getPublicKey()) {
+?>
 <script>// <![CDATA[
     require([
         'jquery',
@@ -33,7 +39,7 @@
                 }
                 if (typeof pmtSdk != 'undefined') {
                     pmtSdk.simulator.init({
-                        publicKey: '<?php echo $block->getPublicKey(); ?>',
+                        publicKey: publicKey,
                         type: simulatorType,
                         selector: positionSelector,
                         itemQuantitySelector: quantitySelector,
@@ -45,8 +51,11 @@
             simulatorId = setInterval(function () {
                 loadSimulator();
             }, 2000);
-        } //END IF
+        }
     });
     // ]]>
 </script>
 <div class="PmtSimulator"></div>
+<?php
+}
+?>

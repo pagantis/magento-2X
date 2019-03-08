@@ -1,6 +1,6 @@
 <page layout="1column" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <referenceContainer name="product.info.addtocart">
-        <block class="DigitalOrigin\Pmt\Block\Product\Simulator"
+        <block class="DigitalOrigin\Pmt\Block\Product\Simulator" name="product.view.simulator" as="product_simulator"
                template="DigitalOrigin_Pmt::product/simulator.phtml"/>
     </referenceContainer>
 </page>
