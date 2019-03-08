@@ -73,8 +73,6 @@ if [ $1 == 'test' ]
 then
     echo 'Running: cache:enable'
     docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} php /var/www/html/bin/magento cache:enable
-    echo 'Running: deploy:mode:set production'
-    docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} php /var/www/html/bin/magento deploy:mode:set production
 else
     echo 'Running: cache:deploy:mode:set developer'
     docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} php /var/www/html/bin/magento deploy:mode:set developer
