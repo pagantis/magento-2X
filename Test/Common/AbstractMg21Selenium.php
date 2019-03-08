@@ -193,9 +193,10 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
     public function checkProductPage()
     {
         sleep(10);
-        $this->checkSimulator();
+        if (version_compare($this->version, '23') < 0) {
+            $this->checkSimulator();
+        }
 
-        sleep(10);
         $paymentFormElement = WebDriverBy::id('product-addtocart-button');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($paymentFormElement);
         $this->webDriver->wait()->until($condition);
