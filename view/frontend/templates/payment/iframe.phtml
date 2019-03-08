@@ -1,17 +1,7 @@
-<?php
-/**
- * @var \DigitalOrigin\Pmt\Block\Payment\Iframe $block
- */
-
-//if ($block->url && $block->checkoutUrl) {
-?>
 <script type="text/javascript">
-    require.config({
-        paths: { "pmtSdk": "https://cdn.pagamastarde.com/pmt-js-client-sdk/3/js/client-sdk.min"},
-        waitSeconds: 0
-    });
-
-    require( ["pmtSdk", "jquery" ],
+    require( [
+        "https://cdn.pagamastarde.com/pmt-js-client-sdk/3/js/client-sdk.min.js",
+            "jquery" ],
         function (pmtClient, $) {
             if (typeof pmtClient !== 'undefined') {
                 $(document).ready( function(){
@@ -33,7 +23,3 @@
         }
     );
 </script>
-<?php
-//}
-?>
-
