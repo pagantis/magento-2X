@@ -58,12 +58,6 @@ docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} composer config 
 echo 'Running: sampledata:deploy'
 docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} php /var/www/html/bin/magento sampledata:deploy
 
-if [ "$2" == "23" ] && [ "$1" == "test" ]
-then
-    echo "Enabling symlinks"
-    docker exec -i magento${VERSION}DB${ENVIROMENT} mysql -uroot -ppassword123 <<< "use magento23-test;insert into core_config_data (value,path,scope) values (1,'dev/template/allow_symlink','default');"
-fi
-
 echo 'Running: setup:upgrade'
 docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} php /var/www/html/bin/magento setup:upgrade
 echo 'Running: cron:run'
