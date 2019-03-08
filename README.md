@@ -15,6 +15,10 @@ To install the module of Paga+Tarde in your Magento shop, you can use Composer:
     composer require pagamastarde/magento-2x
     bin/magento module:enable DigitalOrigin_Pmt
     bin/magento setup:upgrade
+    bin/magento setup:di:compile
+    
+    //remember to have the production mode enabled:
+    bin/magento deploy:mode:set production
 ```
 
 ## :gear: Configuration
