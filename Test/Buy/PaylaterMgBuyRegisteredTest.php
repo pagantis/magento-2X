@@ -66,8 +66,11 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $magentoOrderId = (int)$orderArray['8'];
         $this->assertNotEmpty($magentoOrderId);
         $notifyFile = 'index/';
+        $quoteId=($magentoOrderId)-1;
+
         if (version_compare($this->version, '23') >= 0) {
             $notifyFile = 'indexV2/';
+            $quoteId=$magentoOrderId;
         }
 
         $notifyUrl = sprintf(
@@ -80,7 +83,6 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
             '='
         );
 
-        $quoteId=$magentoOrderId;
         $response = Request::post($notifyUrl.$quoteId)->expects('json')->send();
         $this->assertNotEmpty($response->body->result, print_r($response, true));
         $this->assertContains(
