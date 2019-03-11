@@ -219,9 +219,9 @@ class Index extends Action
                 'paylater/notify/index',
                 ['_query' => ['quoteId'=>$quoteId]]
             );
-            /*if (version_compare($metadata['magento'], '2.3.0') >= 0) {
+            if (version_compare($metadata['magento'], '2.3.0') >= 0) {
                 $okUrl = $this->_url->getUrl('paylater/notify/indexV2', ['_query' => ['quoteId'=>$quoteId]]);
-            }*/
+            }
 
             $orderConfigurationUrls
                 ->setCancel($cancelUrl)

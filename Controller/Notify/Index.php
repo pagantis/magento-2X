@@ -28,8 +28,6 @@ use PagaMasTarde\ModuleUtils\Model\Response\JsonSuccessResponse;
 use PagaMasTarde\ModuleUtils\Model\Response\JsonExceptionResponse;
 use PagaMasTarde\ModuleUtils\Exception\AlreadyProcessedException;
 use PagaMasTarde\ModuleUtils\Model\Log\LogEntry;
-use Magento\Framework\App\RequestInterface;
-use Magento\Framework\App\Request\InvalidRequestException;
 
 /**
  * Class Index
