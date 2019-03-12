@@ -4,7 +4,7 @@
         <payment>
             <paylater>
                 <active>0</active>
-                <title>Instant Financing</title>
+                <title>Pagantis</title>
                 <currency>EUR</currency>
                 <is_gateway>1</is_gateway>
                 <model>PaylaterFacade</model>
