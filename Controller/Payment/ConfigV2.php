@@ -34,8 +34,7 @@ class ConfigV2 extends Action implements CsrfAwareActionInterface
                                    'PMT_DISPLAY_MIN_AMOUNT'=>1,
                                    'PMT_URL_OK'=>'',
                                    'PMT_URL_KO'=>'',
-                                   'PMT_TITLE_EXTRA' => 'Paga hasta en 12 cómodas cuotas con Paga+Tarde. Solicitud totalmente 
-                            online y sin papeleos,¡y la respuesta es inmediata!'
+                                   'PMT_TITLE_EXTRA' => 'Pay up to 12 comfortable installments with Paga + Tarde. Completely online and sympathetic request, and the answer is immediate!'
     );
 
     /**
