@@ -84,6 +84,16 @@ abstract class PaylaterMagentoTest extends TestCase
     const NOTIFICATION_PARAMETER = 'quoteId';
 
     /**
+     * Magento Log URL
+     */
+    const LOG_FOLDER = '/paylater/Payment/Log';
+
+    /**
+     * Magento Config URL
+     */
+    const CONFIG_FOLDER = '/paylater/Payment/Config';
+
+    /**
      * @var array
      */
     protected $configuration = array(
@@ -91,7 +101,7 @@ abstract class PaylaterMagentoTest extends TestCase
         'backofficePassword' => 'password123',
         'publicKey'          => 'tk_fd53cd467ba49022e4f8215e',
         'secretKey'          => '21e57baa97459f6a',
-        'methodName'         => 'Instant Financing',
+        'methodName'         => 'Pagantis',
         'defaultSimulatorOpt'=> 6,
         'defaultMinIns'      => 3,
         'defaultMaxIns'      => 12,
@@ -105,7 +115,7 @@ abstract class PaylaterMagentoTest extends TestCase
         'city'               => 'Barcelona',
         'street'             => 'Av Diagonal 585, planta 7',
         'phone'              => '600123123',
-        'checkoutDescription'=> 'Paga hasta en 12 cómodas cuotas con Paga+Tarde'
+        'checkoutDescription'=> 'Pay up to 12 comfortable installments with Paga + Tarde'
     );
 
     /**

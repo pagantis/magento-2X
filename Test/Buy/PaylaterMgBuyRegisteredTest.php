@@ -6,7 +6,6 @@ use DigitalOrigin\Pmt\Test\Common\AbstractMg21Selenium;
 use Httpful\Request;
 use PagaMasTarde\ModuleUtils\Exception\AlreadyProcessedException;
 use PagaMasTarde\ModuleUtils\Exception\MerchantOrderNotFoundException;
-use PagaMasTarde\ModuleUtils\Exception\NoIdentificationException;
 use PagaMasTarde\ModuleUtils\Exception\QuoteNotFoundException;
 
 /**
@@ -31,6 +30,25 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
      * @var string
      */
     protected $notifyUrl;
+
+    /**
+     * @var array $configs
+     */
+    protected $configs = array(
+        "PMT_TITLE",
+        "PMT_SIMULATOR_DISPLAY_TYPE",
+        "PMT_SIMULATOR_DISPLAY_SKIN",
+        "PMT_SIMULATOR_DISPLAY_POSITION",
+        "PMT_SIMULATOR_START_INSTALLMENTS",
+        "PMT_SIMULATOR_CSS_POSITION_SELECTOR",
+        "PMT_SIMULATOR_DISPLAY_CSS_POSITION",
+        "PMT_SIMULATOR_CSS_PRICE_SELECTOR",
+        "PMT_SIMULATOR_CSS_QUANTITY_SELECTOR",
+        "PMT_FORM_DISPLAY_TYPE",
+        "PMT_DISPLAY_MIN_AMOUNT",
+        "PMT_URL_OK",
+        "PMT_URL_KO",
+    );
 
     /**
      * @throws  \Exception
@@ -67,10 +85,12 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $this->assertNotEmpty($magentoOrderId);
         $notifyFile = 'index/';
         $quoteId=($magentoOrderId)-1;
+        $version = '';
 
         if (version_compare($this->version, '23') >= 0) {
             $notifyFile = 'indexV2/';
-            $quoteId=$magentoOrderId;
+            $quoteId = $magentoOrderId;
+            $version = "V2";
         }
 
         $notifyUrl = sprintf(
@@ -107,6 +127,31 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
             $response->body->result,
             "PR51=>".$notifyUrl.$quoteId." = ".$response->body->result
         );
+
+        $logUrl = sprintf(
+            "%s%s%s%s%s",
+            $this->configuration['magentoUrl'],
+            self::LOG_FOLDER,
+            $version,
+            '?secret=',
+            $this->configuration['secretKey']
+        );
+        $response = Request::get($logUrl)->expects('json')->send();
+        $this->assertEquals(3, "PR57=>".$logUrl." = ".count($response->body));
+
+        $notifyUrl = self::MAGENTO_URL.self::CONFIG_FOLDER.'post?secret='.$this->configuration['secretKey'];
+
+        $response = Request::get($notifyUrl)->expects('json')->send();
+        foreach ($this->configs as $config) {
+            $this->assertArrayHasKey($config, "PR61=>".$response->body);
+        }
+
+        $body = array('PMT_TITLE' => 'changed');
+        $response = Request::post($notifyUrl)
+                           ->body($body, Mime::FORM)
+                           ->expectsJSON()
+                           ->send();
+        $this->assertEquals('changed', "PR62=>".$notifyUrl." = ".$response->body->PMT_TITLE);
     }
 
     /**
