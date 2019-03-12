@@ -23,7 +23,7 @@ then
         module:enable DigitalOrigin_Pmt --clear-static-content
     docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} composer install -d /var/www/html/app/code/DigitalOrigin/Pmt
 else
-    package="v7.0.8.x-dev"
+    package="dev-INT-509"
     if [ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]
     then
         echo "This is the branch of the pull request" ${TRAVIS_PULL_REQUEST_BRANCH}
