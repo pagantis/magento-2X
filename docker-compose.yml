@@ -1,14 +1,14 @@
 version: '3.0'
 services:
-  magento2-dev:
-    container_name: magento2dev
-    image: alexcheng/magento2:latest
+  magento22-dev:
+    container_name: magento22dev
+    image: alexcheng/magento2:2.2.1
     environment:
-      - MYSQL_HOST=db-dev
+      - MYSQL_HOST=db-dev22
       - MYSQL_ROOT_PASSWORD=password123
       - MYSQL_USER=root
       - MYSQL_PASSWORD=password123
-      - MYSQL_DATABASE=magento2-dev
+      - MYSQL_DATABASE=magento22-dev
       - MAGENTO_LANGUAGE=es_ES
       - MAGENTO_TIMEZONE=Europe/Madrid
       - MAGENTO_DEFAULT_CURRENCY=EUR
@@ -25,36 +25,80 @@ services:
     ports:
       - "8086:80"
     extra_hosts:
-      - "magento2-dev.docker:127.0.0.1"
+      - "magento22-dev.docker:127.0.0.1"
     links:
-      - db-dev
+      - db-dev22
     env_file:
       - .env
     volumes:
-      - ./:/var/www/paylater
+      - ./:/var/www/html/app/code/DigitalOrigin/Pmt
     working_dir: /var/www/html/
 
-  db-dev:
+  magento23-dev:
+    container_name: magento23dev
+    image: alexcheng/magento2:latest
+    environment:
+      - MYSQL_HOST=db-dev23
+      - MYSQL_ROOT_PASSWORD=password123
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password123
+      - MYSQL_DATABASE=magento23-dev
+      - MAGENTO_LANGUAGE=es_ES
+      - MAGENTO_TIMEZONE=Europe/Madrid
+      - MAGENTO_DEFAULT_CURRENCY=EUR
+      - MAGENTO_URL=http://magento23-dev.docker:8087
+      - MAGENTO_BACKEND_FRONTNAME=admin
+      - MAGENTO_USE_SECURE=0
+      - MAGENTO_BASE_URL_SECURE=0
+      - MAGENTO_USE_SECURE_ADMIN=0
+      - MAGENTO_ADMIN_FIRSTNAME=Admin
+      - MAGENTO_ADMIN_LASTNAME=MyStore
+      - MAGENTO_ADMIN_EMAIL=amdin@example.com
+      - MAGENTO_ADMIN_USERNAME=admin
+      - MAGENTO_ADMIN_PASSWORD=password123
+    ports:
+      - "8087:80"
+    extra_hosts:
+      - "magento23-dev.docker:127.0.0.1"
+    links:
+      - db-dev23
+    env_file:
+      - .env
+    volumes:
+      - ./:/var/www/html/app/code/DigitalOrigin/Pmt
+    working_dir: /var/www/html/
+
+  db-dev22:
+    container_name: magento22DBdev
     image: mysql:5.6.23
     volumes:
       - db-data:/var/lib/mysql/data
     environment:
       - MYSQL_ROOT_PASSWORD=password123
-      - MYSQL_DATABASE=magento2-dev
+      - MYSQL_DATABASE=magento22-dev
 
-  magento2-test:
-    container_name: magento2test
+  db-dev23:
+    container_name: magento23DBdev
+    image: mysql:5.6.23
+    volumes:
+      - db-data:/var/lib/mysql/data
+    environment:
+      - MYSQL_ROOT_PASSWORD=password123
+      - MYSQL_DATABASE=magento23-dev
+
+  magento22-test:
+    container_name: magento22test
     image: alexcheng/magento2:2.2.1
     environment:
-      - MYSQL_HOST=db-test
+      - MYSQL_HOST=db-test22
       - MYSQL_ROOT_PASSWORD=password123
       - MYSQL_USER=root
       - MYSQL_PASSWORD=password123
-      - MYSQL_DATABASE=magento2-test
+      - MYSQL_DATABASE=magento22-test
       - MAGENTO_LANGUAGE=es_ES
       - MAGENTO_TIMEZONE=Europe/Madrid
       - MAGENTO_DEFAULT_CURRENCY=EUR
-      - MAGENTO_URL=http://magento2-test.docker:8085
+      - MAGENTO_URL=http://magento22-test.docker:8085
       - MAGENTO_BACKEND_FRONTNAME=admin
       - MAGENTO_USE_SECURE=0
       - MAGENTO_BASE_URL_SECURE=0
@@ -67,27 +111,74 @@ services:
     ports:
       - "8085:80"
     extra_hosts:
-      - "magento2-test.docker:127.0.0.1"
+      - "magento22-test.docker:127.0.0.1"
     links:
-      - db-test
+      - db-test22
     env_file:
       - .env
     working_dir: /var/www/html/
 
-  db-test:
+  magento23-test:
+    container_name: magento23test
+    image: alexcheng/magento2:latest
+    environment:
+      - MYSQL_HOST=db-test23
+      - MYSQL_ROOT_PASSWORD=password123
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password123
+      - MYSQL_DATABASE=magento23-test
+      - MAGENTO_LANGUAGE=es_ES
+      - MAGENTO_TIMEZONE=Europe/Madrid
+      - MAGENTO_DEFAULT_CURRENCY=EUR
+      - MAGENTO_URL=http://magento23-test.docker:8084
+      - MAGENTO_BACKEND_FRONTNAME=admin
+      - MAGENTO_USE_SECURE=0
+      - MAGENTO_BASE_URL_SECURE=0
+      - MAGENTO_USE_SECURE_ADMIN=0
+      - MAGENTO_ADMIN_FIRSTNAME=Admin
+      - MAGENTO_ADMIN_LASTNAME=MyStore
+      - MAGENTO_ADMIN_EMAIL=amdin@example.com
+      - MAGENTO_ADMIN_USERNAME=admin
+      - MAGENTO_ADMIN_PASSWORD=password123
+    ports:
+      - "8084:80"
+    extra_hosts:
+      - "magento23-test.docker:127.0.0.1"
+    links:
+      - db-test23
+    env_file:
+      - .env
+    working_dir: /var/www/html/
+
+  db-test22:
+    container_name: magento22DBtest
     image: mysql:5.6.23
     volumes:
       - db-data:/var/lib/mysql/data
     environment:
       - MYSQL_ROOT_PASSWORD=password123
-      - MYSQL_DATABASE=magento2-test
+      - MYSQL_DATABASE=magento22-test
+
+  db-test23:
+    container_name: magento23DBtest
+    image: mysql:5.6.23
+    volumes:
+      - db-data:/var/lib/mysql/data
+    environment:
+      - MYSQL_ROOT_PASSWORD=password123
+      - MYSQL_DATABASE=magento23-test
 
   selenium:
-      image: selenium/standalone-chrome:3.7.1
-      ports:
-        - "4444:4444"
-      extra_hosts:
-      - "magento2-test.docker:${DOCKERHOST}"
-      - "magento2-dev.docker:${DOCKERHOST}"
+    container_name: magentoSelenium
+    image: selenium/standalone-chrome:3.7.1
+    ports:
+      - "4444:4444"
+    extra_hosts:
+      - "magento22-test.docker:${DOCKERHOST}"
+      - "magento23-test.docker:${DOCKERHOST}"
+      - "magento22-dev.docker:${DOCKERHOST}"
+      - "magento23-dev.docker:${DOCKERHOST}"
+
 volumes:
   db-data:
+

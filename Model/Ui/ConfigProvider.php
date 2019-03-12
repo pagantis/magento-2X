@@ -4,6 +4,7 @@ namespace DigitalOrigin\Pmt\Model\Ui;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Checkout\Model\Session;
+use DigitalOrigin\Pmt\Helper\ExtraConfig;
 
 /**
  * Class ConfigProvider
@@ -24,17 +25,25 @@ final class ConfigProvider implements ConfigProviderInterface
     protected $checkoutSession;
 
     /**
+     * @var String
+     */
+    protected $extraConfig;
+
+    /**
      * ConfigProvider constructor.
      *
      * @param \Magento\Payment\Helper\Data $paymentHelper
      * @param Session                      $checkoutSession
-     *
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @param ExtraConfig                  $extraConfig
      */
-    public function __construct(\Magento\Payment\Helper\Data $paymentHelper, Session $checkoutSession)
-    {
+    public function __construct(
+        \Magento\Payment\Helper\Data $paymentHelper,
+        Session $checkoutSession,
+        ExtraConfig $extraConfig
+    ) {
         $this->method = $paymentHelper->getMethodInstance(self::CODE);
         $this->checkoutSession = $checkoutSession;
+        $this->extraConfig = $extraConfig->getExtraConfig();
     }
 
     /**
@@ -50,13 +59,9 @@ final class ConfigProvider implements ConfigProviderInterface
             'payment' => [
                 self::CODE => [
                     'total' => $quote->getGrandTotal(),
-                    'publicKey' => $this->method->getConfigData('public_key'),
-                    'secretKey' => $this->method->getConfigData('secret_key'),
-                    'pmtType' => $this->method->getConfigData('checkout_simulator'),
-                    'pmtMaxIns' => $this->method->getConfigData('max_installments'),
-                    'pmtNumQuota' => $this->method->getConfigData('min_installments'),
                     'displayMode' => $this->method->getConfigData('display_mode'),
-                    'subtitle' => $this->method->getConfigData('checkout_description'),
+                    'title' => $this->extraConfig['PMT_TITLE'],
+                    'subtitle' => $this->extraConfig['PMT_TITLE_EXTRA']
                 ],
             ],
         ];

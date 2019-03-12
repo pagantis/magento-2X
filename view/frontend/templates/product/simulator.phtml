@@ -2,97 +2,61 @@
 /**
  * @var \DigitalOrigin\Pmt\Block\Product\Simulator $block
  */
-
-if ($block->getProductSimulator() && $block->isEnabled() && $block->getPublicKey()) {
+if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->getPublicKey()) {
 ?>
-    <script type="text/javascript">
-        require.config({
-            paths: { "pmtSdk": "https://cdn.pagamastarde.com/pmt-js-client-sdk/3/js/client-sdk.min"},
-            waitSeconds: 40
-        });
-    </script>
+<script>// <![CDATA[
+    require([
+        'jquery',
+        'https://cdn.pagamastarde.com/js/pmt-v2/sdk.js'
+    ], function ($, pmtSdk) {
+        var moduleEnabled = '<? echo $block->isEnabled();?>';
+        var simulatorEnabled = '<? echo $block->getProductSimulator();?>';
+        var publicKey = '<? echo $block->getPublicKey();?>';
+        var positionSelector = '<? echo $block->getPositionSelector();?>';
+        var priceSelector = '<? echo $block->getPriceSelector();?>';
+        var quantitySelector = '<? echo $block->getQuantitySelector();?>';
+        var simulatorType = '<? echo $block->getSimulatorType();?>';
 
-    <br/>
-    <span class="js-pmt-payment-type"></span>
-    <div class="PmtSimulator" style="display:none"
-         data-pmt-num-quota="<?php echo $block->getMinInstallments(); ?>"
-         data-pmt-max-ins="<?php echo $block->getMaxInstallments(); ?>" data-pmt-style="blue"
-         data-pmt-type="<?php echo $block->getProductSimulator();  ?>"
-         data-pmt-discount="0" data-pmt-expanded="no" data-pmt-amount="0" >
-    </div>
+        if(moduleEnabled=='1' && simulatorEnabled=='1' && publicKey!='') {
+            var simulatorId = null;
 
-    <script>
-        require( ["pmtSdk"],
-            function (pmtClient) {
-                if (typeof pmtClient !== 'undefined') {
-                    pmtClient.setPublicKey('<?php echo $block->getPublicKey(); ?>');
-                    pmtClient.simulator.reload();
+            function loadSimulator() {
+                var positionSelector = '<? echo $block->getPositionSelector();?>';
+                if (positionSelector === 'default' || positionSelector === '') {
+                    positionSelector = '.PmtSimulator';
                 }
-                window.pmtClient = pmtClient;
-            }
-        );
-
-        function getMagento2Price(simulatorObject) {
-            // PRICE
-            priceDiv = document.querySelectorAll(simulatorObject.selector);
-            if( priceDiv !== 'undefined' ) {
-                pricesLength = document.querySelectorAll(simulatorObject.selector).length;
-                if( pricesLength !== 'undefined' && pricesLength > 0 ) {
-                    pricesLength = pricesLength - 1;
-                    price = document.querySelectorAll(simulatorObject.selector)[pricesLength].innerText.toString();
-                    price = price.replace(/€|&euro/g, '').replace(',','.').replace(',','.');
-                    pointPieces = price.split(".");
-                    if (pointPieces!=='undefined' && pointPieces.length == '3')
-                    {
-                        price = pointPieces[0].concat(pointPieces[1]).concat('.').concat(pointPieces[2]);
-                    }
-
-                    price = parseFloat(price);
-                    if( price!=='undefined' && price!='' ) {
-                        currentPrice = document.getElementsByClassName('PmtSimulator')[0].getAttribute('data-pmt-amount');
-
-                        if (simulatorObject.quantity_selector!=='undefined' && simulatorObject.quantity_selector!='') {
-                            qtys = document.querySelectorAll(simulatorObject.quantity_selector);
-                            if(qtys.length == 1) {
-                                qty = parseFloat(document.querySelector(simulatorObject.quantity_selector).value);
-                                price = price * qty;
-                            }
-                        }
-                        if( price < simulatorObject.min_amount || price > simulatorObject.max_amount ) {
-                            document.getElementsByClassName('PmtSimulator')[0].style.display = 'none';
-                            document.getElementsByClassName('PmtSimulator')[0].setAttribute('data-pmt-amount', '0');
-                        } else if (currentPrice != price ) {
-                            document.getElementsByClassName('PmtSimulator')[0].style.display = '';
-                            document.getElementsByClassName('PmtSimulator')[0].setAttribute('data-pmt-amount', price);
-                            if (typeof pmtClient !== 'undefined') {
-                                pmtClient.simulator.reload();
-                            }
-                        }
-                    }
+                var priceSelector = '<? echo $block->getPriceSelector();?>';
+                if (priceSelector === 'default' || priceSelector === '') {
+                    priceSelector = 'div.price-final_price span.price-wrapper span.price';
+                }
+                var quantitySelector = '<? echo $block->getQuantitySelector();?>';
+                if (quantitySelector === 'default' || quantitySelector === '') {
+                    quantitySelector = 'div.fieldset div.qty div.control input.qty';
+                }
+                var simulatorType = '<? echo $block->getSimulatorType();?>';
+                if (simulatorType === 'default' || simulatorType === '') {
+                    simulatorType = 'div.fieldset div.qty div.control input.qty';
+                }
+                if (typeof pmtSdk != 'undefined') {
+                    pmtSdk.simulator.init({
+                        publicKey: publicKey,
+                        type: simulatorType,
+                        selector: positionSelector,
+                        itemQuantitySelector: quantitySelector,
+                        itemAmountSelector: priceSelector
+                    });
+                    clearInterval(simulatorId);
                 }
             }
-        }
-
-        // CONFIG VARS
-        var min_amount = '<?php echo $block->getMinAmount();?>';
-        min_amount = (min_amount != '') ? parseFloat(min_amount) : '0.00';
-
-        var max_amount = '<?php echo $block->getMaxAmount();?>';
-        max_amount = (max_amount != '') ? parseFloat(max_amount) : '10000000.00';
-
-        var quantity_selector = '<?php echo html_entity_decode($block->getQuantitySelector()); ?>';
-
-        var selector = '<?php echo html_entity_decode($block->getPriceSelector());?>';
-        if (selector != '') {
-            var simulatorObject = {min_amount:min_amount,
-                max_amount:max_amount,
-                selector:selector,
-                quantity_selector:quantity_selector};
-            setInterval(function () {
-                getMagento2Price(simulatorObject);
+            simulatorId = setInterval(function () {
+                loadSimulator();
             }, 2000);
         }
-    </script>
+    });
+    // ]]>
+</script>
+<div class="PmtSimulator"></div>
 <?php
 }
 ?>
+

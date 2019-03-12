@@ -6,6 +6,10 @@ use Magento\Framework\View\Element\BlockInterface;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Ddl\Table;
 
+/**
+ * Class Iframe
+ * @package DigitalOrigin\Pmt\Controller\Payment
+ */
 class Iframe extends Action
 {
     /** Concurrency tablename */
@@ -19,6 +23,14 @@ class Iframe extends Action
     /** @var ResourceConnection $dbObject */
     protected $dbObject;
 
+    /**
+     * Iframe constructor.
+     *
+     * @param \Magento\Framework\App\Action\Context      $context
+     * @param \Magento\Framework\View\Result\PageFactory $pageFactory
+     * @param ResourceConnection                         $dbObject
+     * @param \DigitalOrigin\Pmt\Helper\Config           $pmtconfig
+     */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $pageFactory,
@@ -43,13 +55,13 @@ class Iframe extends Action
                 throw new \Exception('Empty orderId');
             }
 
-            if ($this->config['public_key'] == '' || $this->config['secret_key'] == '') {
+            if ($this->config['pmt_public_key'] == '' || $this->config['pmt_private_key'] == '') {
                 throw new \Exception('Public and Secret Key not found');
             }
 
             $orderClient = new \PagaMasTarde\OrdersApiClient\Client(
-                $this->config['public_key'],
-                $this->config['secret_key']
+                $this->config['pmt_public_key'],
+                $this->config['pmt_private_key']
             );
 
             $order = $orderClient->getOrder($orderId);
@@ -69,6 +81,10 @@ class Iframe extends Action
         }
     }
 
+    /**
+     * @return void|\Zend_Db_Statement_Interface
+     * @throws \Zend_Db_Exception
+     */
     private function checkDbLogTable()
     {
         /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
@@ -86,6 +102,11 @@ class Iframe extends Action
         return;
     }
 
+    /**
+     * @param $exceptionMessage
+     *
+     * @throws \Zend_Db_Exception
+     */
     private function insertLog($exceptionMessage)
     {
         if ($exceptionMessage instanceof \Exception) {

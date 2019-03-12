@@ -14,11 +14,6 @@ use PHPUnit\Framework\TestCase;
 abstract class PaylaterMagentoTest extends TestCase
 {
     /**
-     * Magento URL
-     */
-    const MAGENTO_URL = 'http://magento2-test.docker:8085/index.php';
-
-    /**
      * Magento Backoffice URL
      */
     const BACKOFFICE_FOLDER = '/admin';
@@ -96,7 +91,7 @@ abstract class PaylaterMagentoTest extends TestCase
         'backofficePassword' => 'password123',
         'publicKey'          => 'tk_fd53cd467ba49022e4f8215e',
         'secretKey'          => '21e57baa97459f6a',
-        'methodName'         => 'Financiación instantánea',
+        'methodName'         => 'Instant Financing',
         'defaultSimulatorOpt'=> 6,
         'defaultMinIns'      => 3,
         'defaultMaxIns'      => 12,
@@ -110,7 +105,7 @@ abstract class PaylaterMagentoTest extends TestCase
         'city'               => 'Barcelona',
         'street'             => 'Av Diagonal 585, planta 7',
         'phone'              => '600123123',
-        'checkoutDescription'=> 'Pay up to 12 comfortable installments with Paga + Tarde'
+        'checkoutDescription'=> 'Paga hasta en 12 cómodas cuotas con Paga+Tarde'
     );
 
     /**
@@ -119,10 +114,39 @@ abstract class PaylaterMagentoTest extends TestCase
     protected $webDriver;
 
     /**
+     * Magento version provided for tests in commandline as an argument.
+     *
+     * @var String
+     */
+    protected $version;
+
+    /**
+     * Magento version testing url port based on magento version
+     *
+     * @var array
+     */
+    protected $versionsPort = array(
+        '22' => '8085',
+        '23' => '8084',
+    );
+
+    /**
      * PaylaterMagentoTest constructor.
      */
     public function __construct()
     {
+        if (!isset($_SERVER['argv']) ||
+            !isset($_SERVER['argv'][4]) ||
+            $_SERVER['argv'][4] != 'magentoVersion' ||
+            !isset($_SERVER['argv'][6]) ||
+            !isset($this->versionsPort[$_SERVER['argv'][6]])
+        ) {
+            throw new \Exception("No magentoVersion param provided or not valid for phpunit testing");
+        }
+
+        $this->version = $_SERVER['argv'][6];
+        $this->configuration['magentoUrl'] = 'http://magento'.$this->version.'-test.docker:'.
+            $this->versionsPort[$this->version].'/index.php';
         $this->configuration['email'] = "john.doe+".microtime(true)."@digitalorigin.com";
 
         return parent::__construct();
@@ -136,8 +160,8 @@ abstract class PaylaterMagentoTest extends TestCase
         $this->webDriver = PmtWebDriver::create(
             'http://localhost:4444/wd/hub',
             DesiredCapabilities::chrome(),
-            90000,
-            90000
+            180000,
+            180000
         );
     }
 

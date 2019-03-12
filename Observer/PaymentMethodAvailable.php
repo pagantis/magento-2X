@@ -20,8 +20,8 @@ class PaymentMethodAvailable implements ObserverInterface
                 $checkResult = $observer->getEvent()->getResult();
                 $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
                 $config        = $objectManager->create('DigitalOrigin\Pmt\Helper\Config')->getConfig();
-                if (!isset($config['public_key']) || $config['public_key'] == '' ||
-                    !isset($config['secret_key']) || $config['secret_key'] == '') {
+                if (!isset($config['pmt_public_key']) || $config['pmt_public_key'] == '' ||
+                    !isset($config['pmt_private_key']) || $config['pmt_private_key'] == '') {
                     $checkResult->setData('is_available', false);
                 } else {
                     $checkResult->setData('is_available', true);

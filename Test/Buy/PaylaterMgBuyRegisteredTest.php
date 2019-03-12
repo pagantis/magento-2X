@@ -4,6 +4,10 @@ namespace DigitalOrigin\Pmt\Test\Buy;
 
 use DigitalOrigin\Pmt\Test\Common\AbstractMg21Selenium;
 use Httpful\Request;
+use PagaMasTarde\ModuleUtils\Exception\AlreadyProcessedException;
+use PagaMasTarde\ModuleUtils\Exception\MerchantOrderNotFoundException;
+use PagaMasTarde\ModuleUtils\Exception\NoIdentificationException;
+use PagaMasTarde\ModuleUtils\Exception\QuoteNotFoundException;
 
 /**
  * @requires magento-install
@@ -61,23 +65,47 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $orderArray = explode('/', $orderUrl);
         $magentoOrderId = (int)$orderArray['8'];
         $this->assertNotEmpty($magentoOrderId);
-        $notifyUrl = self::MAGENTO_URL.self::NOTIFICATION_FOLDER.'?'.self::NOTIFICATION_PARAMETER.'='.$magentoOrderId;
-        $response = Request::post($notifyUrl)->expects('json')->send();
-        $this->assertNotEmpty($response->body->result);
-        $this->assertContains(
-            self::NOORDER_TITLE,
-            $response->body->result,
-            "PR51=>".$response->body->result
+        $notifyFile = 'index/';
+        $quoteId=($magentoOrderId)-1;
+
+        if (version_compare($this->version, '23') >= 0) {
+            $notifyFile = 'indexV2/';
+            $quoteId=$magentoOrderId;
+        }
+
+        $notifyUrl = sprintf(
+            "%s%s%s%s%s%s",
+            $this->configuration['magentoUrl'],
+            self::NOTIFICATION_FOLDER,
+            $notifyFile,
+            '?',
+            self::NOTIFICATION_PARAMETER,
+            '='
         );
 
-        $magentoOrderId = 0;
-        $notifyUrl = self::MAGENTO_URL.self::NOTIFICATION_FOLDER.'?'.self::NOTIFICATION_PARAMETER.'='.$magentoOrderId;
-        $response = Request::post($notifyUrl)->expects('json')->send();
-        $this->assertNotEmpty($response->body->result);
+        $response = Request::post($notifyUrl.$quoteId)->expects('json')->send();
+        $this->assertNotEmpty($response->body->result, print_r($response, true));
         $this->assertContains(
-            self::NOTFOUND_TITLE,
+            AlreadyProcessedException::ERROR_MESSAGE,
             $response->body->result,
-            "PR53=>".$response->body->result
+            "PR51=>".$notifyUrl.$quoteId." = ".$response->body->result
+        );
+
+        $response = Request::post($notifyUrl)->expects('json')->send();
+        $this->assertNotEmpty($response->body->result, print_r($response, true));
+        $this->assertContains(
+            QuoteNotFoundException::ERROR_MESSAGE,
+            $response->body->result,
+            "PR58=>".$notifyUrl.$quoteId." = ".$response->body->result
+        );
+
+        $quoteId=0;
+        $response = Request::post($notifyUrl.$quoteId)->expects('json')->send();
+        $this->assertNotEmpty($response->body->result, print_r($response, true));
+        $this->assertContains(
+            MerchantOrderNotFoundException::ERROR_MESSAGE,
+            $response->body->result,
+            "PR51=>".$notifyUrl.$quoteId." = ".$response->body->result
         );
     }
 

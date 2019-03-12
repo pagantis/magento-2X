@@ -19,7 +19,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function loginToBackOffice()
     {
-        $this->webDriver->get(self::MAGENTO_URL.self::BACKOFFICE_FOLDER);
+        $this->webDriver->get($this->configuration['magentoUrl'].self::BACKOFFICE_FOLDER);
         $emailElementSearch = WebDriverBy::id('username');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($emailElementSearch);
         $this->webDriver->wait()->until($condition);
@@ -39,7 +39,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function getPaylaterBackOffice()
     {
-        $this->webDriver->get(self::MAGENTO_URL.self::BACKOFFICE_FOLDER);
+        $this->webDriver->get($this->configuration['magentoUrl'].self::BACKOFFICE_FOLDER);
 
         $elementSearch = WebDriverBy::linkText('STORES');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($elementSearch);
@@ -101,7 +101,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function createAccount()
     {
-        $this->webDriver->get(self::MAGENTO_URL);
+        $this->webDriver->get($this->configuration['magentoUrl']);
         $loginButtonSearch = WebDriverBy::linkText('Create an Account');
         $condition = WebDriverExpectedCondition::elementToBeClickable($loginButtonSearch);
         $this->webDriver->wait()->until($condition);
@@ -142,6 +142,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $condition = WebDriverExpectedCondition::presenceOfElementLocated($regionLink);
         $this->webDriver->wait()->until($condition);
 
+        sleep(5);
         $this->webDriver->findElement(WebDriverBy::id('region_id'))
                         ->findElement(WebDriverBy::cssSelector("option[value='161']"))
                         ->click();
@@ -155,7 +156,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function loginToFrontend()
     {
-        $this->webDriver->get(self::MAGENTO_URL);
+        $this->webDriver->get($this->configuration['magentoUrl']);
         $loginButton = WebDriverBy::partialLinkText('Sign In');
         $condition = WebDriverExpectedCondition::elementToBeClickable($loginButton);
         $this->webDriver->wait()->until($condition);
@@ -178,7 +179,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function logoutFromFrontend()
     {
-        $this->webDriver->get(self::MAGENTO_URL.self::LOGOUT_FOLDER);
+        $this->webDriver->get($this->configuration['magentoUrl'].self::LOGOUT_FOLDER);
 
         $validatorSearch = WebDriverBy::className('base');
         $actualString = $this->webDriver->findElement($validatorSearch)->getText();
@@ -191,21 +192,10 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function checkProductPage()
     {
-        $this->checkSimulator();
-        $pmtSimElement = WebDriverBy::className('PmtSimulator');
-        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($pmtSimElement);
-        $this->webDriver->wait()->until($condition);
-        sleep(2);
-        $simulatorElement = $this->findByClass('PmtSimulator');
-        $currentSimulatorPrice = $simulatorElement->getAttribute('data-pmt-amount');
-        $this->configureProduct(self::PRODUCT_QTY_AFTER);
         sleep(10);
-        $simulatorElement = $this->findByClass('PmtSimulator');
-        $newPrice = $simulatorElement->getAttribute('data-pmt-amount');
-        $this->assertNotEmpty($currentSimulatorPrice, $currentSimulatorPrice);
-        $this->assertNotNull($currentSimulatorPrice, $currentSimulatorPrice);
-        $newSimulatorPrice = $currentSimulatorPrice * self::PRODUCT_QTY_AFTER;
-        $this->assertEquals($newPrice, $newSimulatorPrice, "PR22,PR23");
+        if (version_compare($this->version, '23') < 0) {
+            $this->checkSimulator();
+        }
 
         $paymentFormElement = WebDriverBy::id('product-addtocart-button');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($paymentFormElement);
@@ -222,7 +212,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function goToProduct($verifySimulator = true)
     {
-        $this->webDriver->get(self::MAGENTO_URL);
+        $this->webDriver->get($this->configuration['magentoUrl']);
         $this->findByLinkText(self::PRODUCT_NAME)->click();
         $condition = WebDriverExpectedCondition::titleContains(self::PRODUCT_NAME);
         $this->webDriver->wait()->until($condition);
@@ -259,7 +249,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
 
     public function goToCart()
     {
-        $this->webDriver->get(self::MAGENTO_URL.self::CART_FOLDER);
+        $this->webDriver->get($this->configuration['magentoUrl'].self::CART_FOLDER);
         $this->findByLinkText(self::PRODUCT_NAME)->click();
         $condition = WebDriverExpectedCondition::titleContains(self::CART_TITLE);
         $this->webDriver->wait()->until($condition);
@@ -285,10 +275,11 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function goToCheckout()
     {
-        $this->webDriver->get(self::MAGENTO_URL.self::CHECKOUT_FOLDER);
+        sleep(15);
+        $this->webDriver->get($this->configuration['magentoUrl'].self::CHECKOUT_FOLDER);
         $condition = WebDriverExpectedCondition::titleContains(self::CHECKOUT_TITLE);
         $this->webDriver->wait()->until($condition);
-        $this->assertTrue((bool)$condition, self::MAGENTO_URL.self::CHECKOUT_FOLDER);
+        $this->assertTrue((bool)$condition, $this->configuration['magentoUrl'].self::CHECKOUT_FOLDER);
     }
 
     /**
@@ -420,8 +411,6 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $actualString = $descriptionElement->getText();
         $this->assertContains($this->configuration['checkoutDescription'], $actualString, "PR54");
 
-        $this->checkSimulator();
-
         $priceSearch = WebDriverBy::className('price');
         $priceElements = $this->webDriver->findElements($priceSearch);
         $price = $priceElements['6']->getText();
@@ -429,13 +418,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $this->assertNotEquals($price, 0, $price);
         $this->assertNotEmpty($price);
 
-        $simulatorElement = $this->findByClass('PmtSimulator');
-        $simulatorPrice = $simulatorElement->getAttribute('data-pmt-amount');
-        $simulatorPrice = preg_replace('/[^\x{20}-\x{7F}]/u', '', $simulatorPrice);
-        $price = preg_replace('/[^\x{20}-\x{7F}]/u', '', $price);
-        $this->assertContains($simulatorPrice, $price, json_encode(array($price,$simulatorPrice)));
-
-        sleep(2);
+        sleep(20);
         $checkoutButton = WebDriverBy::cssSelector("#checkout-payment-method-load > .payment-methods > .payment-group > ._active > .payment-method-content > .actions-toolbar > .primary");
         $condition = WebDriverExpectedCondition::elementToBeClickable($checkoutButton);
         $this->webDriver->wait()->until($condition);
@@ -501,14 +484,10 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     private function checkSimulator()
     {
+        sleep(20);
         $simulatorElementSearch = WebDriverBy::className('PmtSimulator');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($simulatorElementSearch);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition, "PR19//PR28");
-        $simulatorElement = $this->webDriver->findElement(WebDriverBy::className('PmtSimulator'));
-        $minInstallments = $simulatorElement->getAttribute('data-pmt-num-quota');
-        $this->assertEquals($minInstallments, $this->configuration['defaultMinIns'], "PR20//PR29");
-        $maxInstallments = $simulatorElement->getAttribute('data-pmt-max-ins');
-        $this->assertEquals($maxInstallments, $this->configuration['defaultMaxIns'], "PR20//PR29");
     }
 }

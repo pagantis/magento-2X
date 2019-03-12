@@ -7,6 +7,7 @@ use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
+use DigitalOrigin\Pmt\Helper\ExtraConfig;
 
 /**
  * Class Simulator
@@ -27,7 +28,7 @@ class Simulator extends Template
     protected $publicKey;
 
     /**
-     * @var int
+     * @var string
      */
     protected $productSimulator;
 
@@ -47,19 +48,9 @@ class Simulator extends Template
     protected $minAmount;
 
     /**
-     * @var float
-     */
-    protected $maxAmount;
-
-    /**
      * @var int
      */
     protected $minInstallments;
-
-    /**
-     * @var int
-     */
-    protected $maxInstallments;
 
     /**
      * @var string
@@ -71,6 +62,10 @@ class Simulator extends Template
      */
     protected $quantitySelector;
 
+    /**
+     * @var String
+     */
+    protected $positionSelector;
 
     /**
      * @var Registry
@@ -78,15 +73,27 @@ class Simulator extends Template
     protected $registry;
 
     /**
+     * @var Config
+     */
+    protected $extraConfig;
+
+    /**
+     * @var String
+     */
+    protected $simulatorType;
+
+    /**
      * Simulator constructor.
      *
      * @param Context  $context
      * @param Registry $registry
+     * @param ExtraConfig   $extraConfig
      * @param array    $data
      */
     public function __construct(
         Context $context,
         Registry $registry,
+        ExtraConfig $extraConfig,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -96,14 +103,15 @@ class Simulator extends Template
         $config = $scopeConfig->getValue('payment/paylater');
 
         $this->enabled = $config['active'];
-        $this->publicKey = isset($config['public_key']) ? $config['public_key'] : '';
+        $this->publicKey = isset($config['pmt_public_key']) ? $config['pmt_public_key'] : '';
         $this->productSimulator = $config['product_simulator'];
-        $this->minAmount = $config['min_amount'];
-        $this->maxAmount = $config['max_amount'];
-        $this->minInstallments = $config['min_installments'];
-        $this->maxInstallments = $config['max_installments'];
-        $this->priceSelector = $config['price_selector'];
-        $this->quantitySelector = $config['quantity_selector'];
+        $this->extraConfig = $extraConfig->getExtraConfig();
+        $this->minAmount = $this->extraConfig['PMT_DISPLAY_MIN_AMOUNT'];
+        $this->minInstallments = $this->extraConfig['PMT_SIMULATOR_START_INSTALLMENTS'];
+        $this->priceSelector = $this->extraConfig['PMT_SIMULATOR_CSS_PRICE_SELECTOR'];
+        $this->quantitySelector = $this->extraConfig['PMT_SIMULATOR_CSS_QUANTITY_SELECTOR'];
+        $this->positionSelector = $this->extraConfig['PMT_SIMULATOR_CSS_POSITION_SELECTOR'];
+        $this->simulatorType = $this->extraConfig['PMT_SIMULATOR_DISPLAY_TYPE'];
     }
 
     /**
@@ -132,14 +140,6 @@ class Simulator extends Template
     public function getPublicKey()
     {
         return $this->publicKey;
-    }
-
-    /**
-     * @return int
-     */
-    public function getSimulatorType()
-    {
-        return $this->simulatorType;
     }
 
     /**
@@ -177,7 +177,7 @@ class Simulator extends Template
     }
 
     /**
-     * @return int
+     * @return array|false|string
      */
     public function getProductSimulator()
     {
@@ -209,22 +209,6 @@ class Simulator extends Template
     }
 
     /**
-     * @return float
-     */
-    public function getMaxAmount()
-    {
-        return $this->maxAmount;
-    }
-
-    /**
-     * @param float $maxAmount
-     */
-    public function setMaxAmount($maxAmount)
-    {
-        $this->maxAmount = $maxAmount;
-    }
-
-    /**
      * @return int
      */
     public function getMinInstallments()
@@ -238,22 +222,6 @@ class Simulator extends Template
     public function setMinInstallments($minInstallments)
     {
         $this->minInstallments = $minInstallments;
-    }
-
-    /**
-     * @return int
-     */
-    public function getMaxInstallments()
-    {
-        return $this->maxInstallments;
-    }
-
-    /**
-     * @param int $maxInstallments
-     */
-    public function setMaxInstallments($maxInstallments)
-    {
-        $this->maxInstallments = $maxInstallments;
     }
 
     /**
@@ -288,4 +256,36 @@ class Simulator extends Template
         $this->quantitySelector = $quantitySelector;
     }
 
+    /**
+     * @return String
+     */
+    public function getPositionSelector()
+    {
+        return $this->positionSelector;
+    }
+
+    /**
+     * @param String $positionSelector
+     */
+    public function setPositionSelector($positionSelector)
+    {
+        $this->positionSelector = $positionSelector;
+    }
+
+
+    /**
+     * @return String
+     */
+    public function getSimulatorType()
+    {
+        return $this->simulatorType;
+    }
+
+    /**
+     * @param String $simulatorType
+     */
+    public function setSimulatorType($simulatorType)
+    {
+        $this->simulatorType = $simulatorType;
+    }
 }
