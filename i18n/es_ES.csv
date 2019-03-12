@@ -23,7 +23,7 @@
 "How to open payment", "Cómo abrir el pago"
 "Choose the way to open the Paga+Tarde form.", "Elige la forma de abrir el formulario Paga + Tarde."
 "Product Simulator", "Simulador en la página de producto"
-"Use installment simulator in product page (Disabled for Magento V2.3)", "Utilice simulador de cuotas en la página del producto."
+"Use installment simulator in product page (Disabled for Magento V2.3)", "Utilice simulador de cuotas en la página del producto. (No disponible para Magento V2.3)"
 "Checkout Simulator", "Simulador en la página de pago"
 "Use installment simulator in checkout page.", "Utilice simulador de cuotas en la página de pago."
 "Price selector", "Selector de precios"
