@@ -102,7 +102,7 @@ abstract class PaylaterMagentoTest extends TestCase
         'publicKey'          => 'tk_fd53cd467ba49022e4f8215e',
         'secretKey'          => '21e57baa97459f6a',
         'methodName'         => 'Pagantis',
-        'methodTitle'        => 'Financiación instántanea',
+        'methodTitle'        => 'Financiación instantánea',
         'defaultSimulatorOpt'=> 6,
         'defaultMinIns'      => 3,
         'defaultMaxIns'      => 12,
