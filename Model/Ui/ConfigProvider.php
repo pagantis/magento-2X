@@ -32,28 +32,19 @@ final class ConfigProvider implements ConfigProviderInterface
     /**
      * @var String
      */
-    protected $store;
+    protected $assetRepository;
 
-    /**
-     * ConfigProvider constructor.
-     *
-     * @param \Magento\Payment\Helper\Data           $paymentHelper
-     * @param Session                                $checkoutSession
-     * @param ExtraConfig                            $extraConfig
-     * @param \Magento\Store\Api\Data\StoreInterface $store
-     *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
+
     public function __construct(
         \Magento\Payment\Helper\Data $paymentHelper,
         Session $checkoutSession,
         ExtraConfig $extraConfig,
-        \Magento\Store\Api\Data\StoreInterface $store
+        \Magento\Framework\View\Asset\Repository $assetRepository
     ) {
         $this->method = $paymentHelper->getMethodInstance(self::CODE);
         $this->checkoutSession = $checkoutSession;
         $this->extraConfig = $extraConfig->getExtraConfig();
-        $this->store = $store;
+        $this->assetRepository = $assetRepository;
     }
 
     /**
@@ -64,12 +55,7 @@ final class ConfigProvider implements ConfigProviderInterface
     public function getConfig()
     {
         $quote = $this->checkoutSession->getQuote();
-        $currentStore = $this->_store->getLocaleCode();
 
-        $img = "/Images/logosimple.png";
-        if ($currentStore == 'en_US') {
-            $img = "/Images/logopagantis.png";
-        }
         return [
             'payment' => [
                 self::CODE => [
@@ -77,7 +63,7 @@ final class ConfigProvider implements ConfigProviderInterface
                     'displayMode' => $this->method->getConfigData('display_mode'),
                     'title' => __($this->extraConfig['PMT_TITLE']),
                     'subtitle' => __($this->extraConfig['PMT_TITLE_EXTRA']),
-                    'image' => $img
+                    'image' => $this->assetRepository->getUrl('DigitalOrigin_Pmt::logopagantis.png')
                 ],
             ],
         ];
