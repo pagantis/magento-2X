@@ -149,7 +149,7 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         );
         $response = Request::get($configUrl)->expects('json')->send();
         foreach ($this->configs as $config) {
-            $this->assertArrayHasKey($config, "PR61=>".$response->body);
+            $this->assertArrayHasKey($config, $this->configs, "PR61=>".$response->body);
         }
 
         $body = array('PMT_TITLE' => 'changed');
@@ -157,7 +157,7 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
                            ->body($body, Mime::FORM)
                            ->expectsJSON()
                            ->send();
-        $this->assertEquals('changed', "PR62=>".$notifyUrl." = ".$response->body->PMT_TITLE);
+        $this->assertEquals('changed', "PR62=>".$configUrl." = ".$response->body->PMT_TITLE);
     }
 
     /**
