@@ -137,7 +137,7 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
             $this->configuration['secretKey']
         );
         $response = Request::get($logUrl)->expects('json')->send();
-        $this->assertEquals(3, "PR57=>".$logUrl." = ".count($response->body));
+        $this->assertEquals(3, count($response->body), "PR57=>".$logUrl." = ".count($response->body));
 
         $notifyUrl = self::MAGENTO_URL.self::CONFIG_FOLDER.'post?secret='.$this->configuration['secretKey'];
 
