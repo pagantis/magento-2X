@@ -147,9 +147,10 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
             '?secret=',
             $this->configuration['secretKey']
         );
+
         $response = Request::get($configUrl)->expects('json')->send();
         foreach ($this->configs as $config) {
-            $this->assertArrayHasKey($config, $this->configs, (array)$response->body);
+            $this->assertArrayHasKey($config, $this->configs, "PR61=>".print_r($response->body, true));
         }
 
         $body = array('PMT_TITLE' => 'changed');

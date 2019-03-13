@@ -30,20 +30,30 @@ final class ConfigProvider implements ConfigProviderInterface
     protected $extraConfig;
 
     /**
+     * @var String
+     */
+    protected $store;
+
+    /**
      * ConfigProvider constructor.
      *
-     * @param \Magento\Payment\Helper\Data $paymentHelper
-     * @param Session                      $checkoutSession
-     * @param ExtraConfig                  $extraConfig
+     * @param \Magento\Payment\Helper\Data           $paymentHelper
+     * @param Session                                $checkoutSession
+     * @param ExtraConfig                            $extraConfig
+     * @param \Magento\Store\Api\Data\StoreInterface $store
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function __construct(
         \Magento\Payment\Helper\Data $paymentHelper,
         Session $checkoutSession,
-        ExtraConfig $extraConfig
+        ExtraConfig $extraConfig,
+        \Magento\Store\Api\Data\StoreInterface $store
     ) {
         $this->method = $paymentHelper->getMethodInstance(self::CODE);
         $this->checkoutSession = $checkoutSession;
         $this->extraConfig = $extraConfig->getExtraConfig();
+        $this->store = $store;
     }
 
     /**
@@ -54,14 +64,20 @@ final class ConfigProvider implements ConfigProviderInterface
     public function getConfig()
     {
         $quote = $this->checkoutSession->getQuote();
+        $currentStore = $this->_store->getLocaleCode();
 
+        $img = "/Images/logosimple.png";
+        if ($currentStore == 'en_US') {
+            $img = "/Images/logopagantis.png";
+        }
         return [
             'payment' => [
                 self::CODE => [
                     'total' => $quote->getGrandTotal(),
                     'displayMode' => $this->method->getConfigData('display_mode'),
                     'title' => __($this->extraConfig['PMT_TITLE']),
-                    'subtitle' => __($this->extraConfig['PMT_TITLE_EXTRA'])
+                    'subtitle' => __($this->extraConfig['PMT_TITLE_EXTRA']),
+                    'image' => $img
                 ],
             ],
         ];

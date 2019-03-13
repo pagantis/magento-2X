@@ -36,6 +36,10 @@ define(
                     return window.checkoutConfig.payment.paylater.displayMode
                 },
 
+                getImage: function () {
+                    return window.checkoutConfig.payment.paylater.image
+                },
+
                 selectPaymentMethod: function() {
                     selectPaymentMethodAction(this.getData());
                     checkoutData.setSelectedPaymentMethod(this.item.method);
