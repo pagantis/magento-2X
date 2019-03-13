@@ -8,6 +8,7 @@
 "Private API Key(*)", "Chave de API privada (*)"
 "Title", "Título"
 "Instant financing", "Financiamento instantâneo"
+"Instant Financing", "Financiamento instantâneo"
 "Payment title to show in checkout page", "Título do pagamento para mostrar na página de checkout"
 "Checkout description", "Descrição do checkout"
 "Description to show in checkout page after payment title. Leave blank to disabled.", "Descrição para mostrar na página de finalização após o título do pagamento. Deixe em branco para desativado."
