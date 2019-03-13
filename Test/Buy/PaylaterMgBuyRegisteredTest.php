@@ -139,15 +139,21 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $response = Request::get($logUrl)->expects('json')->send();
         $this->assertEquals(3, count($response->body), "PR57=>".$logUrl." = ".count($response->body));
 
-        $notifyUrl = self::MAGENTO_URL.self::CONFIG_FOLDER.'post?secret='.$this->configuration['secretKey'];
-
-        $response = Request::get($notifyUrl)->expects('json')->send();
+        $configUrl = sprintf(
+            "%s%s%s%s%s",
+            $this->configuration['magentoUrl'],
+            self::CONFIG_FOLDER,
+            $version,
+            '?secret=',
+            $this->configuration['secretKey']
+        );
+        $response = Request::get($configUrl)->expects('json')->send();
         foreach ($this->configs as $config) {
             $this->assertArrayHasKey($config, "PR61=>".$response->body);
         }
 
         $body = array('PMT_TITLE' => 'changed');
-        $response = Request::post($notifyUrl)
+        $response = Request::post($configUrl)
                            ->body($body, Mime::FORM)
                            ->expectsJSON()
                            ->send();
