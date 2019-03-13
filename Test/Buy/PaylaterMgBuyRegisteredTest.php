@@ -159,7 +159,8 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
                            ->body($body, Mime::FORM)
                            ->expectsJSON()
                            ->send();
-        $this->assertEquals('changed', "PR62=>".$configUrl." = ".$response->body->PMT_TITLE);
+        $title = $response->body->PMT_TITLE;
+        $this->assertEquals('changed', $title, "PR62=>".$configUrl." = ".$title);
     }
 
     /**
