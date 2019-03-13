@@ -60,8 +60,8 @@ final class ConfigProvider implements ConfigProviderInterface
                 self::CODE => [
                     'total' => $quote->getGrandTotal(),
                     'displayMode' => $this->method->getConfigData('display_mode'),
-                    'title' => $this->extraConfig['PMT_TITLE'],
-                    'subtitle' => $this->extraConfig['PMT_TITLE_EXTRA']
+                    'title' => $this->__($this->extraConfig['PMT_TITLE']),
+                    'subtitle' => $this->__($this->extraConfig['PMT_TITLE_EXTRA'])
                 ],
             ],
         ];
