@@ -404,7 +404,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
         $menuElement = $this->webDriver->findElement($menuSearch);
         $actualString = $menuElement->getText();
         $compareString = (strstr($actualString, $this->configuration['methodTitle'])) === false ? false : true;
-        $this->assertTrue($compareString, $actualString, "PR25,PR26");
+        $this->assertTrue($compareString, "PR25,PR26=>".$actualString.'--'.$this->configuration['methodTitle']);
 
         $descriptionSearch = WebDriverBy::cssSelector("#checkout-payment-method-load > .payment-methods > .payment-group > ._active > .payment-method-content");
         $descriptionElement = $this->webDriver->findElement($descriptionSearch);

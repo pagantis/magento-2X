@@ -102,7 +102,7 @@ abstract class PaylaterMagentoTest extends TestCase
         'publicKey'          => 'tk_fd53cd467ba49022e4f8215e',
         'secretKey'          => '21e57baa97459f6a',
         'methodName'         => 'Pagantis',
-        'methodTitle'        => 'Instant Financing',
+        'methodTitle'        => 'Financiación instántanea',
         'defaultSimulatorOpt'=> 6,
         'defaultMinIns'      => 3,
         'defaultMaxIns'      => 12,
@@ -116,7 +116,7 @@ abstract class PaylaterMagentoTest extends TestCase
         'city'               => 'Barcelona',
         'street'             => 'Av Diagonal 585, planta 7',
         'phone'              => '600123123',
-        'checkoutDescription'=> 'Pay up to 12 comfortable installments with Paga + Tarde'
+        'checkoutDescription'=> 'Paga hasta en 12'
     );
 
     /**
