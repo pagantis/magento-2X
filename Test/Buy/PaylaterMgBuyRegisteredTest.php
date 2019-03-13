@@ -4,6 +4,7 @@ namespace DigitalOrigin\Pmt\Test\Buy;
 
 use DigitalOrigin\Pmt\Test\Common\AbstractMg21Selenium;
 use Httpful\Request;
+use Httpful\Mime;
 use PagaMasTarde\ModuleUtils\Exception\AlreadyProcessedException;
 use PagaMasTarde\ModuleUtils\Exception\MerchantOrderNotFoundException;
 use PagaMasTarde\ModuleUtils\Exception\QuoteNotFoundException;
@@ -66,7 +67,8 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $this->verifyOrder();
         $this->setConfirmationPrice($this->verifyOrderInformation());
         $this->comparePrices();
-        $this->checkProcessed();
+        $this->checkNotifications();
+        $this->checkControllers();
         $this->quit();
     }
 
@@ -75,22 +77,22 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $this->assertContains($this->getCheckoutPrice(), $this->getConfirmationPrice(), "PR46");
     }
 
-    private function checkProcessed()
+    private function checkNotifications()
     {
         $orderUrl = $this->webDriver->getCurrentURL();
         $this->assertNotEmpty($orderUrl);
 
-        $orderArray = explode('/', $orderUrl);
+        $orderArray     = explode('/', $orderUrl);
         $magentoOrderId = (int)$orderArray['8'];
         $this->assertNotEmpty($magentoOrderId);
         $notifyFile = 'index/';
-        $quoteId=($magentoOrderId)-1;
-        $version = '';
+        $quoteId    = ($magentoOrderId) - 1;
+        $version    = '';
 
         if (version_compare($this->version, '23') >= 0) {
             $notifyFile = 'indexV2/';
-            $quoteId = $magentoOrderId;
-            $version = "V2";
+            $quoteId    = $magentoOrderId;
+            $version    = "V2";
         }
 
         $notifyUrl = sprintf(
@@ -119,7 +121,7 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
             "PR58=>".$notifyUrl.$quoteId." = ".$response->body->result
         );
 
-        $quoteId=0;
+        $quoteId  = 0;
         $response = Request::post($notifyUrl.$quoteId)->expects('json')->send();
         $this->assertNotEmpty($response->body->result, print_r($response, true));
         $this->assertContains(
@@ -127,6 +129,14 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
             $response->body->result,
             "PR51=>".$notifyUrl.$quoteId." = ".$response->body->result
         );
+    }
+
+    private function checkControllers()
+    {
+        $version = '';
+        if (version_compare($this->version, '23') >= 0) {
+            $version    = "V2";
+        }
 
         $logUrl = sprintf(
             "%s%s%s%s%s",
