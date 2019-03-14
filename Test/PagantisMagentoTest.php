@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
  * Class pagantisMagentoTest
  * @package Pagantis\Test
  */
-abstract class pagantisMagentoTest extends TestCase
+abstract class PagantisMagentoTest extends TestCase
 {
     /**
      * Magento Backoffice URL

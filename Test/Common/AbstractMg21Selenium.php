@@ -2,8 +2,7 @@
 
 namespace Pagantis\Pagantis\Test\Common;
 
-use Pagantis\Pagantis\Test\pagantisMagentoTest;
-use Facebook\WebDriver\WebDriver;
+use Pagantis\Pagantis\Test\PagantisMagentoTest;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Pagantis\SeleniumFormUtils\SeleniumHelper;
@@ -12,7 +11,7 @@ use Pagantis\SeleniumFormUtils\SeleniumHelper;
  * Class AbstractMg21Selenium
  * @package Pagantis\Test\Common
  */
-abstract class AbstractMg21Selenium extends pagantisMagentoTest
+abstract class AbstractMg21Selenium extends PagantisMagentoTest
 {
     /**
      * @throws \Exception
