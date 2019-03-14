@@ -1,6 +1,6 @@
 <?php
 /**
- * @var \DigitalOrigin\Pmt\Block\Product\Simulator $block
+ * @var \Pagantis\Pagantis\Block\Product\Simulator $block
  */
 if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->getPublicKey()) {
 ?>
@@ -8,7 +8,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
     require([
         'jquery',
         'https://cdn.pagamastarde.com/js/pmt-v2/sdk.js'
-    ], function ($, pmtSdk) {
+    ], function ($, pagantisSdk) {
         var moduleEnabled = '<? echo $block->isEnabled();?>';
         var simulatorEnabled = '<? echo $block->getProductSimulator();?>';
         var publicKey = '<? echo $block->getPublicKey();?>';
@@ -23,7 +23,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
             function loadSimulator() {
                 var positionSelector = '<? echo $block->getPositionSelector();?>';
                 if (positionSelector === 'default' || positionSelector === '') {
-                    positionSelector = '.PmtSimulator';
+                    positionSelector = '.pagantisSimulator';
                 }
                 var priceSelector = '<? echo $block->getPriceSelector();?>';
                 if (priceSelector === 'default' || priceSelector === '') {
@@ -37,8 +37,8 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
                 if (simulatorType === 'default' || simulatorType === '') {
                     simulatorType = 'div.fieldset div.qty div.control input.qty';
                 }
-                if (typeof pmtSdk != 'undefined') {
-                    pmtSdk.simulator.init({
+                if (typeof pagantisSdk != 'undefined') {
+                    pagantisSdk.simulator.init({
                         publicKey: publicKey,
                         type: simulatorType,
                         selector: positionSelector,
@@ -55,7 +55,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
     });
     // ]]>
 </script>
-<div class="PmtSimulator"></div>
+<div class="pagantisSimulator"></div>
 <?php
 }
 ?>

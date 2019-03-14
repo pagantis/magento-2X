@@ -13,7 +13,7 @@ To install the module of Pagantis in your Magento shop, you can use Composer:
 
 ```php
     composer require pagamastarde/magento-2x
-    bin/magento module:enable DigitalOrigin_Pmt
+    bin/magento module:enable Pagantis_Pagantis
     bin/magento setup:upgrade
     bin/magento setup:di:compile
     

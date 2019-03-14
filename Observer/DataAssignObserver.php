@@ -1,13 +1,13 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Observer;
+namespace Pagantis\Pagantis\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Payment\Observer\AbstractDataAssignObserver;
 
 /**
  * Class DataAssignObserver
- * @package DigitalOrigin\Pmt\Observer
+ * @package Pagantis\Pagantis\Observer
  */
 class DataAssignObserver extends AbstractDataAssignObserver
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Helper;
+namespace Pagantis\Pagantis\Helper;
 
 /**
  * Class Config
- * @package DigitalOrigin\Pmt\Helper
+ * @package Pagantis\Pagantis\Helper
  */
 class Config
 {

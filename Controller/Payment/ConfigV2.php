@@ -1,9 +1,8 @@
 <?php
-namespace DigitalOrigin\Pmt\Controller\Payment;
+namespace Pagantis\Pagantis\Controller\Payment;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\ResourceConnection;
-use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
@@ -11,7 +10,7 @@ use Magento\Framework\App\Request\InvalidRequestException;
 class ConfigV2 extends Action implements CsrfAwareActionInterface
 {
     /** Config tablename */
-    const CONFIG_TABLE = 'pmt_config';
+    const CONFIG_TABLE = 'Pagantis_config';
 
     /** @var ResourceConnection $dbObject */
     protected $dbObject;
@@ -34,22 +33,22 @@ class ConfigV2 extends Action implements CsrfAwareActionInterface
                                    'PAGANTIS_DISPLAY_MIN_AMOUNT'=>1,
                                    'PAGANTIS_URL_OK'=>'',
                                    'PAGANTIS_URL_KO'=>'',
-                                   'PAGANTIS_TITLE_EXTRA' => 'Pay up to 12 comfortable installments with Paga + Tarde. Completely online and sympathetic request, and the answer is immediate!'
+                                   'PAGANTIS_TITLE_EXTRA' => 'Pay up to 12 comfortable installments with Pagantis. Completely online and sympathetic request, and the answer is immediate!'
     );
 
     /**
      * Log constructor.
      *
      * @param \Magento\Framework\App\Action\Context $context
-     * @param \DigitalOrigin\Pmt\Helper\Config      $pmtConfig
+     * @param \Pagantis\Pagantis\Helper\Config      $pagantisConfig
      * @param ResourceConnection                    $dbObject
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
-        \DigitalOrigin\Pmt\Helper\Config $pmtConfig,
+        \Pagantis\Pagantis\Helper\Config $pagantisConfig,
         ResourceConnection $dbObject
     ) {
-        $this->config = $pmtConfig->getConfig();
+        $this->config = $pagantisConfig->getConfig();
         $this->dbObject = $dbObject;
 
         // CsrfAwareAction Magento2.3 compatibility

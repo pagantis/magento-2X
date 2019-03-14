@@ -19,7 +19,7 @@ define(
 
         return Component.extend({
                 defaults: {
-                    template: 'DigitalOrigin_Pmt/payment/checkout-form'
+                    template: 'Pagantis_Pagantis/payment/checkout-form'
                 },
 
                 redirectAfterPlaceOrder: false,

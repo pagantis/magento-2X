@@ -1,12 +1,12 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Test\Register;
+namespace Pagantis\Pagantis\Test\Register;
 
-use DigitalOrigin\Pmt\Test\Common\AbstractMg21Selenium;
+use Pagantis\Pagantis\Test\Common\AbstractMg21Selenium;
 
 /**
  * Class pagantisMgInstallTest
- * @package DigitalOrigin\Test\Register
+ * @package Pagantis\Test\Register
  *
  * @group magento-register
  */

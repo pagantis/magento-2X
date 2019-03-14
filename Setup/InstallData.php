@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Setup;
+namespace Pagantis\Pagantis\Setup;
 
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
@@ -9,7 +9,7 @@ use Magento\Framework\Setup\ModuleDataSetupInterface;
 class InstallData implements InstallDataInterface
 {
     /** Config tablename */
-    const CONFIG_TABLE = 'pmt_config';
+    const CONFIG_TABLE = 'Pagantis_config';
 
     /**
      * Variable which contains extra configuration. If you modify this array, modify it in UpdateData.php too
@@ -29,7 +29,7 @@ class InstallData implements InstallDataInterface
                            'PAGANTIS_DISPLAY_MIN_AMOUNT'=>1,
                            'PAGANTIS_URL_OK'=>'',
                            'PAGANTIS_URL_KO'=>'',
-                           'PAGANTIS_TITLE_EXTRA' => 'Pay up to 12 comfortable installments with Paga + Tarde. Completely online and sympathetic request, and the answer is immediate!'
+                           'PAGANTIS_TITLE_EXTRA' => 'Pay up to 12 comfortable installments with Pagantis. Completely online and sympathetic request, and the answer is immediate!'
     );
 
     /**

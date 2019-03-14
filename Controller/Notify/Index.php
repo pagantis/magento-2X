@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Controller\Notify;
+namespace Pagantis\Pagantis\Controller\Notify;
 
 use Magento\Quote\Model\QuoteManagement;
 use Magento\Quote\Api\Data\PaymentInterface;
@@ -12,8 +12,8 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\Action;
 use Pagantis\ModuleUtils\Exception\MerchantOrderNotFoundException;
 use Pagantis\OrdersApiClient\Client;
-use DigitalOrigin\Pmt\Helper\Config;
-use DigitalOrigin\Pmt\Helper\ExtraConfig;
+use Pagantis\Pagantis\Helper\Config;
+use Pagantis\Pagantis\Helper\ExtraConfig;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\DB\Ddl\Table;
@@ -31,7 +31,7 @@ use Pagantis\ModuleUtils\Model\Log\LogEntry;
 
 /**
  * Class Index
- * @package DigitalOrigin\Pmt\Controller\Notify
+ * @package Pagantis\Pagantis\Controller\Notify
  */
 class Index extends Action
 {
@@ -39,10 +39,10 @@ class Index extends Action
     const ORDERS_TABLE = 'cart_process';
 
     /** Concurrency tablename */
-    const CONCURRENCY_TABLE = 'pmt_orders';
+    const CONCURRENCY_TABLE = 'Pagantis_orders';
 
     /** Concurrency tablename */
-    const LOGS_TABLE = 'pmt_logs';
+    const LOGS_TABLE = 'Pagantis_logs';
 
     /** Payment code */
     const PAYMENT_METHOD = 'pagantis';
@@ -80,8 +80,8 @@ class Index extends Action
     /** @var mixed $magentoOrderId */
     protected $magentoOrderId;
 
-    /** @var mixed $pmtOrder */
-    protected $pmtOrder;
+    /** @var mixed $pagantisOrder */
+    protected $pagantisOrder;
 
     /** @var ResourceConnection $dbObject */
     protected $dbObject;
@@ -92,8 +92,8 @@ class Index extends Action
     /** @var Client $orderClient */
     protected $orderClient;
 
-    /** @var mixed $pmtOrderId */
-    protected $pmtOrderId;
+    /** @var mixed $pagantisOrderId */
+    protected $pagantisOrderId;
 
     /** @var  OrderInterface $magentoOrder */
     protected $magentoOrder;
@@ -148,8 +148,8 @@ class Index extends Action
         try {
             $this->checkConcurrency();
             $this->getMerchantOrder();
-            $this->getPmtOrderId();
-            $this->getPmtOrder();
+            $this->getPagantisOrderId();
+            $this->getPagantisOrder();
             $this->checkOrderStatus();
             $this->checkMerchantOrderStatus();
             $this->validateAmount();
@@ -157,7 +157,7 @@ class Index extends Action
         } catch (\Exception $exception) {
             $jsonResponse = new JsonExceptionResponse();
             $jsonResponse->setMerchantOrderId($this->magentoOrderId);
-            $jsonResponse->setPmtOrderId($this->pmtOrderId);
+            $jsonResponse->setpagantisOrderId($this->pagantisOrderId);
             $jsonResponse->setException($exception);
             $response = $jsonResponse->toJson();
             $this->insertLog($exception);
@@ -165,16 +165,16 @@ class Index extends Action
 
         try {
             if (!isset($response)) {
-                $this->confirmPmtOrder();
+                $this->confirmpagantisOrder();
                 $jsonResponse = new JsonSuccessResponse();
                 $jsonResponse->setMerchantOrderId($this->magentoOrderId);
-                $jsonResponse->setPmtOrderId($this->pmtOrderId);
+                $jsonResponse->setpagantisOrderId($this->pagantisOrderId);
             }
         } catch (\Exception $exception) {
             $this->rollbackMerchantOrder();
             $jsonResponse = new JsonExceptionResponse();
             $jsonResponse->setMerchantOrderId($this->magentoOrderId);
-            $jsonResponse->setPmtOrderId($this->pmtOrderId);
+            $jsonResponse->setpagantisOrderId($this->pagantisOrderId);
             $jsonResponse->setException($exception);
             $jsonResponse->toJson();
             $this->insertLog($exception);
@@ -222,7 +222,7 @@ class Index extends Action
     /**
      * @throws UnknownException
      */
-    private function getPmtOrderId()
+    private function getPagantisOrderId()
     {
         try {
             /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
@@ -230,8 +230,8 @@ class Index extends Action
             $tableName        = $this->dbObject->getTableName(self::ORDERS_TABLE);
             $query            = "select order_id from $tableName where id='$this->quoteId'";
             $queryResult      = $dbConnection->fetchRow($query);
-            $this->pmtOrderId = $queryResult['order_id'];
-            if ($this->pmtOrderId == '') {
+            $this->pagantisOrderId = $queryResult['order_id'];
+            if ($this->pagantisOrderId == '') {
                 throw new NoIdentificationException();
             }
         } catch (\Exception $e) {
@@ -242,11 +242,11 @@ class Index extends Action
     /**
      * @throws OrderNotFoundException
      */
-    private function getPmtOrder()
+    private function getPagantisOrder()
     {
         try {
             $this->orderClient = new Client($this->config['pagantis_public_key'], $this->config['pagantis_private_key']);
-            $this->pmtOrder = $this->orderClient->getOrder($this->pmtOrderId);
+            $this->pagantisOrder = $this->orderClient->getOrder($this->pagantisOrderId);
         } catch (\Exception $e) {
             throw new OrderNotFoundException();
         }
@@ -259,13 +259,13 @@ class Index extends Action
     private function checkOrderStatus()
     {
         try {
-            $this->checkPmtStatus(array('AUTHORIZED'));
+            $this->checkPagantisStatus(array('AUTHORIZED'));
         } catch (\Exception $e) {
             $this->getMagentoOrderId();
             if ($this->magentoOrderId!='') {
                 throw new AlreadyProcessedException();
             } else {
-                throw new WrongStatusException($this->pmtOrder->getStatus());
+                throw new WrongStatusException($this->pagantisOrder->getStatus());
             }
         }
     }
@@ -286,10 +286,10 @@ class Index extends Action
      */
     private function validateAmount()
     {
-        $pmtAmount = $this->pmtOrder->getShoppingCart()->getTotalAmount();
+        $pagantisAmount = $this->pagantisOrder->getShoppingCart()->getTotalAmount();
         $merchantAmount = intval(strval(100 * $this->quote->getGrandTotal()));
-        if ($pmtAmount != $merchantAmount) {
-            throw new AmountMismatchException($pmtAmount, $merchantAmount);
+        if ($pagantisAmount != $merchantAmount) {
+            throw new AmountMismatchException($pagantisAmount, $merchantAmount);
         }
     }
 
@@ -310,10 +310,10 @@ class Index extends Action
      * @return false|string
      * @throws UnknownException
      */
-    private function confirmPmtOrder()
+    private function confirmpagantisOrder()
     {
         try {
-            $this->pmtOrder = $this->orderClient->confirmOrder($this->pmtOrderId);
+            $this->pagantisOrder = $this->orderClient->confirmOrder($this->pagantisOrderId);
         } catch (\Exception $e) {
             throw new UnknownException($e->getMessage());
         }
@@ -321,7 +321,7 @@ class Index extends Action
         $jsonResponse = new JsonSuccessResponse();
         $jsonResponse->setStatusCode(200);
         $jsonResponse->setMerchantOrderId($this->magentoOrderId);
-        $jsonResponse->setPmtOrderId($this->pmtOrderId);
+        $jsonResponse->setpagantisOrderId($this->pagantisOrderId);
         $jsonResponse->setResult(self::CPO_OK_MSG);
         return $jsonResponse->toJson();
     }
@@ -421,24 +421,24 @@ class Index extends Action
     }
 
     /** STEP 2 GMO - Get Merchant Order */
-    /** STEP 3 GPOI - Get Pmt OrderId */
-    /** STEP 4 GPO - Get Pmt Order */
+    /** STEP 3 GPOI - Get Pagantis OrderId */
+    /** STEP 4 GPO - Get Pagantis Order */
     /** STEP 5 COS - Check Order Status */
     /**
      * @param $statusArray
      *
      * @throws \Exception
      */
-    private function checkPmtStatus($statusArray)
+    private function checkPagantisStatus($statusArray)
     {
-        $pmtStatus = array();
+        $pagantisStatus = array();
         foreach ($statusArray as $status) {
-            $pmtStatus[] = constant("\PagaMasTarde\OrdersApiClient\Model\Order::STATUS_$status");
+            $pagantisStatus[] = constant("\Pagantis\OrdersApiClient\Model\Order::STATUS_$status");
         }
 
-        $payed = in_array($this->pmtOrder->getStatus(), $pmtStatus);
+        $payed = in_array($this->pagantisOrder->getStatus(), $pagantisStatus);
         if (!$payed) {
-            throw new WrongStatusException($this->pmtOrder->getStatus());
+            throw new WrongStatusException($this->pagantisOrder->getStatus());
         }
     }
 
@@ -452,9 +452,9 @@ class Index extends Action
             /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
             $dbConnection = $this->dbObject->getConnection();
             $tableName    = $this->dbObject->getTableName(self::ORDERS_TABLE);
-            $pmtOrderId   = $this->pmtOrderId;
+            $pagantisOrderId   = $this->pagantisOrderId;
 
-            $query        = "select mg_order_id from $tableName where id='$this->quoteId' and order_id='$pmtOrderId'";
+            $query        = "select mg_order_id from $tableName where id='$this->quoteId' and order_id='$pagantisOrderId'";
             $queryResult  = $dbConnection->fetchRow($query);
             $this->magentoOrderId = $queryResult['mg_order_id'];
         } catch (\Exception $e) {
@@ -492,18 +492,18 @@ class Index extends Action
             /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
             $dbConnection = $this->dbObject->getConnection();
             $tableName    = $this->dbObject->getTableName(self::ORDERS_TABLE);
-            $pmtOrderId   = $this->pmtOrder->getId();
+            $pagantisOrderId   = $this->pagantisOrder->getId();
             $dbConnection->update(
                 $tableName,
                 array('mg_order_id' => $this->magentoOrderId),
-                "order_id='$pmtOrderId' and id='$this->quoteId'"
+                "order_id='$pagantisOrderId' and id='$this->quoteId'"
             );
         } catch (\Exception $e) {
             throw new UnknownException($e->getMessage());
         }
     }
 
-    /** STEP 9 CPO - Confirmation Pmt Order */
+    /** STEP 9 CPO - Confirmation Pagantis Order */
     /**
      * @throws UnknownException
      */

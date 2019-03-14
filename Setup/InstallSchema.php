@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Setup;
+namespace Pagantis\Pagantis\Setup;
 
 use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
@@ -9,7 +9,7 @@ use Magento\Framework\Setup\SchemaSetupInterface;
 class InstallSchema implements InstallSchemaInterface
 {
     /** Config tablename */
-    const CONFIG_TABLE = 'pmt_config';
+    const CONFIG_TABLE = 'Pagantis_config';
 
     /**
      * @param SchemaSetupInterface   $setup

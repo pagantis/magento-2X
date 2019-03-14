@@ -17,7 +17,7 @@
                     <attribute type="button_credentials_url">
                         <![CDATA[https://bo.pagantis.com/shop]]>
                     </attribute>
-                    <frontend_model>DigitalOrigin\Pmt\Model\Adminhtml\Source\ConfigButtonLinkType</frontend_model>
+                    <frontend_model>Pagantis\Pagantis\Model\Adminhtml\Source\ConfigButtonLinkType</frontend_model>
                 </field>
                 <field id="pagantis_public_key" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Public API Key(*)</label>

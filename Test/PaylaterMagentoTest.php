@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Test;
+namespace Pagantis\Pagantis\Test;
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Class pagantisMagentoTest
- * @package DigitalOrigin\Test
+ * @package Pagantis\Test
  */
 abstract class pagantisMagentoTest extends TestCase
 {
@@ -59,7 +59,7 @@ abstract class pagantisMagentoTest extends TestCase
     const ORDER_TITLE = 'Order #';
 
     /**
-     * Pmt Order Title
+     * Pagantis Order Title
      */
     const PAGANTIS_TITLE = 'Pagantis';
 
@@ -71,7 +71,7 @@ abstract class pagantisMagentoTest extends TestCase
     /**
      * Wrong order
      */
-    const NOORDER_TITLE = 'We can not get the PagaMasTarde identification in database';
+    const NOORDER_TITLE = 'We can not get the Pagantis identification in database';
 
     /**
      * Magento Logout URL
@@ -158,7 +158,7 @@ abstract class pagantisMagentoTest extends TestCase
         $this->version = $_SERVER['argv'][6];
         $this->configuration['magentoUrl'] = 'http://magento'.$this->version.'-test.docker:'.
             $this->versionsPort[$this->version].'/index.php';
-        $this->configuration['email'] = "john.doe+".microtime(true)."@digitalorigin.com";
+        $this->configuration['email'] = "john.doe+".microtime(true)."@pagantis.com";
 
         return parent::__construct();
     }
@@ -168,7 +168,7 @@ abstract class pagantisMagentoTest extends TestCase
      */
     protected function setUp()
     {
-        $this->webDriver = PmtWebDriver::create(
+        $this->webDriver = PagantisWebDriver::create(
             'http://localhost:4444/wd/hub',
             DesiredCapabilities::chrome(),
             180000,

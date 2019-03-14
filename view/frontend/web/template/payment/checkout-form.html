@@ -5,10 +5,12 @@
                name="payment[method]"
                class="radio"
                data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
-        <label data-bind="attr: {'for': getCode()}" class="label pagantis_title"><span data-bind="text: getTitle()"><img data-bind="attr: {'src': getImage()}"/></span></label>
+        <label data-bind="attr: {'for': getCode()}" class="label pagantis_title">
+            <span data-bind="text: getTitle()"></span>
+            <img src='' data-bind="attr: {'src': getImage()}" /></label>
     </div>
     <div class="payment-method-content">
-        <p class="js-pmt-payment-type"  data-bind="text: getSubtitle()"></p>
+        <p class="js-pagantis-payment-type"  data-bind="text: getSubtitle()"></p>
         <!-- ko foreach: getRegion('messages') -->
         <!-- ko template: getTemplate() --><!-- /ko -->
         <!--/ko-->

@@ -1,8 +1,8 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Test\Buy;
+namespace Pagantis\Pagantis\Test\Buy;
 
-use DigitalOrigin\Pmt\Test\Common\AbstractMg21Selenium;
+use Pagantis\Pagantis\Test\Common\AbstractMg21Selenium;
 
 
 /**

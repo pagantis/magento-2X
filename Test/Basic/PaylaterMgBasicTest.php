@@ -1,13 +1,13 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Test\Basic;
+namespace Pagantis\Pagantis\Test\Basic;
 
-use DigitalOrigin\Pmt\Test\Common\AbstractMg21Selenium;
+use Pagantis\Pagantis\Test\Common\AbstractMg21Selenium;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 
 /**
  * Class pagantisMgBasicTest
- * @package DigitalOrigin\Test\Basic
+ * @package Pagantis\Test\Basic
  *
  * @group magento-basic
  */

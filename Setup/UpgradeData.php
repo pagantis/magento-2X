@@ -1,16 +1,16 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Setup;
+namespace Pagantis\Pagantis\Setup;
 
 use Magento\Framework\Setup\UpgradeDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
-use DigitalOrigin\Pmt\Helper\Config;
+use Pagantis\Pagantis\Helper\Config;
 
 class UpgradeData implements UpgradeDataInterface
 {
     /** Config tablename */
-    const CONFIG_TABLE = 'pmt_config';
+    const CONFIG_TABLE = 'Pagantis_config';
 
     /** @var Config */
     public $config;

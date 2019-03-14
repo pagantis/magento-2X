@@ -1,8 +1,8 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Test\Common;
+namespace Pagantis\Pagantis\Test\Common;
 
-use DigitalOrigin\Pmt\Test\pagantisMagentoTest;
+use Pagantis\Pagantis\Test\pagantisMagentoTest;
 use Facebook\WebDriver\WebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
@@ -10,7 +10,7 @@ use Pagantis\SeleniumFormUtils\SeleniumHelper;
 
 /**
  * Class AbstractMg21Selenium
- * @package DigitalOrigin\Test\Common
+ * @package Pagantis\Test\Common
  */
 abstract class AbstractMg21Selenium extends pagantisMagentoTest
 {
@@ -485,7 +485,7 @@ abstract class AbstractMg21Selenium extends pagantisMagentoTest
     private function checkSimulator()
     {
         sleep(20);
-        $simulatorElementSearch = WebDriverBy::className('PmtSimulator');
+        $simulatorElementSearch = WebDriverBy::className('PagantisSimulator');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($simulatorElementSearch);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition, "PR19//PR28");

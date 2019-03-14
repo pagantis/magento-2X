@@ -1,17 +1,17 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Helper;
+namespace Pagantis\Pagantis\Helper;
 
 use Magento\Framework\App\ResourceConnection;
 
 /**
  * Class ExtraConfig
- * @package DigitalOrigin\Pmt\Helper
+ * @package Pagantis\Pagantis\Helper
  */
 class ExtraConfig
 {
     /** Config tablename */
-    const CONFIG_TABLE = 'pmt_config';
+    const CONFIG_TABLE = 'Pagantis_config';
 
     /** @var ResourceConnection $dbObject */
     protected $dbObject;

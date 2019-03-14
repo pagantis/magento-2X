@@ -11,7 +11,7 @@ define(
         rendererList.push(
             {
                 type: 'pagantis',
-                component: 'DigitalOrigin_Pmt/js/view/payment/method-renderer/pagantis'
+                component: 'Pagantis_Pagantis/js/view/payment/method-renderer/pagantis'
             }
         );
         return Component.extend({});

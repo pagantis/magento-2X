@@ -1,12 +1,12 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Model\Adminhtml\Source;
+namespace Pagantis\Pagantis\Model\Adminhtml\Source;
 
 use Magento\Framework\Option\ArrayInterface;
 
 /**
  * Class DisplayType
- * @package DigitalOrigin\Pmt\Model\Adminhtml\Source
+ * @package Pagantis\Pagantis\Model\Adminhtml\Source
  */
 class DisplayType implements ArrayInterface
 {

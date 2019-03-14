@@ -1,20 +1,20 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Model\Adminhtml\Source;
+namespace Pagantis\Pagantis\Model\Adminhtml\Source;
 
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 
 /**
  * Class ConfigButtonLinkType
- * @package DigitalOrigin\Pmt\Model\Adminhtml\Source
+ * @package Pagantis\Pagantis\Model\Adminhtml\Source
  */
 class ConfigButtonLinkType extends Field
 {
     /**
      * Path to block template
      */
-    const WIZARD_TEMPLATE = 'DigitalOrigin_Pmt::button.phtml';
+    const WIZARD_TEMPLATE = 'Pagantis_Pagantis::button.phtml';
 
     /**
      * Get the button and scripts contents

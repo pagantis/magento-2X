@@ -1,14 +1,14 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Model\Ui;
+namespace Pagantis\Pagantis\Model\Ui;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Checkout\Model\Session;
-use DigitalOrigin\Pmt\Helper\ExtraConfig;
+use Pagantis\Pagantis\Helper\ExtraConfig;
 
 /**
  * Class ConfigProvider
- * @package DigitalOrigin\Pmt\Model\Ui
+ * @package Pagantis\Pagantis\Model\Ui
  */
 final class ConfigProvider implements ConfigProviderInterface
 {
@@ -63,7 +63,7 @@ final class ConfigProvider implements ConfigProviderInterface
                     'displayMode' => $this->method->getConfigData('display_mode'),
                     'title' => __($this->extraConfig['PAGANTIS_TITLE']),
                     'subtitle' => __($this->extraConfig['PAGANTIS_TITLE_EXTRA']),
-                    'image' => $this->assetRepository->getUrl('DigitalOrigin_Pmt::logopagantis.png')
+                    'image' => $this->assetRepository->getUrl('Pagantis_Pagantis::logopagantis.png')
                 ],
             ],
         ];

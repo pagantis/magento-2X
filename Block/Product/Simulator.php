@@ -1,17 +1,17 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Block\Product;
+namespace Pagantis\Pagantis\Block\Product;
 
 use Magento\Backend\Block\Template\Context;
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
-use DigitalOrigin\Pmt\Helper\ExtraConfig;
+use Pagantis\Pagantis\Helper\ExtraConfig;
 
 /**
  * Class Simulator
- * @package DigitalOrigin\Pmt\Block\Product
+ * @package Pagantis\Pagantis\Block\Product
  */
 class Simulator extends Template
 {

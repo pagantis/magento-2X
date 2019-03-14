@@ -1,14 +1,14 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Test\Install;
+namespace Pagantis\Pagantis\Test\Install;
 
-use DigitalOrigin\Pmt\Test\Common\AbstractMg21Selenium;
+use Pagantis\Pagantis\Test\Common\AbstractMg21Selenium;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverBy;
 
 /**
  * Class pagantisMgInstallTest
- * @package DigitalOrigin\Test\Install
+ * @package Pagantis\Test\Install
  *
  * @group magento-install
  */

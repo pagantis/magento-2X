@@ -1,5 +1,5 @@
 <?php
-namespace DigitalOrigin\Pmt\Controller\Payment;
+namespace Pagantis\Pagantis\Controller\Payment;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\ResourceConnection;
@@ -11,10 +11,13 @@ use Magento\Framework\App\Request\InvalidRequestException;
 class Config extends Action
 {
     /** Config tablename */
-    const CONFIG_TABLE = 'pmt_config';
+    const CONFIG_TABLE = 'Pagantis_config';
 
     /** @var ResourceConnection $dbObject */
     protected $dbObject;
+
+    /** @var mixed $config */
+    protected $config;
 
     /**
      * Variable which contains extra configuration.
@@ -34,32 +37,23 @@ class Config extends Action
                                    'PAGANTIS_DISPLAY_MIN_AMOUNT'=>1,
                                    'PAGANTIS_URL_OK'=>'',
                                    'PAGANTIS_URL_KO'=>'',
-                                   'PAGANTIS_TITLE_EXTRA' => 'Pay up to 12 comfortable installments with Paga + Tarde. Completely online and sympathetic request, and the answer is immediate!'
+                                   'PAGANTIS_TITLE_EXTRA' => 'Pay up to 12 comfortable installments with Pagantis. Completely online and sympathetic request, and the answer is immediate!'
     );
 
     /**
      * Log constructor.
      *
      * @param \Magento\Framework\App\Action\Context $context
-     * @param \DigitalOrigin\Pmt\Helper\Config      $pmtConfig
+     * @param \Pagantis\Pagantis\Helper\Config      $pagantisConfig
      * @param ResourceConnection                    $dbObject
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
-        \DigitalOrigin\Pmt\Helper\Config $pmtConfig,
+        \Pagantis\Pagantis\Helper\Config $pagantisConfig,
         ResourceConnection $dbObject
     ) {
-        $this->config = $pmtConfig->getConfig();
+        $this->config = $pagantisConfig->getConfig();
         $this->dbObject = $dbObject;
-
-        // CsrfAwareAction Magento2.3 compatibility
-        if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
-            $request = $this->getRequest();
-            if ($request instanceof HttpRequest && $request->isPost() && empty($request->getParam('form_key'))) {
-                $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
-                $request->setParam('form_key', $formKey->getFormKey());
-            }
-        }
 
         return parent::__construct($context);
     }

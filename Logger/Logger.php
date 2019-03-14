@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Logger;
+namespace Pagantis\Pagantis\Logger;
 
 class Logger extends \Monolog\Logger
 {
