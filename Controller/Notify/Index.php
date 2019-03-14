@@ -10,24 +10,24 @@ use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\QuoteRepository;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\Action;
-use PagaMasTarde\ModuleUtils\Exception\MerchantOrderNotFoundException;
-use PagaMasTarde\OrdersApiClient\Client;
+use Pagantis\ModuleUtils\Exception\MerchantOrderNotFoundException;
+use Pagantis\OrdersApiClient\Client;
 use DigitalOrigin\Pmt\Helper\Config;
 use DigitalOrigin\Pmt\Helper\ExtraConfig;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\DB\Ddl\Table;
-use PagaMasTarde\ModuleUtils\Exception\AmountMismatchException;
-use PagaMasTarde\ModuleUtils\Exception\ConcurrencyException;
-use PagaMasTarde\ModuleUtils\Exception\NoIdentificationException;
-use PagaMasTarde\ModuleUtils\Exception\OrderNotFoundException;
-use PagaMasTarde\ModuleUtils\Exception\QuoteNotFoundException;
-use PagaMasTarde\ModuleUtils\Exception\UnknownException;
-use PagaMasTarde\ModuleUtils\Exception\WrongStatusException;
-use PagaMasTarde\ModuleUtils\Model\Response\JsonSuccessResponse;
-use PagaMasTarde\ModuleUtils\Model\Response\JsonExceptionResponse;
-use PagaMasTarde\ModuleUtils\Exception\AlreadyProcessedException;
-use PagaMasTarde\ModuleUtils\Model\Log\LogEntry;
+use Pagantis\ModuleUtils\Exception\AmountMismatchException;
+use Pagantis\ModuleUtils\Exception\ConcurrencyException;
+use Pagantis\ModuleUtils\Exception\NoIdentificationException;
+use Pagantis\ModuleUtils\Exception\OrderNotFoundException;
+use Pagantis\ModuleUtils\Exception\QuoteNotFoundException;
+use Pagantis\ModuleUtils\Exception\UnknownException;
+use Pagantis\ModuleUtils\Exception\WrongStatusException;
+use Pagantis\ModuleUtils\Model\Response\JsonSuccessResponse;
+use Pagantis\ModuleUtils\Model\Response\JsonExceptionResponse;
+use Pagantis\ModuleUtils\Exception\AlreadyProcessedException;
+use Pagantis\ModuleUtils\Model\Log\LogEntry;
 
 /**
  * Class Index
@@ -45,7 +45,7 @@ class Index extends Action
     const LOGS_TABLE = 'pmt_logs';
 
     /** Payment code */
-    const PAYMENT_METHOD = 'paylater';
+    const PAYMENT_METHOD = 'pagantis';
 
     /**
      * EXCEPTION RESPONSES
@@ -245,7 +245,7 @@ class Index extends Action
     private function getPmtOrder()
     {
         try {
-            $this->orderClient = new Client($this->config['pmt_public_key'], $this->config['pmt_private_key']);
+            $this->orderClient = new Client($this->config['pagantis_public_key'], $this->config['pagantis_private_key']);
             $this->pmtOrder = $this->orderClient->getOrder($this->pmtOrderId);
         } catch (\Exception $e) {
             throw new OrderNotFoundException();
@@ -542,14 +542,14 @@ class Index extends Action
             $orderStatus    = strtolower($this->magentoOrder->getStatus());
             $acceptedStatus = array('processing', 'completed');
             if (in_array($orderStatus, $acceptedStatus)) {
-                if (isset($this->extraConfig['PMT_OK_URL']) &&  $this->extraConfig['PMT_OK_URL']!= '') {
-                    $returnUrl = $this->extraConfig['PMT_OK_URL'];
+                if (isset($this->extraConfig['PAGANTIS_OK_URL']) &&  $this->extraConfig['PAGANTIS_OK_URL']!= '') {
+                    $returnUrl = $this->extraConfig['PAGANTIS_OK_URL'];
                 } else {
                     $returnUrl = 'checkout/onepage/success';
                 }
             } else {
-                if (isset($this->extraConfig['PMT_KO_URL']) && $this->extraConfig['PMT_KO_URL'] != '') {
-                    $returnUrl = $this->extraConfig['PMT_KO_URL'];
+                if (isset($this->extraConfig['PAGANTIS_KO_URL']) && $this->extraConfig['PAGANTIS_KO_URL'] != '') {
+                    $returnUrl = $this->extraConfig['PAGANTIS_KO_URL'];
                 } else {
                     //$returnUrl = 'checkout/#payment';
                     $returnUrl = $this->_url->getUrl('checkout', ['_fragment' => 'payment']);

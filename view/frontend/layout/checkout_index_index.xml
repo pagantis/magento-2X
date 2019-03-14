@@ -15,10 +15,10 @@
                                                     <item name="children" xsi:type="array">
                                                         <item name="renders" xsi:type="array">
                                                             <item name="children" xsi:type="array">
-                                                                <item name="paylater" xsi:type="array">
-                                                                    <item name="component" xsi:type="string">DigitalOrigin_Pmt/js/view/payment/paylater</item>
+                                                                <item name="pagantis" xsi:type="array">
+                                                                    <item name="component" xsi:type="string">DigitalOrigin_Pmt/js/view/payment/pagantis</item>
                                                                     <item name="methods" xsi:type="array">
-                                                                        <item name="paylater" xsi:type="array"/>
+                                                                        <item name="pagantis" xsi:type="array"/>
                                                                             <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
                                                                     </item>
                                                                 </item>

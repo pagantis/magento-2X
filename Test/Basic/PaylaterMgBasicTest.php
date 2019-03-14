@@ -6,12 +6,12 @@ use DigitalOrigin\Pmt\Test\Common\AbstractMg21Selenium;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 
 /**
- * Class PaylaterMgBasicTest
+ * Class pagantisMgBasicTest
  * @package DigitalOrigin\Test\Basic
  *
  * @group magento-basic
  */
-class PaylaterMgBasicTest extends AbstractMg21Selenium
+class pagantisMgBasicTest extends AbstractMg21Selenium
 {
     /**
      * String
@@ -26,7 +26,7 @@ class PaylaterMgBasicTest extends AbstractMg21Selenium
     /**
      * testMagentoOpen
     */
-    public function testPaylaterMg21BasicTest()
+    public function testpagantisMg21BasicTest()
     {
         $this->webDriver->get($this->configuration['magentoUrl']);
         $condition = WebDriverExpectedCondition::titleContains(self::TITLE);

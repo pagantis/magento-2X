@@ -9,7 +9,7 @@
 This module supports Magento v2.1 and higher.
 
 ## :floppy_disk: Installation
-To install the module of Paga+Tarde in your Magento shop, you can use Composer:
+To install the module of Pagantis in your Magento shop, you can use Composer:
 
 ```php
     composer require pagamastarde/magento-2x
@@ -22,11 +22,11 @@ To install the module of Paga+Tarde in your Magento shop, you can use Composer:
 ```
 
 ## :gear: Configuration
-Configure the module in Magento admin panel using the information found in your [Paga+Tarde profile](https://bo.pagamastarde.com/shop). 
+Configure the module in Magento admin panel using the information found in your [Pagantis profile](https://bo.pagantis.com/shop). 
 
 For more information about how to config the module, see our [configuration section](/Documentation/configuration.md).
 
 ## :arrow_forward: Use
-To use in a real environment you should enable your Paga+Tarde account.
+To use in a real environment you should enable your Pagantis account.
 
 For more information about how to use the module, see our [use section](/Documentation/use.md).

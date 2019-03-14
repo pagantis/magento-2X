@@ -55,7 +55,7 @@ class LogV2 extends Action implements CsrfAwareActionInterface
         try {
             $response = array();
             $secretKey = $this->getRequest()->getParam('secret');
-            $privateKey = isset($this->config['pmt_private_key']) ? $this->config['pmt_private_key'] : null;
+            $privateKey = isset($this->config['pagantis_private_key']) ? $this->config['pagantis_private_key'] : null;
 
             if ($secretKey!='' && $privateKey!='') {
                 $this->checkDbLogTable();

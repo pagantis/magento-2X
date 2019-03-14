@@ -55,19 +55,19 @@ class Iframe extends Action
                 throw new \Exception('Empty orderId');
             }
 
-            if ($this->config['pmt_public_key'] == '' || $this->config['pmt_private_key'] == '') {
+            if ($this->config['pagantis_public_key'] == '' || $this->config['pagantis_private_key'] == '') {
                 throw new \Exception('Public and Secret Key not found');
             }
 
             $orderClient = new \PagaMasTarde\OrdersApiClient\Client(
-                $this->config['pmt_public_key'],
-                $this->config['pmt_private_key']
+                $this->config['pagantis_public_key'],
+                $this->config['pagantis_private_key']
             );
 
             $order = $orderClient->getOrder($orderId);
 
             /** @var \DigitalOrigin\Pmt\Block\Payment\Iframe $block */
-            $block = $resultPage->getLayout()->getBlock('paylater_payment_iframe');
+            $block = $resultPage->getLayout()->getBlock('pagantis_payment_iframe');
             $block
                 ->setEmail($order->getUser()->getEmail())
                 ->setOrderUrl($order->getActionUrls()->getForm())

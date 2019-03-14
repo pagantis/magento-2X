@@ -1,6 +1,6 @@
 {
-  "name": "pagamastarde/magento-2x",
-  "description": "Paga+Tarde Magento 2 module",
+  "name": "pagantis/magento-2x",
+  "description": "Pagantis Magento 2 module",
   "type": "magento2-module",
   "keywords": [
     "api",
@@ -11,17 +11,17 @@
     "payment",
     "checkout",
     "credit",
-    "pagamastarde",
+    "pagantis",
     "financiar",
     "financiera",
     "financiación"
   ],
-  "homepage": "https://pagamastarde.com/",
+  "homepage": "https://pagantis.com/",
   "license": "proprietary",
   "authors": [
     {
-      "name": "Digital Origin",
-      "email": "integration@pagamastarde.com"
+      "name": "Pagantis",
+      "email": "integrations@pagantis.com"
     }
   ],
   "repositories": [
@@ -32,11 +32,9 @@
   ],
   "require": {
     "php": "~5.6|~7.0|~7.1|~7.2|~7.3",
-    "pagamastarde/orders-api-client": "^1.0",
-    "pagamastarde/selenium-form-utils": "^1.0",
-    "pagamastarde/module-utils": "^1.1",
-    "phpunit/phpunit-selenium": "^4.1",
-    "facebook/webdriver": "^1.6"
+    "pagantis/orders-api-client": "^2.0",
+    "pagantis/selenium-form-utils": "^2.0",
+    "pagantis/module-utils": "^2.0"
   },
   "require-dev": {
     "magento/module-sales": "102.0.*",
@@ -52,4 +50,3 @@
   },
   "minimum-stability": "dev"
 }
-

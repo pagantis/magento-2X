@@ -5,15 +5,15 @@ namespace DigitalOrigin\Pmt\Test\Register;
 use DigitalOrigin\Pmt\Test\Common\AbstractMg21Selenium;
 
 /**
- * Class PaylaterMgInstallTest
+ * Class pagantisMgInstallTest
  * @package DigitalOrigin\Test\Register
  *
  * @group magento-register
  */
-class PaylaterMgRegisterTest extends AbstractMg21Selenium
+class pagantisMgRegisterTest extends AbstractMg21Selenium
 {
     /**
-     * @require configurePaylater
+     * @require configurepagantis
      *
      * @throws \Exception
      */

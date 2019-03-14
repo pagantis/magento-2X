@@ -8,10 +8,10 @@ use Facebook\WebDriver\WebDriverBy;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class PaylaterMagentoTest
+ * Class pagantisMagentoTest
  * @package DigitalOrigin\Test
  */
-abstract class PaylaterMagentoTest extends TestCase
+abstract class pagantisMagentoTest extends TestCase
 {
     /**
      * Magento Backoffice URL
@@ -61,7 +61,7 @@ abstract class PaylaterMagentoTest extends TestCase
     /**
      * Pmt Order Title
      */
-    const PMT_TITLE = 'Paga+Tarde';
+    const PAGANTIS_TITLE = 'Pagantis';
 
     /**
      * Already processed
@@ -76,7 +76,7 @@ abstract class PaylaterMagentoTest extends TestCase
     /**
      * Magento Logout URL
      */
-    const NOTIFICATION_FOLDER = '/paylater/notify/';
+    const NOTIFICATION_FOLDER = '/pagantis/notify/';
 
     /**
      * Magento Logout URL
@@ -86,12 +86,12 @@ abstract class PaylaterMagentoTest extends TestCase
     /**
      * Magento Log URL
      */
-    const LOG_FOLDER = '/paylater/Payment/Log';
+    const LOG_FOLDER = '/pagantis/Payment/Log';
 
     /**
      * Magento Config URL
      */
-    const CONFIG_FOLDER = '/paylater/Payment/Config';
+    const CONFIG_FOLDER = '/pagantis/Payment/Config';
 
     /**
      * @var array
@@ -142,7 +142,7 @@ abstract class PaylaterMagentoTest extends TestCase
     );
 
     /**
-     * PaylaterMagentoTest constructor.
+     * pagantisMagentoTest constructor.
      */
     public function __construct()
     {

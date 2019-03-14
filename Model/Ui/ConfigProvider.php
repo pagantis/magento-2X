@@ -12,7 +12,7 @@ use DigitalOrigin\Pmt\Helper\ExtraConfig;
  */
 final class ConfigProvider implements ConfigProviderInterface
 {
-    const CODE = 'paylater';
+    const CODE = 'pagantis';
 
     /**
      * @var \Magento\Payment\Model\MethodInterface
@@ -61,8 +61,8 @@ final class ConfigProvider implements ConfigProviderInterface
                 self::CODE => [
                     'total' => $quote->getGrandTotal(),
                     'displayMode' => $this->method->getConfigData('display_mode'),
-                    'title' => __($this->extraConfig['PMT_TITLE']),
-                    'subtitle' => __($this->extraConfig['PMT_TITLE_EXTRA']),
+                    'title' => __($this->extraConfig['PAGANTIS_TITLE']),
+                    'subtitle' => __($this->extraConfig['PAGANTIS_TITLE_EXTRA']),
                     'image' => $this->assetRepository->getUrl('DigitalOrigin_Pmt::logopagantis.png')
                 ],
             ],

@@ -12,7 +12,7 @@ use DigitalOrigin\Pmt\Helper\ExtraConfig;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Module\ModuleList;
-use PagaMasTarde\OrdersApiClient\Model\Order\User\Address;
+use Pagantis\OrdersApiClient\Model\Order\User\Address;
 use Magento\Framework\DB\Ddl\Table;
 
 /**
@@ -216,11 +216,11 @@ class Index extends Action
             $orderConfigurationUrls = new \PagaMasTarde\OrdersApiClient\Model\Order\Configuration\Urls();
             $quoteId = $quote->getId();
             $okUrl = $this->_url->getUrl(
-                'paylater/notify/index',
+                'pagantis/notify/index',
                 ['_query' => ['quoteId'=>$quoteId]]
             );
             if (version_compare($metadata['magento'], '2.3.0') >= 0) {
-                $okUrl = $this->_url->getUrl('paylater/notify/indexV2', ['_query' => ['quoteId'=>$quoteId]]);
+                $okUrl = $this->_url->getUrl('pagantis/notify/indexV2', ['_query' => ['quoteId'=>$quoteId]]);
             }
 
             $orderConfigurationUrls
@@ -250,13 +250,13 @@ class Index extends Action
                 ->setUser($orderUser)
             ;
 
-            if ($this->config['pmt_public_key']=='' || $this->config['pmt_private_key']=='') {
+            if ($this->config['pagantis_public_key']=='' || $this->config['pagantis_private_key']=='') {
                 throw new \Exception('Public and Secret Key not found');
             }
 
             $orderClient = new \PagaMasTarde\OrdersApiClient\Client(
-                $this->config['pmt_public_key'],
-                $this->config['pmt_private_key']
+                $this->config['pagantis_public_key'],
+                $this->config['pagantis_private_key']
             );
 
             $order = $orderClient->createOrder($order);
@@ -275,13 +275,13 @@ class Index extends Action
             exit;
         }
 
-        $displayMode = $this->extraConfig['PMT_FORM_DISPLAY_TYPE'];
+        $displayMode = $this->extraConfig['PAGANTIS_FORM_DISPLAY_TYPE'];
         if ($displayMode==='0') {
             echo $url;
             exit;
         } else {
             $iframeUrl = $this->_url->getUrl(
-                "paylater/Payment/iframe",
+                "pagantis/Payment/iframe",
                 ['_query' => ["orderId"=>$order->getId()]]
             );
             echo $iframeUrl;

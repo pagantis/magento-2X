@@ -31,10 +31,10 @@ class ConfigButtonLinkType extends Field
         $urlCredentials =   $this->escapeHtml($originalData['button_credentials_url']);
         return <<<EOD
 <div class="pp-buttons-container">
-    <button onclick="javascript:window.open('$url')" class="scalable" type="button" id="bo_paylater">
+    <button onclick="javascript:window.open('$url')" class="scalable" type="button" id="bo_pagantis">
         <span>$label</span>
     </button>
-    <button onclick="javascript:window.open('$urlCredentials')" class="scalable" type="button" id="api_paylater">
+    <button onclick="javascript:window.open('$urlCredentials')" class="scalable" type="button" id="api_pagantis">
         <span>$labelCredentials</span>
     </button>
 </div>

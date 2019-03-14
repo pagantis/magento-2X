@@ -10,8 +10,8 @@ define(
         'use strict';
         rendererList.push(
             {
-                type: 'paylater',
-                component: 'DigitalOrigin_Pmt/js/view/payment/method-renderer/paylater'
+                type: 'pagantis',
+                component: 'DigitalOrigin_Pmt/js/view/payment/method-renderer/pagantis'
             }
         );
         return Component.extend({});

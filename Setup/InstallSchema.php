@@ -47,7 +47,7 @@ class InstallSchema implements InstallSchemaInterface
                             ['nullable' => false],
                             'Value'
                         )
-                           ->setComment('Paga+Tarde config table');
+                           ->setComment('Pagantis config table');
 
         $installer->getConnection()->createTable($table);
 

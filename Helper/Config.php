@@ -28,6 +28,6 @@ class Config
      */
     public function getConfig()
     {
-        return $this->scopeConfig->getValue('payment/paylater');
+        return $this->scopeConfig->getValue('payment/pagantis');
     }
 }
