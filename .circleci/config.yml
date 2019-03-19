@@ -1,0 +1,140 @@
+version: 2.1
+commands:
+  host_and_docker_compose:
+    description: "Add Docker Host && DockerCompose install"
+    steps:
+      - run:
+          name: Add Docker Host && DockerCompose install
+          command: |
+            export DOCKERHOST=$(ifconfig | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1)
+            echo 127.0.0.1 magento22-test.docker | sudo tee -a /etc/hosts
+            echo 127.0.0.1 magento23-test.docker | sudo tee -a /etc/hosts
+            sudo curl -L https://github.com/docker/compose/releases/download/1.23.2/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+            sudo chmod +x /usr/local/bin/docker-compose
+            echo -e "MAGENTO_PUBLIC_KEY=${MAGENTO_PUBLIC_KEY}\nMAGENTO_PRIVATE_KEY=${MAGENTO_PRIVATE_KEY}" > .env
+  install_dependencies:
+    description: "Install php7.2 && Composer Install"
+    steps:
+      - run:
+          name: Install php7.2 && Composer Install
+          command: |
+            sudo apt install -y python-software-properties
+            sudo add-apt-repository -y ppa:ondrej/php
+            find /etc/apt/sources.list.d -type f -name '*.list' -exec sudo apt-get update -o Dir::Etc::sourcelist="{}" ';'
+            sudo apt install -y php7.2-fpm php7.2-gd php7.2-curl php7.2-mysql php7.2-dev php7.2-cli php7.2-common php7.2-mbstring php7.2-intl php7.2-zip php7.2-bcmath php7.2-dom node
+            curl -s https://getcomposer.org/installer | php
+            sudo mv composer.phar /usr/local/bin/composer
+            composer install --ignore-platform-reqs
+  docker_up:
+    description: "Docker Up && Install Magento2 && Install Sample Data"
+    steps:
+      - run:
+          name: Docker Up && Install Magento2 && Install Sample Data
+          command: |
+            export DOCKERHOST=$(ifconfig | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1)
+            docker-compose up -d selenium
+            docker-compose up -d --build magento${VERSION}-test
+            docker-compose exec magento${VERSION}-test docker-php-ext-install bcmath
+            docker-compose exec magento${VERSION}-test install-magento
+  install_module:
+    description: "Install Module && Module Enable"
+    steps:
+      - run:
+          name: Install Module && Module Enable
+          command: |
+            export DOCKERHOST=$(ifconfig | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1)
+            package='dev-'${CIRCLE_BRANCH}
+            echo $package
+            docker-compose exec -u www-data magento${VERSION}-test composer require pagamastarde/magento-2x:$package -d /var/www/html
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt --clear-static-content
+  sample_data:
+    description: "Sample Data + DI + SetupUpgrade + Clear Cache"
+    steps:
+      - run:
+          name: Sample Data + DI + SetupUpgrade + Clear Cache
+          command: |
+            export DOCKERHOST=$(ifconfig | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1)
+            docker-compose exec -u www-data magento${VERSION}-test composer config http-basic.repo.magento.com \
+                5310458a34d580de1700dfe826ff19a1 \
+                255059b03eb9d30604d5ef52fca7465d
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento sampledata:deploy
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento setup:upgrade
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cron:run
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cache:enable
+            containerPort=$(docker container port magento${VERSION}-test)
+  basic_test:
+    description: "Basic Test"
+    steps:
+      - run:
+          name: Basic Test
+          command: |
+            vendor/bin/phpunit --group magento-basic -d magentoVersion -d ${VERSION}
+  magento_install:
+    description: "Install Test"
+    steps:
+      - run:
+          name: Install Test
+          command: |
+            vendor/bin/phpunit --group magento-install -d magentoVersion -d ${VERSION}
+  magento_buy_unregistered:
+    description: "Buy Unregistered"
+    steps:
+      - run:
+          name: Buy Unregistered
+          command: |
+            vendor/bin/phpunit --group magento-buy-unregistered -d magentoVersion -d ${VERSION}
+  magento_register:
+    description: "Register Test"
+    steps:
+      - run:
+          name: Register Test
+          command: |
+            vendor/bin/phpunit --group magento-register -d magentoVersion -d ${VERSION}
+  magento_buy_registered:
+    description: "Buy Registered Test"
+    steps:
+      - run:
+          name: Buy Registered Test
+          command: |
+            vendor/bin/phpunit --group magento-buy-registered -d magentoVersion -d ${VERSION}
+jobs:
+  test-magento-22:
+    environment:
+      VERSION: 22
+    machine: true
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - host_and_docker_compose
+      - install_dependencies
+      - docker_up
+      - install_module
+      - sample_data
+      - basic_test
+      - magento_install
+      - magento_buy_unregistered
+      - magento_register
+      - magento_buy_registered
+  test-magento-23:
+    environment:
+      VERSION: 23
+    machine: true
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - host_and_docker_compose
+      - install_dependencies
+      - docker_up
+      - install_module
+      - sample_data
+      - basic_test
+      - magento_install
+      - magento_buy_unregistered
+      - magento_register
+      - magento_buy_registered
+workflows:
+  version: 2
+  build:
+    jobs:
+      - test-magento-22
+      - test-magento-23

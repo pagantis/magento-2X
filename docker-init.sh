@@ -23,31 +23,13 @@ then
         module:enable Pagantis_Pagantis --clear-static-content
     docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} composer install -d /var/www/html/app/code/Pagantis/Pagantis
 else
-    package="dev-master"
-    if [ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]
-    then
-        echo "This is the branch of the pull request" ${TRAVIS_PULL_REQUEST_BRANCH}
-        package=${TRAVIS_PULL_REQUEST_BRANCH}'.x-dev'
-    fi
-
-    if [ ! -z "$TRAVIS_TAG" ]
-    then
-        echo "This is the branch of the tag:" ${TRAVIS_TAG}
-        package=${TRAVIS_TAG}
-    fi
-    if [ ! -z "$TRAVIS_BRANCH" ]
-    then
-        echo "This is the branch of the branch:" ${TRAVIS_BRANCH}
-        package='dev-master'
-    fi
-package="dev-INT-509"
+    package="v7.0.8.x-dev"
     echo 'Package: '$package
-
-    echo 'Running: composer require pagantis/magento-2x:'$package' -d /var/www/html'
-    docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} composer require pagamatarde/magento-2x:$package -d /var/www/html
-    echo 'Running: module:enable Pagantis_Pagantis'
+    echo 'Running: composer require pagamastarde/magento-2x:'$package' -d /var/www/html'
+    docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} composer require pagamastarde/magento-2x:$package -d /var/www/html
+    echo 'Running: module:enable DigitalOrigin_Pmt'
     docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} \
-        php /var/www/html/bin/magento module:enable Pagantis_Pagantis \
+        php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt \
         --clear-static-content
 fi
 
