@@ -57,8 +57,6 @@ commands:
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cron:run
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cache:enable
             containerPort=$(docker container port magento${VERSION}-test)
-            PORT=$(sed  -e 's/.*://' <<< $containerPort)
-            echo 'Build of Magento2 complete: http://magento'${VERSION}'-test.docker:'${PORT}
   basic_test:
     description: "Basic Test"
     steps:
