@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "29453bbf3ba82361dfcbf1d6bec5df58",
+    "content-hash": "4ab1970f3b8a165a540116fe97c85683",
     "packages": [
         {
             "name": "nategood/httpful",
@@ -3102,48 +3102,6 @@
             "time": "2014-03-04T18:49:54+00:00"
         },
         {
-            "name": "pagamastarde/selenium-form-utils",
-            "version": "v2.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pagantis/selenium-form-utils.git",
-                "reference": "26e92f4c7901423a27d7870332e4ac5049252fa2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/pagantis/selenium-form-utils/zipball/26e92f4c7901423a27d7870332e4ac5049252fa2",
-                "reference": "26e92f4c7901423a27d7870332e4ac5049252fa2",
-                "shasum": ""
-            },
-            "require": {
-                "facebook/webdriver": "^1.1",
-                "fzaninotto/faker": "^1.8",
-                "pagantis/orders-api-client": "^2.0",
-                "php": ">=7.1",
-                "phpunit/phpunit": "^4.8",
-                "phpunit/phpunit-selenium": "^2.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Pagantis\\SeleniumFormUtils\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "proprietary"
-            ],
-            "authors": [
-                {
-                    "name": "Pagantis",
-                    "email": "integrations@pagantis.com"
-                }
-            ],
-            "description": "Pagantis PHP Library. Selenium helper to end a test purchase. Helper to test the payment validation and redirection",
-            "abandoned": "pagantis/selenium-form-utils",
-            "time": "2019-03-19T10:46:23+00:00"
-        },
-        {
             "name": "pagantis/orders-api-client",
             "version": "v2.0.1",
             "source": {
@@ -3184,6 +3142,47 @@
             ],
             "description": "Pagantis Orders Api Client in PHP. Use the api with simple methods and using OOP.",
             "time": "2019-03-14T10:56:53+00:00"
+        },
+        {
+            "name": "pagantis/selenium-form-utils",
+            "version": "v2.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pagantis/selenium-form-utils.git",
+                "reference": "26e92f4c7901423a27d7870332e4ac5049252fa2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pagantis/selenium-form-utils/zipball/26e92f4c7901423a27d7870332e4ac5049252fa2",
+                "reference": "26e92f4c7901423a27d7870332e4ac5049252fa2",
+                "shasum": ""
+            },
+            "require": {
+                "facebook/webdriver": "^1.1",
+                "fzaninotto/faker": "^1.8",
+                "pagantis/orders-api-client": "^2.0",
+                "php": ">=7.1",
+                "phpunit/phpunit": "^4.8",
+                "phpunit/phpunit-selenium": "^2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Pagantis\\SeleniumFormUtils\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "Pagantis",
+                    "email": "integrations@pagantis.com"
+                }
+            ],
+            "description": "Pagantis PHP Library. Selenium helper to end a test purchase. Helper to test the payment validation and redirection",
+            "time": "2019-03-19T10:46:23+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
