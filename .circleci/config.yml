@@ -43,7 +43,8 @@ commands:
           name: Install Module && Module Enable
           command: |
             export DOCKERHOST=$(ifconfig | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1)
-            package=${CIRCLE_BRANCH}'.x-dev'
+            package='dev-'${CIRCLE_BRANCH}
+            echo $package
             docker-compose exec -u www-data magento${VERSION}-test composer require pagamastarde/magento-2x:$package -d /var/www/html
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt --clear-static-content
   sample_data:
