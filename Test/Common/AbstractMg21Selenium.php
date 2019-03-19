@@ -6,7 +6,7 @@ use DigitalOrigin\Pmt\Test\PaylaterMagentoTest;
 use Facebook\WebDriver\WebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
-use PagaMasTarde\SeleniumFormUtils\SeleniumHelper;
+use Pagantis\SeleniumFormUtils\SeleniumHelper;
 
 /**
  * Class AbstractMg21Selenium

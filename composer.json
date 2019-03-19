@@ -31,18 +31,15 @@
     }
   ],
   "require": {
-    "php": "~5.6|~7.0|~7.1|~7.2|~7.3",
-    "pagamastarde/orders-api-client": "^1.0",
-    "pagamastarde/selenium-form-utils": "^1.0",
-    "pagamastarde/module-utils": "^1.1",
-    "phpunit/phpunit-selenium": "^4.1",
-    "facebook/webdriver": "^1.6"
+      "pagamastarde/orders-api-client": "^1.0",
+      "pagamastarde/module-utils": "^1.1"
   },
   "require-dev": {
-    "magento/module-sales": "102.0.*",
-    "magento/module-checkout": "100.3.*",
-    "magento/module-payment": "100.3.*",
-    "magento/framework": "102.0.*"
+      "pagamastarde/selenium-form-utils": "^2.0",
+      "magento/module-sales": "102.0.*",
+      "magento/module-checkout": "100.3.*",
+      "magento/module-payment": "100.3.*",
+      "magento/framework": "102.0.*"
   },
   "autoload": {
     "files": [ "registration.php" ],
@@ -52,4 +49,3 @@
   },
   "minimum-stability": "dev"
 }
-
