@@ -28,7 +28,7 @@ commands:
     description: "Docker Up && Install Magento2 && Install Sample Data"
     steps:
       - run:
-          name: Docker Up
+          name: Docker Up && Install Magento2 && Install Sample Data
           command: |
             docker-compose up -d selenium
             docker-compose up -d --build magento${VERSION}-test
@@ -63,7 +63,7 @@ commands:
     description: "Basic Test"
     steps:
       - run:
-          name: Sample Data + DI + SetupUpgrade + Clear Cache
+          name: Basic Test
           command: |
             vendor/bin/phpunit --group magento-basic -d magentoVersion -d ${VERSION}
 jobs:
