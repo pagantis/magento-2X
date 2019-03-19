@@ -11,6 +11,7 @@ commands:
             echo 127.0.0.1 magento23-test.docker | sudo tee -a /etc/hosts
             sudo curl -L https://github.com/docker/compose/releases/download/1.23.2/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
+            echo -e "MAGENTO_PUBLIC_KEY=${MAGENTO_PUBLIC_KEY}\nMAGENTO_PRIVATE_KEY=${MAGENTO_PRIVATE_KEY}" > .env
   install_dependencies:
     description: "Install php7.2 && Composer Install"
     steps:
@@ -30,6 +31,7 @@ commands:
       - run:
           name: Docker Up && Install Magento2 && Install Sample Data
           command: |
+            export DOCKERHOST=$(ifconfig | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1)
             docker-compose up -d selenium
             docker-compose up -d --build magento${VERSION}-test
             docker-compose exec magento${VERSION}-test docker-php-ext-install bcmath
@@ -40,6 +42,7 @@ commands:
       - run:
           name: Install Module && Module Enable
           command: |
+            export DOCKERHOST=$(ifconfig | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1)
             package=${CIRCLE_BRANCH}'.x-dev'
             docker-compose exec -u www-data magento${VERSION}-test composer require pagamastarde/magento-2x:$package -d /var/www/html
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento module:enable DigitalOrigin_Pmt --clear-static-content
@@ -49,6 +52,7 @@ commands:
       - run:
           name: Sample Data + DI + SetupUpgrade + Clear Cache
           command: |
+            export DOCKERHOST=$(ifconfig | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1)
             docker-compose exec -u www-data magento${VERSION}-test composer config http-basic.repo.magento.com \
                 5310458a34d580de1700dfe826ff19a1 \
                 255059b03eb9d30604d5ef52fca7465d
