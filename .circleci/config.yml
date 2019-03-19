@@ -69,6 +69,34 @@ commands:
           name: Basic Test
           command: |
             vendor/bin/phpunit --group magento-basic -d magentoVersion -d ${VERSION}
+  magento_install:
+    description: "Install Test"
+    steps:
+      - run:
+          name: Install Test
+          command: |
+            vendor/bin/phpunit --group magento-install -d magentoVersion -d ${VERSION}
+  magento_buy_unregistered:
+    description: "Buy Unregistered"
+    steps:
+      - run:
+          name: Buy Unregistered
+          command: |
+            vendor/bin/phpunit --group magento-buy-unregistered -d magentoVersion -d ${VERSION}
+  magento_register:
+    description: "Register Test"
+    steps:
+      - run:
+          name: Register Test
+          command: |
+            vendor/bin/phpunit --group magento-register -d magentoVersion -d ${VERSION}
+  magento_buy_registered:
+    description: "Buy Registered Test"
+    steps:
+      - run:
+          name: Buy Registered Test
+          command: |
+            vendor/bin/phpunit --group magento-buy-registered -d magentoVersion -d ${VERSION}
 jobs:
   test-magento-22:
     environment:
@@ -83,6 +111,10 @@ jobs:
       - install_module
       - sample_data
       - basic_test
+      - magento_install
+      - magento_buy_unregistered
+      - magento_register
+      - magento_buy_registered
   test-magento-23:
     environment:
       VERSION: 23
@@ -96,6 +128,10 @@ jobs:
       - install_module
       - sample_data
       - basic_test
+      - magento_install
+      - magento_buy_unregistered
+      - magento_register
+      - magento_buy_registered
 workflows:
   version: 2
   build:
