@@ -61,7 +61,7 @@ abstract class PagantisMagentoTest extends TestCase
     /**
      * Pagantis Order Title
      */
-    const PAGANTIS_TITLE = 'Pagantis';
+    const PAGANTIS_TITLE = 'Paga+Tarde';
 
     /**
      * Already processed
