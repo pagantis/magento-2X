@@ -31,8 +31,8 @@
     }
   ],
   "require": {
-      "pagamastarde/orders-api-client": "^1.0",
-      "pagamastarde/module-utils": "^1.1"
+      "pagantis/orders-api-client": "^2.0",
+      "pagantis/module-utils": "^2.0"
   },
   "require-dev": {
       "pagantis/selenium-form-utils": "^2.0",
