@@ -1,10 +1,10 @@
-# Module installation <img src="https://pagamastarde.com/img/icons/logo.svg" width="100" align="right">
+# Module installation <img src="https://camo.githubusercontent.com/758f1928ec7fd472d2183240199035f57ad95bfc/68747470733a2f2f646576656c6f7065722e706167616e7469732e636f6d2f6c6f676f732f706167616e7469735f7267625f636f6c6f722e706e67" width="100" align="right">
 
-CicleCI: [![CircleCI](https://circleci.com/gh/PagaMasTarde/magento-2X/tree/master.svg?style=svg)](https://circleci.com/gh/PagaMasTarde/magento-2X/tree/master)
+CicleCI: [![CircleCI](https://circleci.com/gh/pagantis/magento-2X/tree/master.svg?style=svg)](https://circleci.com/gh/pagantis/magento-2X/tree/master)
 
-[![Latest Stable Version](https://poser.pugx.org/pagamastarde/magento-2x/v/stable)](https://packagist.org/packages/pagamastarde/magento-2x)
-[![composer.lock](https://poser.pugx.org/pagamastarde/magento-2x/composerlock)](https://packagist.org/packages/pagamastarde/magento-2x)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/PagaMasTarde/magento-2x/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/PagaMasTarde/magento-2x/?branch=master)
+[![Latest Stable Version](https://poser.pugx.org/pagantis/magento-2x/v/stable)](https://packagist.org/packages/pagantis/magento-2x)
+[![composer.lock](https://poser.pugx.org/pagantis/magento-2x/composerlock)](https://packagist.org/packages/pagantis/magento-2x)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/pagantis/magento-2x/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/pagantis/magento-2x/?branch=master)
 
 ## :hand: Requirements
 This module supports Magento v2.1 and higher.

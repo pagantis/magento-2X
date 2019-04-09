@@ -1,11 +1,10 @@
 <script type="text/javascript">
     require( [
-        "https://cdn.pagamastarde.com/pmt-js-client-sdk/3/js/client-sdk.min.js",
-            "jquery" ],
-        function (pagantisClient, $) {
-            if (typeof pagantisClient !== 'undefined') {
+        "https://cdn.pagantis.com/js/pg-v2/sdk.js", "jquery" ],
+        function (pgSDK, $) {
+            if (typeof pgSDK !== 'undefined') {
                 $(document).ready( function(){
-                    pagantisClient.modal.open(
+                    pgSDK.modal.open(
                         "<?=$block->getOrderUrl(); ?>",
                         {
                             closeOnBackDropClick: false,
@@ -16,7 +15,7 @@
                         }
                     );
                 });
-                pagantisClient.modal.onClose(function() {
+                pgSDK.modal.onClose(function() {
                     window.location.href = "<?=$block->getCheckoutUrl(); ?>";
                 });
             }
