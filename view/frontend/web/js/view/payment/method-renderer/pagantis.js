@@ -15,25 +15,29 @@ define(
     function ($, Component, url, customerData, errorProcessor, fullScreenLoader, quote, selectPaymentMethodAction, checkoutData, totals, priceUtils) {
         'use strict';
 
-        window.checkoutConfig.payment.paylater.guestEmail = quote.guestEmail;
+        window.checkoutConfig.payment.pagantis.guestEmail = quote.guestEmail;
 
         return Component.extend({
                 defaults: {
-                    template: 'DigitalOrigin_Pmt/payment/checkout-form'
+                    template: 'Pagantis_Pagantis/payment/checkout-form'
                 },
 
                 redirectAfterPlaceOrder: false,
 
                 getTitle: function () {
-                    return window.checkoutConfig.payment.paylater.title
+                    return window.checkoutConfig.payment.pagantis.title
                 },
 
                 getSubtitle: function () {
-                    return window.checkoutConfig.payment.paylater.subtitle
+                    return window.checkoutConfig.payment.pagantis.subtitle
                 },
 
                 getDisplayMode: function () {
-                    return window.checkoutConfig.payment.paylater.displayMode
+                    return window.checkoutConfig.payment.pagantis.displayMode
+                },
+
+                getImage: function () {
+                    return window.checkoutConfig.payment.pagantis.image
                 },
 
                 selectPaymentMethod: function() {
@@ -43,8 +47,8 @@ define(
                 },
 
                 placeOrder: function () {
-                    var paymentUrl = url.build('paylater/Payment');
-                    $.post(paymentUrl, { email: window.checkoutConfig.payment.paylater.guestEmail }, 'json')
+                    var paymentUrl = url.build('pagantis/Payment');
+                    $.post(paymentUrl, { email: window.checkoutConfig.payment.pagantis.guestEmail }, 'json')
                         .done(function (response) {
                             window.location.replace(response);
                         })

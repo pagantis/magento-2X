@@ -1,5 +1,5 @@
 <?php
-namespace DigitalOrigin\Pmt\Controller\Payment;
+namespace Pagantis\Pagantis\Controller\Payment;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\ResourceConnection;
@@ -11,56 +11,49 @@ use Magento\Framework\App\Request\InvalidRequestException;
 class Config extends Action
 {
     /** Config tablename */
-    const CONFIG_TABLE = 'pmt_config';
+    const CONFIG_TABLE = 'Pagantis_config';
 
     /** @var ResourceConnection $dbObject */
     protected $dbObject;
+
+    /** @var mixed $config */
+    protected $config;
 
     /**
      * Variable which contains extra configuration.
      * @var array $defaultConfigs
      */
-    public $defaultConfigs = array('PMT_TITLE'=>'Instant Financing',
-                                   'PMT_SIMULATOR_DISPLAY_TYPE'=>'pmtSDK.simulator.types.SIMPLE',
-                                   'PMT_SIMULATOR_DISPLAY_SKIN'=>'pmtSDK.simulator.skins.BLUE',
-                                   'PMT_SIMULATOR_DISPLAY_POSITION'=>'hookDisplayProductButtons',
-                                   'PMT_SIMULATOR_START_INSTALLMENTS'=>3,
-                                   'PMT_SIMULATOR_MAX_INSTALLMENTS'=>12,
-                                   'PMT_SIMULATOR_CSS_POSITION_SELECTOR'=>'default',
-                                   'PMT_SIMULATOR_DISPLAY_CSS_POSITION'=>'pmtSDK.simulator.positions.INNER',
-                                   'PMT_SIMULATOR_CSS_PRICE_SELECTOR'=>'default',
-                                   'PMT_SIMULATOR_CSS_QUANTITY_SELECTOR'=>'default',
-                                   'PMT_FORM_DISPLAY_TYPE'=>0,
-                                   'PMT_DISPLAY_MIN_AMOUNT'=>1,
-                                   'PMT_URL_OK'=>'',
-                                   'PMT_URL_KO'=>'',
-                                   'PMT_TITLE_EXTRA' => 'Paga hasta en 12 cómodas cuotas con Paga+Tarde. Solicitud totalmente 
-                            online y sin papeleos,¡y la respuesta es inmediata!'
+    public $defaultConfigs = array('PAGANTIS_TITLE'=>'Instant Financing',
+                                   'PAGANTIS_SIMULATOR_DISPLAY_TYPE'=>'pmtSDK.simulator.types.SIMPLE',
+                                   'PAGANTIS_SIMULATOR_DISPLAY_SKIN'=>'pmtSDK.simulator.skins.BLUE',
+                                   'PAGANTIS_SIMULATOR_DISPLAY_POSITION'=>'hookDisplayProductButtons',
+                                   'PAGANTIS_SIMULATOR_START_INSTALLMENTS'=>3,
+                                   'PAGANTIS_SIMULATOR_MAX_INSTALLMENTS'=>12,
+                                   'PAGANTIS_SIMULATOR_CSS_POSITION_SELECTOR'=>'default',
+                                   'PAGANTIS_SIMULATOR_DISPLAY_CSS_POSITION'=>'pmtSDK.simulator.positions.INNER',
+                                   'PAGANTIS_SIMULATOR_CSS_PRICE_SELECTOR'=>'default',
+                                   'PAGANTIS_SIMULATOR_CSS_QUANTITY_SELECTOR'=>'default',
+                                   'PAGANTIS_FORM_DISPLAY_TYPE'=>0,
+                                   'PAGANTIS_DISPLAY_MIN_AMOUNT'=>1,
+                                   'PAGANTIS_URL_OK'=>'',
+                                   'PAGANTIS_URL_KO'=>'',
+                                   'PAGANTIS_TITLE_EXTRA' => 'Pay up to 12 comfortable installments with Pagantis. Completely online and sympathetic request, and the answer is immediate!'
     );
 
     /**
      * Log constructor.
      *
      * @param \Magento\Framework\App\Action\Context $context
-     * @param \DigitalOrigin\Pmt\Helper\Config      $pmtConfig
+     * @param \Pagantis\Pagantis\Helper\Config      $pagantisConfig
      * @param ResourceConnection                    $dbObject
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
-        \DigitalOrigin\Pmt\Helper\Config $pmtConfig,
+        \Pagantis\Pagantis\Helper\Config $pagantisConfig,
         ResourceConnection $dbObject
     ) {
-        $this->config = $pmtConfig->getConfig();
+        $this->config = $pagantisConfig->getConfig();
         $this->dbObject = $dbObject;
-
-        // CsrfAwareAction Magento2.3 compatibility
-        if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
-            $request = $this->getRequest();
-            if ($request instanceof HttpRequest && $request->isPost() && empty($request->getParam('form_key'))) {
-                $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
-                $request->setParam('form_key', $formKey->getFormKey());
-            }
-        }
 
         return parent::__construct($context);
     }
@@ -75,7 +68,7 @@ class Config extends Action
             $response = array('status'=>null);
             $tableName = $this->dbObject->getTableName(self::CONFIG_TABLE);
             $secretKey = $this->getRequest()->getParam('secret');
-            $privateKey = isset($this->config['pmt_private_key']) ? $this->config['pmt_private_key'] : null;
+            $privateKey = isset($this->config['pagantis_private_key']) ? $this->config['pagantis_private_key'] : null;
 
             /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
             $dbConnection = $this->dbObject->getConnection();

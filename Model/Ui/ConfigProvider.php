@@ -1,18 +1,18 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Model\Ui;
+namespace Pagantis\Pagantis\Model\Ui;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Checkout\Model\Session;
-use DigitalOrigin\Pmt\Helper\ExtraConfig;
+use Pagantis\Pagantis\Helper\ExtraConfig;
 
 /**
  * Class ConfigProvider
- * @package DigitalOrigin\Pmt\Model\Ui
+ * @package Pagantis\Pagantis\Model\Ui
  */
 final class ConfigProvider implements ConfigProviderInterface
 {
-    const CODE = 'paylater';
+    const CODE = 'pagantis';
 
     /**
      * @var \Magento\Payment\Model\MethodInterface
@@ -30,20 +30,21 @@ final class ConfigProvider implements ConfigProviderInterface
     protected $extraConfig;
 
     /**
-     * ConfigProvider constructor.
-     *
-     * @param \Magento\Payment\Helper\Data $paymentHelper
-     * @param Session                      $checkoutSession
-     * @param ExtraConfig                  $extraConfig
+     * @var String
      */
+    protected $assetRepository;
+
+
     public function __construct(
         \Magento\Payment\Helper\Data $paymentHelper,
         Session $checkoutSession,
-        ExtraConfig $extraConfig
+        ExtraConfig $extraConfig,
+        \Magento\Framework\View\Asset\Repository $assetRepository
     ) {
         $this->method = $paymentHelper->getMethodInstance(self::CODE);
         $this->checkoutSession = $checkoutSession;
         $this->extraConfig = $extraConfig->getExtraConfig();
+        $this->assetRepository = $assetRepository;
     }
 
     /**
@@ -60,8 +61,9 @@ final class ConfigProvider implements ConfigProviderInterface
                 self::CODE => [
                     'total' => $quote->getGrandTotal(),
                     'displayMode' => $this->method->getConfigData('display_mode'),
-                    'title' => $this->extraConfig['PMT_TITLE'],
-                    'subtitle' => $this->extraConfig['PMT_TITLE_EXTRA']
+                    'title' => __($this->extraConfig['PAGANTIS_TITLE']),
+                    'subtitle' => __($this->extraConfig['PAGANTIS_TITLE_EXTRA']),
+                    'image' => $this->assetRepository->getUrl('Pagantis_Pagantis::logopagantis.png')
                 ],
             ],
         ];

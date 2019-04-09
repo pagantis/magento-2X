@@ -1,5 +1,5 @@
 <?php
-namespace DigitalOrigin\Pmt\Controller\Payment;
+namespace Pagantis\Pagantis\Controller\Payment;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\ResourceConnection;
@@ -8,7 +8,7 @@ use Magento\Framework\DB\Ddl\Table;
 class Log extends Action
 {
     /** Concurrency tablename */
-    const LOGS_TABLE = 'pmt_logs';
+    const LOGS_TABLE = 'Pagantis_logs';
 
     /** @var mixed $config */
     protected $config;
@@ -20,15 +20,15 @@ class Log extends Action
      * Log constructor.
      *
      * @param \Magento\Framework\App\Action\Context $context
-     * @param \DigitalOrigin\Pmt\Helper\Config      $pmtConfig
+     * @param \Pagantis\Pagantis\Helper\Config      $pagantisConfig
      * @param ResourceConnection                    $dbObject
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
-        \DigitalOrigin\Pmt\Helper\Config $pmtConfig,
+        \Pagantis\Pagantis\Helper\Config $pagantisConfig,
         ResourceConnection $dbObject
     ) {
-        $this->config = $pmtConfig->getConfig();
+        $this->config = $pagantisConfig->getConfig();
         $this->dbObject = $dbObject;
         return parent::__construct($context);
     }
@@ -42,7 +42,7 @@ class Log extends Action
         try {
             $response = array();
             $secretKey = $this->getRequest()->getParam('secret');
-            $privateKey = isset($this->config['pmt_private_key']) ? $this->config['pmt_private_key'] : null;
+            $privateKey = isset($this->config['pagantis_private_key']) ? $this->config['pagantis_private_key'] : null;
 
             if ($secretKey!='' && $privateKey!='') {
                 $this->checkDbLogTable();

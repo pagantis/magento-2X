@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Test;
+namespace Pagantis\Pagantis\Test;
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -8,10 +8,10 @@ use Facebook\WebDriver\WebDriverBy;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class PaylaterMagentoTest
- * @package DigitalOrigin\Test
+ * Class pagantisMagentoTest
+ * @package Pagantis\Test
  */
-abstract class PaylaterMagentoTest extends TestCase
+abstract class PagantisMagentoTest extends TestCase
 {
     /**
      * Magento Backoffice URL
@@ -59,9 +59,9 @@ abstract class PaylaterMagentoTest extends TestCase
     const ORDER_TITLE = 'Order #';
 
     /**
-     * Pmt Order Title
+     * Pagantis Order Title
      */
-    const PMT_TITLE = 'Paga+Tarde';
+    const PAGANTIS_TITLE = 'Paga+Tarde';
 
     /**
      * Already processed
@@ -71,17 +71,27 @@ abstract class PaylaterMagentoTest extends TestCase
     /**
      * Wrong order
      */
-    const NOORDER_TITLE = 'We can not get the PagaMasTarde identification in database';
+    const NOORDER_TITLE = 'We can not get the Pagantis identification in database';
 
     /**
      * Magento Logout URL
      */
-    const NOTIFICATION_FOLDER = '/paylater/notify/';
+    const NOTIFICATION_FOLDER = '/pagantis/notify/';
 
     /**
      * Magento Logout URL
      */
     const NOTIFICATION_PARAMETER = 'quoteId';
+
+    /**
+     * Magento Log URL
+     */
+    const LOG_FOLDER = '/pagantis/Payment/Log';
+
+    /**
+     * Magento Config URL
+     */
+    const CONFIG_FOLDER = '/pagantis/Payment/Config';
 
     /**
      * @var array
@@ -91,7 +101,8 @@ abstract class PaylaterMagentoTest extends TestCase
         'backofficePassword' => 'password123',
         'publicKey'          => 'tk_fd53cd467ba49022e4f8215e',
         'secretKey'          => '21e57baa97459f6a',
-        'methodName'         => 'Instant Financing',
+        'methodName'         => 'Pagantis',
+        'methodTitle'        => 'Financiación instantánea',
         'defaultSimulatorOpt'=> 6,
         'defaultMinIns'      => 3,
         'defaultMaxIns'      => 12,
@@ -105,7 +116,7 @@ abstract class PaylaterMagentoTest extends TestCase
         'city'               => 'Barcelona',
         'street'             => 'Av Diagonal 585, planta 7',
         'phone'              => '600123123',
-        'checkoutDescription'=> 'Paga hasta en 12 cómodas cuotas con Paga+Tarde'
+        'checkoutDescription'=> 'Paga hasta en 12'
     );
 
     /**
@@ -131,7 +142,7 @@ abstract class PaylaterMagentoTest extends TestCase
     );
 
     /**
-     * PaylaterMagentoTest constructor.
+     * pagantisMagentoTest constructor.
      */
     public function __construct()
     {
@@ -147,7 +158,7 @@ abstract class PaylaterMagentoTest extends TestCase
         $this->version = $_SERVER['argv'][6];
         $this->configuration['magentoUrl'] = 'http://magento'.$this->version.'-test.docker:'.
             $this->versionsPort[$this->version].'/index.php';
-        $this->configuration['email'] = "john.doe+".microtime(true)."@digitalorigin.com";
+        $this->configuration['email'] = "john.doe+".microtime(true)."@pagantis.com";
 
         return parent::__construct();
     }
@@ -157,7 +168,7 @@ abstract class PaylaterMagentoTest extends TestCase
      */
     protected function setUp()
     {
-        $this->webDriver = PmtWebDriver::create(
+        $this->webDriver = PagantisWebDriver::create(
             'http://localhost:4444/wd/hub',
             DesiredCapabilities::chrome(),
             180000,

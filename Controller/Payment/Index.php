@@ -1,23 +1,23 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Controller\Payment;
+namespace Pagantis\Pagantis\Controller\Payment;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Quote\Model\QuoteRepository;
 use Magento\Sales\Model\ResourceModel\Order\Collection as OrderCollection;
 use Magento\Checkout\Model\Session;
-use DigitalOrigin\Pmt\Helper\Config;
-use DigitalOrigin\Pmt\Helper\ExtraConfig;
+use Pagantis\Pagantis\Helper\Config;
+use Pagantis\Pagantis\Helper\ExtraConfig;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Module\ModuleList;
-use PagaMasTarde\OrdersApiClient\Model\Order\User\Address;
+use Pagantis\OrdersApiClient\Model\Order\User\Address;
 use Magento\Framework\DB\Ddl\Table;
 
 /**
  * Class Index
- * @package DigitalOrigin\Pmt\Controller\Payment
+ * @package Pagantis\Pagantis\Controller\Payment
  */
 class Index extends Action
 {
@@ -25,7 +25,7 @@ class Index extends Action
     const ORDERS_TABLE = 'cart_process';
 
     /** Concurrency tablename */
-    const LOGS_TABLE = 'pmt_logs';
+    const LOGS_TABLE = 'Pagantis_logs';
 
     /** @var Context $context */
     protected $context;
@@ -155,7 +155,7 @@ class Index extends Action
                 ->setMobilePhone($billingAddress->getTelephone())
             ;
 
-            $orderUser = new \PagaMasTarde\OrdersApiClient\Model\Order\User();
+            $orderUser = new \Pagantis\OrdersApiClient\Model\Order\User();
             $billingAddress->setEmail($customer->getEmail());
             $orderUser
                 ->setAddress($userAddress)
@@ -178,7 +178,7 @@ class Index extends Action
 
             $previousOrders = $this->getOrders($customer->getId());
             foreach ($previousOrders as $orderElement) {
-                $orderHistory = new \PagaMasTarde\OrdersApiClient\Model\Order\User\OrderHistory();
+                $orderHistory = new \Pagantis\OrdersApiClient\Model\Order\User\OrderHistory();
                 $orderHistory
                     ->setAmount(intval(100 * $orderElement['grand_total']))
                     ->setDate(new \DateTime($orderElement['created_at']))
@@ -186,12 +186,12 @@ class Index extends Action
                 $orderUser->addOrderHistory($orderHistory);
             }
 
-            $details = new \PagaMasTarde\OrdersApiClient\Model\Order\ShoppingCart\Details();
+            $details = new \Pagantis\OrdersApiClient\Model\Order\ShoppingCart\Details();
             $shippingCost = $quote->collectTotals()->getTotals()['shipping']->getData('value');
             $details->setShippingCost(intval(strval(100 * $shippingCost)));
             $items = $quote->getAllVisibleItems();
             foreach ($items as $key => $item) {
-                $product = new \PagaMasTarde\OrdersApiClient\Model\Order\ShoppingCart\Details\Product();
+                $product = new \Pagantis\OrdersApiClient\Model\Order\ShoppingCart\Details\Product();
                 $product
                     ->setAmount(intval(100 * $item->getPrice()))
                     ->setQuantity($item->getQty())
@@ -199,7 +199,7 @@ class Index extends Action
                 $details->addProduct($product);
             }
 
-            $orderShoppingCart = new \PagaMasTarde\OrdersApiClient\Model\Order\ShoppingCart();
+            $orderShoppingCart = new \Pagantis\OrdersApiClient\Model\Order\ShoppingCart();
             $orderShoppingCart
                 ->setDetails($details)
                 ->setOrderReference($quote->getId())
@@ -207,20 +207,20 @@ class Index extends Action
                 ->setTotalAmount(intval(strval(100 * $quote->getGrandTotal())))
             ;
 
-            $metadataOrder = new \PagaMasTarde\OrdersApiClient\Model\Order\Metadata();
+            $metadataOrder = new \Pagantis\OrdersApiClient\Model\Order\Metadata();
             $metadata = $this->getMetadata();
             foreach ($metadata as $key => $metadatum) {
                 $metadataOrder->addMetadata($key, $metadatum);
             }
 
-            $orderConfigurationUrls = new \PagaMasTarde\OrdersApiClient\Model\Order\Configuration\Urls();
+            $orderConfigurationUrls = new \Pagantis\OrdersApiClient\Model\Order\Configuration\Urls();
             $quoteId = $quote->getId();
             $okUrl = $this->_url->getUrl(
-                'paylater/notify/index',
+                'pagantis/notify/index',
                 ['_query' => ['quoteId'=>$quoteId]]
             );
             if (version_compare($metadata['magento'], '2.3.0') >= 0) {
-                $okUrl = $this->_url->getUrl('paylater/notify/indexV2', ['_query' => ['quoteId'=>$quoteId]]);
+                $okUrl = $this->_url->getUrl('pagantis/notify/indexV2', ['_query' => ['quoteId'=>$quoteId]]);
             }
 
             $orderConfigurationUrls
@@ -231,18 +231,18 @@ class Index extends Action
                 ->setOk($okUrl)
             ;
 
-            $orderChannel = new \PagaMasTarde\OrdersApiClient\Model\Order\Configuration\Channel();
+            $orderChannel = new \Pagantis\OrdersApiClient\Model\Order\Configuration\Channel();
             $orderChannel
                 ->setAssistedSale(false)
-                ->setType(\PagaMasTarde\OrdersApiClient\Model\Order\Configuration\Channel::ONLINE)
+                ->setType(\Pagantis\OrdersApiClient\Model\Order\Configuration\Channel::ONLINE)
             ;
-            $orderConfiguration = new \PagaMasTarde\OrdersApiClient\Model\Order\Configuration();
+            $orderConfiguration = new \Pagantis\OrdersApiClient\Model\Order\Configuration();
             $orderConfiguration
                 ->setChannel($orderChannel)
                 ->setUrls($orderConfigurationUrls)
             ;
 
-            $order = new \PagaMasTarde\OrdersApiClient\Model\Order();
+            $order = new \Pagantis\OrdersApiClient\Model\Order();
             $order
                 ->setConfiguration($orderConfiguration)
                 ->setMetadata($metadataOrder)
@@ -250,21 +250,21 @@ class Index extends Action
                 ->setUser($orderUser)
             ;
 
-            if ($this->config['pmt_public_key']=='' || $this->config['pmt_private_key']=='') {
+            if ($this->config['pagantis_public_key']=='' || $this->config['pagantis_private_key']=='') {
                 throw new \Exception('Public and Secret Key not found');
             }
 
-            $orderClient = new \PagaMasTarde\OrdersApiClient\Client(
-                $this->config['pmt_public_key'],
-                $this->config['pmt_private_key']
+            $orderClient = new \Pagantis\OrdersApiClient\Client(
+                $this->config['pagantis_public_key'],
+                $this->config['pagantis_private_key']
             );
 
             $order = $orderClient->createOrder($order);
-            if ($order instanceof \PagaMasTarde\OrdersApiClient\Model\Order) {
+            if ($order instanceof \Pagantis\OrdersApiClient\Model\Order) {
                 $url = $order->getActionUrls()->getForm();
                 $result = $this->insertRow($quote->getId(), $order->getId());
                 if (!$result) {
-                    throw new \Exception('Unable to save pmt-order-id');
+                    throw new \Exception('Unable to save pagantis-order-id');
                 }
             } else {
                 throw new \Exception('Order not created');
@@ -275,13 +275,13 @@ class Index extends Action
             exit;
         }
 
-        $displayMode = $this->extraConfig['PMT_FORM_DISPLAY_TYPE'];
+        $displayMode = $this->extraConfig['PAGANTIS_FORM_DISPLAY_TYPE'];
         if ($displayMode==='0') {
             echo $url;
             exit;
         } else {
             $iframeUrl = $this->_url->getUrl(
-                "paylater/Payment/iframe",
+                "pagantis/Payment/iframe",
                 ['_query' => ["orderId"=>$order->getId()]]
             );
             echo $iframeUrl;
@@ -331,21 +331,21 @@ class Index extends Action
     }
 
     /**
-     * Create relationship between quote_id & pmt_order_id
+     * Create relationship between quote_id & Pagantis_order_id
      * @param $quoteId
-     * @param $pmtOrderId
+     * @param $pagantisOrderId
      *
      * @return int
      * @throws \Zend_Db_Exception
      */
-    private function insertRow($quoteId, $pmtOrderId)
+    private function insertRow($quoteId, $pagantisOrderId)
     {
         $this->checkDbTable();
         $dbConnection = $this->dbObject->getConnection();
         $tableName = $this->dbObject->getTableName(self::ORDERS_TABLE);
         return $dbConnection->insertOnDuplicate(
             $tableName,
-            array('id'=>$quoteId,'order_id'=>$pmtOrderId),
+            array('id'=>$quoteId,'order_id'=>$pagantisOrderId),
             array('order_id')
         );
     }
@@ -358,9 +358,9 @@ class Index extends Action
         $curlInfo = curl_version();
         $curlVersion = $curlInfo['version'];
         $magentoVersion = $this->productMetadataInterface->getVersion();
-        $moduleInfo = $this->moduleList->getOne('DigitalOrigin_Pmt');
+        $moduleInfo = $this->moduleList->getOne('Pagantis_Pagantis');
         return array(  'magento' => $magentoVersion,
-                       'pmt' => $moduleInfo['setup_version'],
+                       'pagantis' => $moduleInfo['setup_version'],
                        'php' => phpversion(),
                        'curl' => $curlVersion);
     }

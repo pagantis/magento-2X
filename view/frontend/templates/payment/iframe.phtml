@@ -2,21 +2,21 @@
     require( [
         "https://cdn.pagamastarde.com/pmt-js-client-sdk/3/js/client-sdk.min.js",
             "jquery" ],
-        function (pmtClient, $) {
-            if (typeof pmtClient !== 'undefined') {
+        function (pagantisClient, $) {
+            if (typeof pagantisClient !== 'undefined') {
                 $(document).ready( function(){
-                    pmtClient.modal.open(
+                    pagantisClient.modal.open(
                         "<?=$block->getOrderUrl(); ?>",
                         {
                             closeOnBackDropClick: false,
                             closeOnEscPress: false,
                             backDropDark: false,
                             largeSize: true,
-                            closeConfirmationMessage: "{l s='Sure you want to leave?' mod='paylater'}"
+                            closeConfirmationMessage: "{l s='Sure you want to leave?' mod='pagantis'}"
                         }
                     );
                 });
-                pmtClient.modal.onClose(function() {
+                pagantisClient.modal.onClose(function() {
                     window.location.href = "<?=$block->getCheckoutUrl(); ?>";
                 });
             }

@@ -1,19 +1,19 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Test\Register;
+namespace Pagantis\Pagantis\Test\Register;
 
-use DigitalOrigin\Pmt\Test\Common\AbstractMg21Selenium;
+use Pagantis\Pagantis\Test\Common\AbstractMg21Selenium;
 
 /**
- * Class PaylaterMgInstallTest
- * @package DigitalOrigin\Test\Register
+ * Class pagantisMgInstallTest
+ * @package Pagantis\Test\Register
  *
  * @group magento-register
  */
-class PaylaterMgRegisterTest extends AbstractMg21Selenium
+class pagantisMgRegisterTest extends AbstractMg21Selenium
 {
     /**
-     * @require configurePaylater
+     * @require configurepagantis
      *
      * @throws \Exception
      */

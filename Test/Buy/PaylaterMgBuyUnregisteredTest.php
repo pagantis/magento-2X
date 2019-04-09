@@ -1,16 +1,16 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Test\Buy;
+namespace Pagantis\Pagantis\Test\Buy;
 
-use DigitalOrigin\Pmt\Test\Common\AbstractMg21Selenium;
+use Pagantis\Pagantis\Test\Common\AbstractMg21Selenium;
 
 
 /**
- * Class PaylaterMgBuyUnregisteredTest
+ * Class pagantisMgBuyUnregisteredTest
  *
  * @group magento-buy-unregistered
  */
-class PaylaterMgBuyUnregisteredTest extends AbstractMg21Selenium
+class pagantisMgBuyUnregisteredTest extends AbstractMg21Selenium
 {
     /**
      * @throws \Exception
@@ -23,7 +23,7 @@ class PaylaterMgBuyUnregisteredTest extends AbstractMg21Selenium
         $this->goToCheckout();
         $this->prepareCheckout();
         $this->preparePaymentMethod();
-        $this->verifyPaylater();
+        $this->verifypagantis();
         $this->verifyOrder();
         $this->quit();
     }

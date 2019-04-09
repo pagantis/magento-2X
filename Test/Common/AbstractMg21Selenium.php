@@ -1,18 +1,17 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Test\Common;
+namespace Pagantis\Pagantis\Test\Common;
 
-use DigitalOrigin\Pmt\Test\PaylaterMagentoTest;
-use Facebook\WebDriver\WebDriver;
+use Pagantis\Pagantis\Test\PagantisMagentoTest;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Pagantis\SeleniumFormUtils\SeleniumHelper;
 
 /**
  * Class AbstractMg21Selenium
- * @package DigitalOrigin\Test\Common
+ * @package Pagantis\Test\Common
  */
-abstract class AbstractMg21Selenium extends PaylaterMagentoTest
+abstract class AbstractMg21Selenium extends PagantisMagentoTest
 {
     /**
      * @throws \Exception
@@ -37,7 +36,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      *
      * @throws \Exception
      */
-    public function getPaylaterBackOffice()
+    public function getpagantisBackOffice()
     {
         $this->webDriver->get($this->configuration['magentoUrl'].self::BACKOFFICE_FOLDER);
 
@@ -82,16 +81,16 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
             $otherElement->click();
         }
 
-        $verify = WebDriverBy::id('payment_us_paylater-head');
+        $verify = WebDriverBy::id('payment_us_pagantis-head');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($verify);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition, "PR4");
-        $paylaterElement = $this->findById('payment_us_paylater-head');
-        if ($paylaterElement->getAttribute('class')!='open') {
-            $paylaterElement->click();
+        $pagantisElement = $this->findById('payment_us_pagantis-head');
+        if ($pagantisElement->getAttribute('class')!='open') {
+            $pagantisElement->click();
         }
 
-        $verify = WebDriverBy::id('payment_us_paylater_active');
+        $verify = WebDriverBy::id('payment_us_pagantis_active');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($verify);
         $this->webDriver->wait()->until($condition);
     }
@@ -298,13 +297,13 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
     }
 
     /**
-     * Verify Paylater
+     * Verify pagantis
      *
      * @throws \Exception
      */
-    public function verifyPaylater()
+    public function verifypagantis()
     {
-        $condition = WebDriverExpectedCondition::titleContains(self::PMT_TITLE);
+        $condition = WebDriverExpectedCondition::titleContains(self::PAGANTIS_TITLE);
         $this->webDriver->wait(300)->until($condition, $this->webDriver->getCurrentURL());
         $this->assertTrue((bool)$condition, "PR32");
 
@@ -381,30 +380,30 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     public function preparePaymentMethod()
     {
-        $paylaterElement = WebDriverBy::id('paylater');
-        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($paylaterElement);
+        $pagantisElement = WebDriverBy::id('pagantis');
+        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($pagantisElement);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
 
-        $condition = WebDriverExpectedCondition::elementToBeClickable($paylaterElement);
+        $condition = WebDriverExpectedCondition::elementToBeClickable($pagantisElement);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
 
         sleep(10);
-        $this->findById('paylater')->click();
+        $this->findById('pagantis')->click();
 
         sleep(2);
 
-        $paylaterElement = WebDriverBy::className('payment-group');
-        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($paylaterElement);
+        $pagantisElement = WebDriverBy::className('payment-group');
+        $condition = WebDriverExpectedCondition::visibilityOfElementLocated($pagantisElement);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition);
 
         $menuSearch = WebDriverBy::cssSelector("#checkout-payment-method-load > .payment-methods > .payment-group > ._active > .payment-method-title");
         $menuElement = $this->webDriver->findElement($menuSearch);
         $actualString = $menuElement->getText();
-        $compareString = (strstr($actualString, $this->configuration['methodName'])) === false ? false : true;
-        $this->assertTrue($compareString, $actualString, "PR25,PR26");
+        $compareString = (strstr($actualString, $this->configuration['methodTitle'])) === false ? false : true;
+        $this->assertTrue($compareString, "PR25,PR26=>".$actualString.'--'.$this->configuration['methodTitle']);
 
         $descriptionSearch = WebDriverBy::cssSelector("#checkout-payment-method-load > .payment-methods > .payment-group > ._active > .payment-method-content");
         $descriptionElement = $this->webDriver->findElement($descriptionSearch);
@@ -484,8 +483,7 @@ abstract class AbstractMg21Selenium extends PaylaterMagentoTest
      */
     private function checkSimulator()
     {
-        sleep(20);
-        $simulatorElementSearch = WebDriverBy::className('PmtSimulator');
+        $simulatorElementSearch = WebDriverBy::className('pagantisSimulator');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($simulatorElementSearch);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition, "PR19//PR28");

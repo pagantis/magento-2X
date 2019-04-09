@@ -1,16 +1,16 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Test;
+namespace Pagantis\Pagantis\Test;
 
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverWait;
 
 /**
- * Class PmtWebDriver
+ * Class PagantisWebDriver
  *
  * @package Test
  */
-class PmtWebDriver extends RemoteWebDriver
+class PagantisWebDriver extends RemoteWebDriver
 {
     /**
      * Override method to increase the default timeouts

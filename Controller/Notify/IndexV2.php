@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Controller\Notify;
+namespace Pagantis\Pagantis\Controller\Notify;
 
 use Magento\Quote\Model\QuoteManagement;
 use Magento\Quote\Api\Data\PaymentInterface;
@@ -10,31 +10,31 @@ use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\QuoteRepository;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\Action;
-use PagaMasTarde\ModuleUtils\Exception\MerchantOrderNotFoundException;
-use PagaMasTarde\OrdersApiClient\Client;
-use DigitalOrigin\Pmt\Helper\Config;
-use DigitalOrigin\Pmt\Helper\ExtraConfig;
+use Pagantis\ModuleUtils\Exception\MerchantOrderNotFoundException;
+use Pagantis\OrdersApiClient\Client;
+use Pagantis\Pagantis\Helper\Config;
+use Pagantis\Pagantis\Helper\ExtraConfig;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\DB\Ddl\Table;
-use PagaMasTarde\ModuleUtils\Exception\AmountMismatchException;
-use PagaMasTarde\ModuleUtils\Exception\ConcurrencyException;
-use PagaMasTarde\ModuleUtils\Exception\NoIdentificationException;
-use PagaMasTarde\ModuleUtils\Exception\OrderNotFoundException;
-use PagaMasTarde\ModuleUtils\Exception\QuoteNotFoundException;
-use PagaMasTarde\ModuleUtils\Exception\UnknownException;
-use PagaMasTarde\ModuleUtils\Exception\WrongStatusException;
-use PagaMasTarde\ModuleUtils\Model\Response\JsonSuccessResponse;
-use PagaMasTarde\ModuleUtils\Model\Response\JsonExceptionResponse;
-use PagaMasTarde\ModuleUtils\Exception\AlreadyProcessedException;
-use PagaMasTarde\ModuleUtils\Model\Log\LogEntry;
+use Pagantis\ModuleUtils\Exception\AmountMismatchException;
+use Pagantis\ModuleUtils\Exception\ConcurrencyException;
+use Pagantis\ModuleUtils\Exception\NoIdentificationException;
+use Pagantis\ModuleUtils\Exception\OrderNotFoundException;
+use Pagantis\ModuleUtils\Exception\QuoteNotFoundException;
+use Pagantis\ModuleUtils\Exception\UnknownException;
+use Pagantis\ModuleUtils\Exception\WrongStatusException;
+use Pagantis\ModuleUtils\Model\Response\JsonSuccessResponse;
+use Pagantis\ModuleUtils\Model\Response\JsonExceptionResponse;
+use Pagantis\ModuleUtils\Exception\AlreadyProcessedException;
+use Pagantis\ModuleUtils\Model\Log\LogEntry;
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 
 /**
  * Class Index
- * @package DigitalOrigin\Pmt\Controller\Notify
+ * @package Pagantis\Pagantis\Controller\Notify
  */
 class IndexV2 extends Action implements CsrfAwareActionInterface
 {
@@ -42,13 +42,13 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
     const ORDERS_TABLE = 'cart_process';
 
     /** Concurrency tablename */
-    const CONCURRENCY_TABLE = 'pmt_orders';
+    const CONCURRENCY_TABLE = 'Pagantis_orders';
 
     /** Concurrency tablename */
-    const LOGS_TABLE = 'pmt_logs';
+    const LOGS_TABLE = 'Pagantis_logs';
 
     /** Payment code */
-    const PAYMENT_METHOD = 'paylater';
+    const PAYMENT_METHOD = 'pagantis';
 
     /**
      * EXCEPTION RESPONSES
@@ -83,8 +83,8 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
     /** @var mixed $magentoOrderId */
     protected $magentoOrderId;
 
-    /** @var mixed $pmtOrder */
-    protected $pmtOrder;
+    /** @var mixed $pagantisOrder */
+    protected $pagantisOrder;
 
     /** @var ResourceConnection $dbObject */
     protected $dbObject;
@@ -95,8 +95,8 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
     /** @var Client $orderClient */
     protected $orderClient;
 
-    /** @var mixed $pmtOrderId */
-    protected $pmtOrderId;
+    /** @var mixed $pagantisOrderId */
+    protected $pagantisOrderId;
 
     /** @var  OrderInterface $magentoOrder */
     protected $magentoOrder;
@@ -151,8 +151,8 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
         try {
             $this->checkConcurrency();
             $this->getMerchantOrder();
-            $this->getPmtOrderId();
-            $this->getPmtOrder();
+            $this->getPagantisOrderId();
+            $this->getPagantisOrder();
             $this->checkOrderStatus();
             $this->checkMerchantOrderStatus();
             $this->validateAmount();
@@ -160,7 +160,7 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
         } catch (\Exception $exception) {
             $jsonResponse = new JsonExceptionResponse();
             $jsonResponse->setMerchantOrderId($this->magentoOrderId);
-            $jsonResponse->setPmtOrderId($this->pmtOrderId);
+            $jsonResponse->setpagantisOrderId($this->pagantisOrderId);
             $jsonResponse->setException($exception);
             $response = $jsonResponse->toJson();
             $this->insertLog($exception);
@@ -168,16 +168,16 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
 
         try {
             if (!isset($response)) {
-                $this->confirmPmtOrder();
+                $this->confirmpagantisOrder();
                 $jsonResponse = new JsonSuccessResponse();
                 $jsonResponse->setMerchantOrderId($this->magentoOrderId);
-                $jsonResponse->setPmtOrderId($this->pmtOrderId);
+                $jsonResponse->setpagantisOrderId($this->pagantisOrderId);
             }
         } catch (\Exception $exception) {
             $this->rollbackMerchantOrder();
             $jsonResponse = new JsonExceptionResponse();
             $jsonResponse->setMerchantOrderId($this->magentoOrderId);
-            $jsonResponse->setPmtOrderId($this->pmtOrderId);
+            $jsonResponse->setpagantisOrderId($this->pagantisOrderId);
             $jsonResponse->setException($exception);
             $jsonResponse->toJson();
             $this->insertLog($exception);
@@ -225,7 +225,7 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
     /**
      * @throws UnknownException
      */
-    private function getPmtOrderId()
+    private function getPagantisOrderId()
     {
         try {
             /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
@@ -233,8 +233,8 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
             $tableName        = $this->dbObject->getTableName(self::ORDERS_TABLE);
             $query            = "select order_id from $tableName where id='$this->quoteId'";
             $queryResult      = $dbConnection->fetchRow($query);
-            $this->pmtOrderId = $queryResult['order_id'];
-            if ($this->pmtOrderId == '') {
+            $this->pagantisOrderId = $queryResult['order_id'];
+            if ($this->pagantisOrderId == '') {
                 throw new NoIdentificationException();
             }
         } catch (\Exception $e) {
@@ -245,11 +245,11 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
     /**
      * @throws OrderNotFoundException
      */
-    private function getPmtOrder()
+    private function getPagantisOrder()
     {
         try {
-            $this->orderClient = new Client($this->config['pmt_public_key'], $this->config['pmt_private_key']);
-            $this->pmtOrder = $this->orderClient->getOrder($this->pmtOrderId);
+            $this->orderClient = new Client($this->config['pagantis_public_key'], $this->config['pagantis_private_key']);
+            $this->pagantisOrder = $this->orderClient->getOrder($this->pagantisOrderId);
         } catch (\Exception $e) {
             throw new OrderNotFoundException();
         }
@@ -262,13 +262,13 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
     private function checkOrderStatus()
     {
         try {
-            $this->checkPmtStatus(array('AUTHORIZED'));
+            $this->checkPagantisStatus(array('AUTHORIZED'));
         } catch (\Exception $e) {
             $this->getMagentoOrderId();
             if ($this->magentoOrderId!='') {
                 throw new AlreadyProcessedException();
             } else {
-                throw new WrongStatusException($this->pmtOrder->getStatus());
+                throw new WrongStatusException($this->pagantisOrder->getStatus());
             }
         }
     }
@@ -289,10 +289,10 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
      */
     private function validateAmount()
     {
-        $pmtAmount = $this->pmtOrder->getShoppingCart()->getTotalAmount();
+        $pagantisAmount = $this->pagantisOrder->getShoppingCart()->getTotalAmount();
         $merchantAmount = intval(strval(100 * $this->quote->getGrandTotal()));
-        if ($pmtAmount != $merchantAmount) {
-            throw new AmountMismatchException($pmtAmount, $merchantAmount);
+        if ($pagantisAmount != $merchantAmount) {
+            throw new AmountMismatchException($pagantisAmount, $merchantAmount);
         }
     }
 
@@ -313,10 +313,10 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
      * @return false|string
      * @throws UnknownException
      */
-    private function confirmPmtOrder()
+    private function confirmpagantisOrder()
     {
         try {
-            $this->pmtOrder = $this->orderClient->confirmOrder($this->pmtOrderId);
+            $this->pagantisOrder = $this->orderClient->confirmOrder($this->pagantisOrderId);
         } catch (\Exception $e) {
             throw new UnknownException($e->getMessage());
         }
@@ -324,7 +324,7 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
         $jsonResponse = new JsonSuccessResponse();
         $jsonResponse->setStatusCode(200);
         $jsonResponse->setMerchantOrderId($this->magentoOrderId);
-        $jsonResponse->setPmtOrderId($this->pmtOrderId);
+        $jsonResponse->setpagantisOrderId($this->pagantisOrderId);
         $jsonResponse->setResult(self::CPO_OK_MSG);
         return $jsonResponse->toJson();
     }
@@ -424,24 +424,24 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
     }
 
     /** STEP 2 GMO - Get Merchant Order */
-    /** STEP 3 GPOI - Get Pmt OrderId */
-    /** STEP 4 GPO - Get Pmt Order */
+    /** STEP 3 GPOI - Get Pagantis OrderId */
+    /** STEP 4 GPO - Get Pagantis Order */
     /** STEP 5 COS - Check Order Status */
     /**
      * @param $statusArray
      *
      * @throws \Exception
      */
-    private function checkPmtStatus($statusArray)
+    private function checkPagantisStatus($statusArray)
     {
-        $pmtStatus = array();
+        $pagantisStatus = array();
         foreach ($statusArray as $status) {
-            $pmtStatus[] = constant("\PagaMasTarde\OrdersApiClient\Model\Order::STATUS_$status");
+            $pagantisStatus[] = constant("\Pagantis\OrdersApiClient\Model\Order::STATUS_$status");
         }
 
-        $payed = in_array($this->pmtOrder->getStatus(), $pmtStatus);
+        $payed = in_array($this->pagantisOrder->getStatus(), $pagantisStatus);
         if (!$payed) {
-            throw new WrongStatusException($this->pmtOrder->getStatus());
+            throw new WrongStatusException($this->pagantisOrder->getStatus());
         }
     }
 
@@ -455,9 +455,9 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
             /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
             $dbConnection = $this->dbObject->getConnection();
             $tableName    = $this->dbObject->getTableName(self::ORDERS_TABLE);
-            $pmtOrderId   = $this->pmtOrderId;
+            $pagantisOrderId   = $this->pagantisOrderId;
 
-            $query        = "select mg_order_id from $tableName where id='$this->quoteId' and order_id='$pmtOrderId'";
+            $query        = "select mg_order_id from $tableName where id='$this->quoteId' and order_id='$pagantisOrderId'";
             $queryResult  = $dbConnection->fetchRow($query);
             $this->magentoOrderId = $queryResult['mg_order_id'];
         } catch (\Exception $e) {
@@ -495,18 +495,18 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
             /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
             $dbConnection = $this->dbObject->getConnection();
             $tableName    = $this->dbObject->getTableName(self::ORDERS_TABLE);
-            $pmtOrderId   = $this->pmtOrder->getId();
+            $pagantisOrderId   = $this->pagantisOrder->getId();
             $dbConnection->update(
                 $tableName,
                 array('mg_order_id' => $this->magentoOrderId),
-                "order_id='$pmtOrderId' and id='$this->quoteId'"
+                "order_id='$pagantisOrderId' and id='$this->quoteId'"
             );
         } catch (\Exception $e) {
             throw new UnknownException($e->getMessage());
         }
     }
 
-    /** STEP 9 CPO - Confirmation Pmt Order */
+    /** STEP 9 CPO - Confirmation Pagantis Order */
     /**
      * @throws UnknownException
      */
@@ -545,14 +545,14 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
             $orderStatus    = strtolower($this->magentoOrder->getStatus());
             $acceptedStatus = array('processing', 'completed');
             if (in_array($orderStatus, $acceptedStatus)) {
-                if (isset($this->extraConfig['PMT_OK_URL']) &&  $this->extraConfig['PMT_OK_URL']!= '') {
-                    $returnUrl = $this->extraConfig['PMT_OK_URL'];
+                if (isset($this->extraConfig['PAGANTIS_OK_URL']) &&  $this->extraConfig['PAGANTIS_OK_URL']!= '') {
+                    $returnUrl = $this->extraConfig['PAGANTIS_OK_URL'];
                 } else {
                     $returnUrl = 'checkout/onepage/success';
                 }
             } else {
-                if (isset($this->extraConfig['PMT_KO_URL']) && $this->extraConfig['PMT_KO_URL'] != '') {
-                    $returnUrl = $this->extraConfig['PMT_KO_URL'];
+                if (isset($this->extraConfig['PAGANTIS_KO_URL']) && $this->extraConfig['PAGANTIS_KO_URL'] != '') {
+                    $returnUrl = $this->extraConfig['PAGANTIS_KO_URL'];
                 } else {
                     //$returnUrl = 'checkout/#payment';
                     $returnUrl = $this->_url->getUrl('checkout', ['_fragment' => 'payment']);

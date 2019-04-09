@@ -1,21 +1,21 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Block\Product;
+namespace Pagantis\Pagantis\Block\Product;
 
 use Magento\Backend\Block\Template\Context;
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
-use DigitalOrigin\Pmt\Helper\ExtraConfig;
+use Pagantis\Pagantis\Helper\ExtraConfig;
 
 /**
  * Class Simulator
- * @package DigitalOrigin\Pmt\Block\Product
+ * @package Pagantis\Pagantis\Block\Product
  */
 class Simulator extends Template
 {
-    const PROMOTIONS_CATEGORY = 'paylater-promotion-product';
+    const PROMOTIONS_CATEGORY = 'pagantis-promotion-product';
 
     /**
      * @var bool
@@ -100,18 +100,18 @@ class Simulator extends Template
         $this->registry = $registry;
         /** @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig */
         $scopeConfig = $this->_scopeConfig;
-        $config = $scopeConfig->getValue('payment/paylater');
+        $config = $scopeConfig->getValue('payment/pagantis');
 
         $this->enabled = $config['active'];
-        $this->publicKey = isset($config['pmt_public_key']) ? $config['pmt_public_key'] : '';
+        $this->publicKey = isset($config['pagantis_public_key']) ? $config['pagantis_public_key'] : '';
         $this->productSimulator = $config['product_simulator'];
         $this->extraConfig = $extraConfig->getExtraConfig();
-        $this->minAmount = $this->extraConfig['PMT_DISPLAY_MIN_AMOUNT'];
-        $this->minInstallments = $this->extraConfig['PMT_SIMULATOR_START_INSTALLMENTS'];
-        $this->priceSelector = $this->extraConfig['PMT_SIMULATOR_CSS_PRICE_SELECTOR'];
-        $this->quantitySelector = $this->extraConfig['PMT_SIMULATOR_CSS_QUANTITY_SELECTOR'];
-        $this->positionSelector = $this->extraConfig['PMT_SIMULATOR_CSS_POSITION_SELECTOR'];
-        $this->simulatorType = $this->extraConfig['PMT_SIMULATOR_DISPLAY_TYPE'];
+        $this->minAmount = $this->extraConfig['PAGANTIS_DISPLAY_MIN_AMOUNT'];
+        $this->minInstallments = $this->extraConfig['PAGANTIS_SIMULATOR_START_INSTALLMENTS'];
+        $this->priceSelector = $this->extraConfig['PAGANTIS_SIMULATOR_CSS_PRICE_SELECTOR'];
+        $this->quantitySelector = $this->extraConfig['PAGANTIS_SIMULATOR_CSS_QUANTITY_SELECTOR'];
+        $this->positionSelector = $this->extraConfig['PAGANTIS_SIMULATOR_CSS_POSITION_SELECTOR'];
+        $this->simulatorType = $this->extraConfig['PAGANTIS_SIMULATOR_DISPLAY_TYPE'];
     }
 
     /**

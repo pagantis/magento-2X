@@ -1,48 +1,48 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Test\Install;
+namespace Pagantis\Pagantis\Test\Install;
 
-use DigitalOrigin\Pmt\Test\Common\AbstractMg21Selenium;
+use Pagantis\Pagantis\Test\Common\AbstractMg21Selenium;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverBy;
 
 /**
- * Class PaylaterMgInstallTest
- * @package DigitalOrigin\Test\Install
+ * Class pagantisMgInstallTest
+ * @package Pagantis\Test\Install
  *
  * @group magento-install
  */
-class PaylaterMgInstallTest extends AbstractMg21Selenium
+class pagantisMgInstallTest extends AbstractMg21Selenium
 {
     /**
      * @throws \Exception
      */
-    public function testPaylaterMg21InstallTest()
+    public function testpagantisMg21InstallTest()
     {
         $this->loginToBackOffice();
-        $this->getPaylaterBackOffice();
-        $this->configurePaylater();
+        $this->getpagantisBackOffice();
+        $this->configurepagantis();
         $this->quit();
     }
 
     /**
-     * @require getPaylaterBackOffice
+     * @require getpagantisBackOffice
      *
      * @throws \Exception
      */
-    private function configurePaylater()
+    private function configurepagantis()
     {
-        $verify = WebDriverBy::id('payment_us_paylater_pmt_public_key');
+        $verify = WebDriverBy::id('payment_us_pagantis_pagantis_public_key');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($verify);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition, "PR5");
 
-        $verify = WebDriverBy::id('payment_us_paylater_pmt_private_key');
+        $verify = WebDriverBy::id('payment_us_pagantis_pagantis_private_key');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($verify);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition, "PR5");
 
-        $activeSelect = $this->findById('payment_us_paylater_active');
+        $activeSelect = $this->findById('payment_us_pagantis_active');
         $activeOptions = $activeSelect->findElements(WebDriverBy::xpath('option'));
         foreach ($activeOptions as $activeOption) {
             if ($activeOption->getText() == 'Yes') {
@@ -51,7 +51,7 @@ class PaylaterMgInstallTest extends AbstractMg21Selenium
             }
         }
 
-        $activeSelect = $this->findById('payment_us_paylater_product_simulator');
+        $activeSelect = $this->findById('payment_us_pagantis_product_simulator');
         $activeOptions = $activeSelect->findElements(WebDriverBy::xpath('option'));
         foreach ($activeOptions as $activeOption) {
             if ($activeOption->getText() == 'Yes') {
@@ -60,8 +60,8 @@ class PaylaterMgInstallTest extends AbstractMg21Selenium
             }
         }
 
-        $this->findById('payment_us_paylater_pmt_public_key')->clear()->sendKeys($this->configuration['publicKey']);
-        $this->findById('payment_us_paylater_pmt_private_key')->clear()->sendKeys($this->configuration['secretKey']);
+        $this->findById('payment_us_pagantis_pagantis_public_key')->clear()->sendKeys($this->configuration['publicKey']);
+        $this->findById('payment_us_pagantis_pagantis_private_key')->clear()->sendKeys($this->configuration['secretKey']);
 
         $this->findById('config-edit-form')->submit();
 
@@ -70,10 +70,10 @@ class PaylaterMgInstallTest extends AbstractMg21Selenium
         $compareString = (strstr($actualString, 'You saved the configuration')) === false ? false : true;
         $this->assertTrue($compareString, $actualString);
 
-        $enabledModule = $this->findByCss("select#payment_us_paylater_active > option[selected]");
+        $enabledModule = $this->findByCss("select#payment_us_pagantis_active > option[selected]");
         $this->assertEquals($enabledModule->getText(), 'Yes', 'PR6');
 
-        $verify = WebDriverBy::id('payment_us_paylater_active');
+        $verify = WebDriverBy::id('payment_us_pagantis_active');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($verify);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition, "PR7");

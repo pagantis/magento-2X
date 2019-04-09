@@ -1,13 +1,13 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Test\Buy;
+namespace Pagantis\Pagantis\Test\Buy;
 
-use DigitalOrigin\Pmt\Test\Common\AbstractMg21Selenium;
+use Pagantis\Pagantis\Test\Common\AbstractMg21Selenium;
 use Httpful\Request;
-use PagaMasTarde\ModuleUtils\Exception\AlreadyProcessedException;
-use PagaMasTarde\ModuleUtils\Exception\MerchantOrderNotFoundException;
-use PagaMasTarde\ModuleUtils\Exception\NoIdentificationException;
-use PagaMasTarde\ModuleUtils\Exception\QuoteNotFoundException;
+use Httpful\Mime;
+use Pagantis\ModuleUtils\Exception\AlreadyProcessedException;
+use Pagantis\ModuleUtils\Exception\MerchantOrderNotFoundException;
+use Pagantis\ModuleUtils\Exception\QuoteNotFoundException;
 
 /**
  * @requires magento-install
@@ -15,7 +15,7 @@ use PagaMasTarde\ModuleUtils\Exception\QuoteNotFoundException;
  *
  * @group magento-buy-registered
  */
-class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
+class pagantisMgBuyRegisteredTest extends AbstractMg21Selenium
 {
     /**
      * @var string
@@ -33,6 +33,25 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
     protected $notifyUrl;
 
     /**
+     * @var array $configs
+     */
+    protected $configs = array(
+        "PAGANTIS_TITLE",
+        "PAGANTIS_SIMULATOR_DISPLAY_TYPE",
+        "PAGANTIS_SIMULATOR_DISPLAY_SKIN",
+        "PAGANTIS_SIMULATOR_DISPLAY_POSITION",
+        "PAGANTIS_SIMULATOR_START_INSTALLMENTS",
+        "PAGANTIS_SIMULATOR_CSS_POSITION_SELECTOR",
+        "PAGANTIS_SIMULATOR_DISPLAY_CSS_POSITION",
+        "PAGANTIS_SIMULATOR_CSS_PRICE_SELECTOR",
+        "PAGANTIS_SIMULATOR_CSS_QUANTITY_SELECTOR",
+        "PAGANTIS_FORM_DISPLAY_TYPE",
+        "PAGANTIS_DISPLAY_MIN_AMOUNT",
+        "PAGANTIS_URL_OK",
+        "PAGANTIS_URL_KO",
+    );
+
+    /**
      * @throws  \Exception
      */
     public function testBuy()
@@ -44,11 +63,12 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $this->goToCheckout();
         $this->goToPayment();
         $this->setCheckoutPrice($this->preparePaymentMethod());
-        $this->verifyPaylater();
+        $this->verifypagantis();
         $this->verifyOrder();
         $this->setConfirmationPrice($this->verifyOrderInformation());
         $this->comparePrices();
-        $this->checkProcessed();
+        $this->checkNotifications();
+        $this->checkControllers();
         $this->quit();
     }
 
@@ -57,20 +77,22 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
         $this->assertContains($this->getCheckoutPrice(), $this->getConfirmationPrice(), "PR46");
     }
 
-    private function checkProcessed()
+    private function checkNotifications()
     {
         $orderUrl = $this->webDriver->getCurrentURL();
         $this->assertNotEmpty($orderUrl);
 
-        $orderArray = explode('/', $orderUrl);
+        $orderArray     = explode('/', $orderUrl);
         $magentoOrderId = (int)$orderArray['8'];
         $this->assertNotEmpty($magentoOrderId);
         $notifyFile = 'index/';
-        $quoteId=($magentoOrderId)-1;
+        $quoteId    = ($magentoOrderId) - 1;
+        $version    = '';
 
         if (version_compare($this->version, '23') >= 0) {
             $notifyFile = 'indexV2/';
-            $quoteId=$magentoOrderId;
+            $quoteId    = $magentoOrderId;
+            $version    = "V2";
         }
 
         $notifyUrl = sprintf(
@@ -99,7 +121,7 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
             "PR58=>".$notifyUrl.$quoteId." = ".$response->body->result
         );
 
-        $quoteId=0;
+        $quoteId  = 0;
         $response = Request::post($notifyUrl.$quoteId)->expects('json')->send();
         $this->assertNotEmpty($response->body->result, print_r($response, true));
         $this->assertContains(
@@ -107,6 +129,48 @@ class PaylaterMgBuyRegisteredTest extends AbstractMg21Selenium
             $response->body->result,
             "PR51=>".$notifyUrl.$quoteId." = ".$response->body->result
         );
+    }
+
+    private function checkControllers()
+    {
+        $version = '';
+        if (version_compare($this->version, '23') >= 0) {
+            $version    = "V2";
+        }
+
+        $logUrl = sprintf(
+            "%s%s%s%s%s",
+            $this->configuration['magentoUrl'],
+            self::LOG_FOLDER,
+            $version,
+            '?secret=',
+            $this->configuration['secretKey']
+        );
+        $response = Request::get($logUrl)->expects('json')->send();
+        $this->assertEquals(3, count($response->body), "PR57=>".$logUrl." = ".count($response->body));
+
+        $configUrl = sprintf(
+            "%s%s%s%s%s",
+            $this->configuration['magentoUrl'],
+            self::CONFIG_FOLDER,
+            $version,
+            '?secret=',
+            $this->configuration['secretKey']
+        );
+
+        $response = Request::get($configUrl)->expects('json')->send();
+        $content = $response->body;
+        foreach ($this->configs as $config) {
+            $this->assertArrayHasKey($config, (array) $content, "PR61=>".print_r($content, true));
+        }
+
+        $body = array('PAGANTIS_TITLE' => 'changed');
+        $response = Request::post($configUrl)
+                           ->body($body, Mime::FORM)
+                           ->expectsJSON()
+                           ->send();
+        $title = $response->body->PAGANTIS_TITLE;
+        $this->assertEquals('changed', $title, "PR62=>".$configUrl." = ".$title);
     }
 
     /**

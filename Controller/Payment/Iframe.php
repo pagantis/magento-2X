@@ -1,5 +1,5 @@
 <?php
-namespace DigitalOrigin\Pmt\Controller\Payment;
+namespace Pagantis\Pagantis\Controller\Payment;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\View\Element\BlockInterface;
@@ -8,12 +8,12 @@ use Magento\Framework\DB\Ddl\Table;
 
 /**
  * Class Iframe
- * @package DigitalOrigin\Pmt\Controller\Payment
+ * @package Pagantis\Pagantis\Controller\Payment
  */
 class Iframe extends Action
 {
     /** Concurrency tablename */
-    const LOGS_TABLE = 'pmt_logs';
+    const LOGS_TABLE = 'Pagantis_logs';
 
     /**
      * @var \Magento\Framework\View\Result\PageFactory
@@ -29,22 +29,23 @@ class Iframe extends Action
      * @param \Magento\Framework\App\Action\Context      $context
      * @param \Magento\Framework\View\Result\PageFactory $pageFactory
      * @param ResourceConnection                         $dbObject
-     * @param \DigitalOrigin\Pmt\Helper\Config           $pmtconfig
+     * @param \Pagantis\Pagantis\Helper\Config           $pagantisConfig
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $pageFactory,
         ResourceConnection $dbObject,
-        \DigitalOrigin\Pmt\Helper\Config $pmtconfig
+        \Pagantis\Pagantis\Helper\Config $pagantisConfig
     ) {
         $this->_pageFactory = $pageFactory;
         $this->dbObject = $dbObject;
-        $this->config = $pmtconfig->getConfig();
+        $this->config = $pagantisConfig->getConfig();
         return parent::__construct($context);
     }
 
     /**
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|\Magento\Framework\View\Result\Page
+     * @throws \Zend_Db_Exception
      */
     public function execute()
     {
@@ -55,19 +56,19 @@ class Iframe extends Action
                 throw new \Exception('Empty orderId');
             }
 
-            if ($this->config['pmt_public_key'] == '' || $this->config['pmt_private_key'] == '') {
+            if ($this->config['pagantis_public_key'] == '' || $this->config['pagantis_private_key'] == '') {
                 throw new \Exception('Public and Secret Key not found');
             }
 
-            $orderClient = new \PagaMasTarde\OrdersApiClient\Client(
-                $this->config['pmt_public_key'],
-                $this->config['pmt_private_key']
+            $orderClient = new \Pagantis\OrdersApiClient\Client(
+                $this->config['pagantis_public_key'],
+                $this->config['pagantis_private_key']
             );
 
             $order = $orderClient->getOrder($orderId);
 
-            /** @var \DigitalOrigin\Pmt\Block\Payment\Iframe $block */
-            $block = $resultPage->getLayout()->getBlock('paylater_payment_iframe');
+            /** @var \Pagantis\Pagantis\Block\Payment\Iframe $block */
+            $block = $resultPage->getLayout()->getBlock('pagantis_payment_iframe');
             $block
                 ->setEmail($order->getUser()->getEmail())
                 ->setOrderUrl($order->getActionUrls()->getForm())

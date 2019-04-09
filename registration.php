@@ -4,6 +4,6 @@ use \Magento\Framework\Component\ComponentRegistrar;
 
 ComponentRegistrar::register(
     ComponentRegistrar::MODULE,
-    'DigitalOrigin_Pmt',
+    'Pagantis_Pagantis',
     isset($file) ? dirname($file) : __DIR__
 );

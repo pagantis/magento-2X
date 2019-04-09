@@ -1,10 +1,10 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Helper;
+namespace Pagantis\Pagantis\Helper;
 
 /**
  * Class Config
- * @package DigitalOrigin\Pmt\Helper
+ * @package Pagantis\Pagantis\Helper
  */
 class Config
 {
@@ -28,6 +28,6 @@ class Config
      */
     public function getConfig()
     {
-        return $this->scopeConfig->getValue('payment/paylater');
+        return $this->scopeConfig->getValue('payment/pagantis');
     }
 }

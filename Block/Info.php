@@ -1,14 +1,14 @@
 <?php
 
-namespace DigitalOrigin\Pmt\Block;
+namespace Pagantis\Pagantis\Block;
 
 use Magento\Framework\Phrase;
 use Magento\Payment\Block\ConfigurableInfo;
-use DigitalOrigin\Pmt\Gateway\Response\FraudHandler;
+use Pagantis\Pagantis\Gateway\Response\FraudHandler;
 
 /**
  * Class Info
- * @package DigitalOrigin\Pmt\Block
+ * @package Pagantis\Pagantis\Block
  */
 class Info extends ConfigurableInfo
 {
