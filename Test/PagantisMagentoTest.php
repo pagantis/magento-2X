@@ -5,6 +5,7 @@ namespace Pagantis\Pagantis\Test;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
+use Faker\Factory;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -146,6 +147,20 @@ abstract class PagantisMagentoTest extends TestCase
      */
     public function __construct()
     {
+        $faker = Factory::create();
+        $this->configuration['dni'] = $this->getDNI();
+        $this->configuration['birthdate'] =
+            $faker->numberBetween(1, 28) . '/' .
+            $faker->numberBetween(1, 12). '/1975'
+        ;
+        $this->configuration['firstname'] = $faker->firstName;
+        $this->configuration['lastname'] = $faker->lastName . ' ' . $faker->lastName;
+        $this->configuration['company'] = $faker->company;
+        $this->configuration['zip'] = '28'.$faker->randomNumber(3, true);
+        $this->configuration['street'] = $faker->streetAddress;
+        $this->configuration['phone'] = '6' . $faker->randomNumber(8);
+        $this->configuration['email'] = date('ymd') . '@pagantis.com';
+
         if (!isset($_SERVER['argv']) ||
             !isset($_SERVER['argv'][4]) ||
             $_SERVER['argv'][4] != 'magentoVersion' ||
@@ -161,6 +176,20 @@ abstract class PagantisMagentoTest extends TestCase
         $this->configuration['email'] = "john.doe+".microtime(true)."@pagantis.com";
 
         return parent::__construct();
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDNI()
+    {
+        $dni = '0000' . rand(pow(10, 4-1), pow(10, 4)-1);
+        $value = (int) ($dni / 23);
+        $value *= 23;
+        $value= $dni - $value;
+        $letter= "TRWAGMYFPDXBNJZSQVHLCKEO";
+        $dniLetter= substr($letter, $value, 1);
+        return $dni.$dniLetter;
     }
 
     /**

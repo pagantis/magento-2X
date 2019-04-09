@@ -40,7 +40,7 @@ else
         echo "This is the branch of the branch:" ${TRAVIS_BRANCH}
         package='dev-master'
     fi
-package="dev-INT-509"
+
     echo 'Package: '$package
 
     echo 'Running: composer require pagantis/magento-2x:'$package' -d /var/www/html'
