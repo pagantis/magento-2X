@@ -12,6 +12,7 @@ use Pagantis\Pagantis\Helper\ExtraConfig;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Module\ModuleList;
+use Magento\Store\Api\Data\StoreInterface;
 use Pagantis\OrdersApiClient\Model\Order\User\Address;
 use Magento\Framework\DB\Ddl\Table;
 
@@ -53,6 +54,9 @@ class Index extends Action
 
     /** @var ExtraConfig $extraConfig */
     protected $extraConfig;
+    
+    /** @var StoreInterface $store */
+    protected $store;
 
     /**
      * Index constructor.
@@ -66,6 +70,7 @@ class Index extends Action
      * @param ProductMetadataInterface $productMetadataInterface
      * @param ModuleList               $moduleList
      * @param ExtraConfig              $extraConfig
+     * @param StoreInterface           $storeInterface
      */
     public function __construct(
         Context $context,
@@ -76,7 +81,8 @@ class Index extends Action
         ResourceConnection $dbObject,
         ProductMetadataInterface $productMetadataInterface,
         ModuleList $moduleList,
-        ExtraConfig $extraConfig
+        ExtraConfig $extraConfig,
+        StoreInterface $storeInterface
     ) {
         parent::__construct($context);
         $this->session = $session;
@@ -88,6 +94,7 @@ class Index extends Action
         $this->moduleList = $moduleList;
         $this->productMetadataInterface = $productMetadataInterface;
         $this->extraConfig = $extraConfig->getExtraConfig();
+        $this->store = $storeInterface;
     }
 
     /**
@@ -236,11 +243,16 @@ class Index extends Action
                 ->setAssistedSale(false)
                 ->setType(\Pagantis\OrdersApiClient\Model\Order\Configuration\Channel::ONLINE)
             ;
-            $orderConfiguration = new \Pagantis\OrdersApiClient\Model\Order\Configuration();
+            
+            $haystack  = $this->store->getLocale();
+            $language = strstr($haystack, '_', true);
+            $orderConfiguration = new \PagaMasTarde\OrdersApiClient\Model\Order\Configuration();
             $orderConfiguration
                 ->setChannel($orderChannel)
                 ->setUrls($orderConfigurationUrls)
+                ->setPurchaseCountry($language)
             ;
+
 
             $order = new \Pagantis\OrdersApiClient\Model\Order();
             $order
