@@ -7,6 +7,7 @@ use Magento\Framework\App\Action\Context;
 use Magento\Quote\Model\QuoteRepository;
 use Magento\Sales\Model\ResourceModel\Order\Collection as OrderCollection;
 use Magento\Checkout\Model\Session;
+use Pagantis\OrdersApiClient\Model\Order;
 use Pagantis\Pagantis\Helper\Config;
 use Pagantis\Pagantis\Helper\ExtraConfig;
 use Magento\Framework\App\ResourceConnection;
@@ -15,6 +16,16 @@ use Magento\Framework\Module\ModuleList;
 use Magento\Store\Api\Data\StoreInterface;
 use Pagantis\OrdersApiClient\Model\Order\User\Address;
 use Magento\Framework\DB\Ddl\Table;
+use Pagantis\OrdersApiClient\Model\Order\User;
+use Pagantis\OrdersApiClient\Model\Order\User\OrderHistory;
+use Pagantis\OrdersApiClient\Model\Order\ShoppingCart\Details;
+use Pagantis\OrdersApiClient\Model\Order\ShoppingCart;
+use Pagantis\OrdersApiClient\Model\Order\ShoppingCart\Details\Product;
+use Pagantis\OrdersApiClient\Model\Order\Metadata;
+use Pagantis\OrdersApiClient\Model\Order\Configuration\Urls;
+use Pagantis\OrdersApiClient\Model\Order\Configuration\Channel;
+use Pagantis\OrdersApiClient\Model\Order\Configuration;
+use Pagantis\OrdersApiClient\Client;
 
 /**
  * Class Index
@@ -139,6 +150,7 @@ class Index extends Action
                 ->setAddress($shippingAddress->getStreetFull())
             ;
 
+            $tax_id = $this->getTaxId($quote->getBillingAddress());
             $orderShippingAddress = new Address();
             $orderShippingAddress
                 ->setZipCode($shippingAddress->getPostcode())
@@ -148,6 +160,7 @@ class Index extends Action
                 ->setAddress($shippingAddress->getStreetFull())
                 ->setFixPhone($shippingAddress->getTelephone())
                 ->setMobilePhone($shippingAddress->getTelephone())
+                ->setTaxId($tax_id)
             ;
 
             $orderBillingAddress =  new Address();
@@ -160,9 +173,10 @@ class Index extends Action
                 ->setAddress($billingAddress->getStreetFull())
                 ->setFixPhone($billingAddress->getTelephone())
                 ->setMobilePhone($billingAddress->getTelephone())
+                ->setTaxId($tax_id)
             ;
 
-            $orderUser = new \Pagantis\OrdersApiClient\Model\Order\User();
+            $orderUser = new User();
             $billingAddress->setEmail($customer->getEmail());
             $orderUser
                 ->setAddress($userAddress)
@@ -172,6 +186,7 @@ class Index extends Action
                 ->setFixPhone($shippingAddress->getTelephone())
                 ->setMobilePhone($shippingAddress->getTelephone())
                 ->setShippingAddress($orderShippingAddress)
+                ->setTaxId($tax_id)
             ;
 
             if ($customer->getDob()) {
@@ -181,11 +196,14 @@ class Index extends Action
                 $orderUser->setDni($customer->getTaxvat());
                 $orderBillingAddress->setDni($customer->getTaxvat());
                 $orderShippingAddress->setDni($customer->getTaxvat());
+                $orderUser->setNationalId($customer->getTaxvat());
+                $orderBillingAddress->setNationalId($customer->getTaxvat());
+                $orderShippingAddress->setNationalId($customer->getTaxvat());
             }
 
             $previousOrders = $this->getOrders($customer->getId());
             foreach ($previousOrders as $orderElement) {
-                $orderHistory = new \Pagantis\OrdersApiClient\Model\Order\User\OrderHistory();
+                $orderHistory = new OrderHistory();
                 $orderHistory
                     ->setAmount(intval(100 * $orderElement['grand_total']))
                     ->setDate(new \DateTime($orderElement['created_at']))
@@ -193,12 +211,12 @@ class Index extends Action
                 $orderUser->addOrderHistory($orderHistory);
             }
 
-            $details = new \Pagantis\OrdersApiClient\Model\Order\ShoppingCart\Details();
+            $details = new Details();
             $shippingCost = $quote->collectTotals()->getTotals()['shipping']->getData('value');
             $details->setShippingCost(intval(strval(100 * $shippingCost)));
             $items = $quote->getAllVisibleItems();
             foreach ($items as $key => $item) {
-                $product = new \Pagantis\OrdersApiClient\Model\Order\ShoppingCart\Details\Product();
+                $product = new Product();
                 $product
                     ->setAmount(intval(100 * $item->getPrice()))
                     ->setQuantity($item->getQty())
@@ -206,7 +224,7 @@ class Index extends Action
                 $details->addProduct($product);
             }
 
-            $orderShoppingCart = new \Pagantis\OrdersApiClient\Model\Order\ShoppingCart();
+            $orderShoppingCart = new ShoppingCart();
             $orderShoppingCart
                 ->setDetails($details)
                 ->setOrderReference($quote->getId())
@@ -214,13 +232,13 @@ class Index extends Action
                 ->setTotalAmount(intval(strval(100 * $quote->getGrandTotal())))
             ;
 
-            $metadataOrder = new \Pagantis\OrdersApiClient\Model\Order\Metadata();
+            $metadataOrder = new Metadata();
             $metadata = $this->getMetadata();
             foreach ($metadata as $key => $metadatum) {
                 $metadataOrder->addMetadata($key, $metadatum);
             }
 
-            $orderConfigurationUrls = new \Pagantis\OrdersApiClient\Model\Order\Configuration\Urls();
+            $orderConfigurationUrls = new Urls();
             $quoteId = $quote->getId();
             $okUrl = $this->_url->getUrl(
                 'pagantis/notify/index',
@@ -238,15 +256,15 @@ class Index extends Action
                 ->setOk($okUrl)
             ;
 
-            $orderChannel = new \Pagantis\OrdersApiClient\Model\Order\Configuration\Channel();
+            $orderChannel = new Channel();
             $orderChannel
                 ->setAssistedSale(false)
-                ->setType(\Pagantis\OrdersApiClient\Model\Order\Configuration\Channel::ONLINE)
+                ->setType(Channel::ONLINE)
             ;
             
             $haystack  = $this->store->getLocale();
             $language = strstr($haystack, '_', true);
-            $orderConfiguration = new \PagaMasTarde\OrdersApiClient\Model\Order\Configuration();
+            $orderConfiguration = new Configuration();
             $orderConfiguration
                 ->setChannel($orderChannel)
                 ->setUrls($orderConfigurationUrls)
@@ -254,7 +272,7 @@ class Index extends Action
             ;
 
 
-            $order = new \Pagantis\OrdersApiClient\Model\Order();
+            $order = new Order();
             $order
                 ->setConfiguration($orderConfiguration)
                 ->setMetadata($metadataOrder)
@@ -266,13 +284,13 @@ class Index extends Action
                 throw new \Exception('Public and Secret Key not found');
             }
 
-            $orderClient = new \Pagantis\OrdersApiClient\Client(
+            $orderClient = new Client(
                 $this->config['pagantis_public_key'],
                 $this->config['pagantis_private_key']
             );
 
             $order = $orderClient->createOrder($order);
-            if ($order instanceof \Pagantis\OrdersApiClient\Model\Order) {
+            if ($order instanceof Order) {
                 $url = $order->getActionUrls()->getForm();
                 $result = $this->insertRow($quote->getId(), $order->getId());
                 if (!$result) {
@@ -420,6 +438,22 @@ class Index extends Action
             $dbConnection = $this->dbObject->getConnection();
             $tableName    = $this->dbObject->getTableName(self::LOGS_TABLE);
             $dbConnection->insert($tableName, array('log' => json_encode($logObject)));
+        }
+    }
+
+    /**
+     * @param $billingAdd
+     *
+     * @return null
+     */
+    private function getTaxId($billingAdd)
+    {
+        if (isset($billingAdd['vat_id'])) {
+            return $billingAdd['vat_id'];
+        } elseif (isset($billingAdd['cod_fisc'])) {
+            return $billingAdd['cod_fisc'];
+        } else {
+            return null;
         }
     }
 }
