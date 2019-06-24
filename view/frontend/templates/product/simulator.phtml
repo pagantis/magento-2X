@@ -16,6 +16,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
         var priceSelector = '<? echo $block->getPriceSelector();?>';
         var quantitySelector = '<? echo $block->getQuantitySelector();?>';
         var simulatorType = '<? echo $block->getSimulatorType();?>';
+        var locale = '<? echo $block->getLocale();?>';
 
         if(moduleEnabled=='1' && simulatorEnabled=='1' && publicKey!='') {
             var simulatorId = null;
@@ -44,6 +45,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
                         selector: positionSelector,
                         itemQuantitySelector: quantitySelector,
                         itemAmountSelector: priceSelector
+                        locale : locale
                     });
                     clearInterval(simulatorId);
                 }
