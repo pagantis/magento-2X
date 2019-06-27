@@ -29,7 +29,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
                     var pmt = pgSdk;
                 }
                 function loadSimulator() {
-                    var pmtDiv = document.getElementsByClassName("PmtSimulator");
+                    var pmtDiv = document.getElementsByClassName("installmentSimulator");
                     if(pmtDiv.length > 0) {
                         var pmtElement = pmtDiv[0];
                         if(pmtElement.innerHTML != '' )
@@ -41,7 +41,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
 
                     var positionSelector = '<? echo $block->getPositionSelector();?>';
                     if (positionSelector === 'default' || positionSelector === '') {
-                        positionSelector = '.PmtSimulator';
+                        positionSelector = '.installmentSimulator';
                     }
 
                     var priceSelector = '<? echo $block->getPriceSelector();?>';
@@ -77,7 +77,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
         });
         // ]]>
     </script>
-    <div class="PmtSimulator"></div>
+    <div class="installmentSimulator"></div>
     <?php
 }
 ?>
