@@ -20,7 +20,7 @@ class PaymentMethodAvailable implements ObserverInterface
                 $checkResult = $observer->getEvent()->getResult();
                 $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
                 $config        = $objectManager->create('Pagantis\Pagantis\Helper\Config')->getConfig();
-                $extraConfig   = $objectManager->create('Pagantis\Pagantis\Helper\ExtraConfig')->getConfig();
+                $extraConfig   = $objectManager->create('Pagantis\Pagantis\Helper\ExtraConfig')->getExtraConfig();
                 $resolver      = $objectManager->create('Magento\Framework\Locale\Resolver');
                 $locale = strstr($resolver->getLocale(), '_', true);
                 $allowedCountries = unserialize($extraConfig['PAGANTIS_ALLOWED_COUNTRIES']);
