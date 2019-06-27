@@ -1,6 +1,6 @@
 <?php
 /**
- * @var \DigitalOrigin\Pmt\Block\Product\Simulator $block
+ * @var \Pagantis\Pagantis\Block\Product\Simulator $block
  */
 if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->getPublicKey()) {
     ?>
@@ -35,7 +35,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
                         var pmtElement = pmtDiv[0];
                         if(pmtElement.innerHTML != '' )
                         {
-                            clearInterval(window.WCSimulatorId);
+                            clearInterval(window.MGsimulatorId);
                             return true;
                         }
                     }
@@ -58,7 +58,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
                         simulatorType = 'div.fieldset div.qty div.control input.qty';
                     }
                     if (typeof pmt != 'undefined') {
-                        window.WCsimulatorId = pmt.simulator.init({
+                        window.MGsimulatorId = pmt.simulator.init({
                             publicKey: publicKey,
                             type: simulatorType,
                             selector: positionSelector,
@@ -78,7 +78,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
         });
         // ]]>
     </script>
-    <div class="installmentsSimulator"></div>
+    <div class="pagantisSimulator"></div>
     <?php
 }
 ?>

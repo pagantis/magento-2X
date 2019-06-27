@@ -45,7 +45,7 @@ define(
                             {
                                 sdk.simulator.init({
                                     publicKey: window.checkoutConfig.payment.pagantis.publicKey,
-                                    selector: '.installmentsSimulator',
+                                    selector: '.pagantisSimulator',
                                     totalAmount: window.checkoutConfig.payment.pagantis.total,
                                     locale: window.checkoutConfig.payment.pagantis.locale
                                 });
