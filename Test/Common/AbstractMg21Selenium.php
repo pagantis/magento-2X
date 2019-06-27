@@ -483,7 +483,7 @@ abstract class AbstractMg21Selenium extends PagantisMagentoTest
      */
     private function checkSimulator()
     {
-        $simulatorElementSearch = WebDriverBy::className('pagantisSimulator');
+        $simulatorElementSearch = WebDriverBy::className('installmentsSimulator');
         $condition = WebDriverExpectedCondition::visibilityOfElementLocated($simulatorElementSearch);
         $this->webDriver->wait()->until($condition);
         $this->assertTrue((bool) $condition, "PR19//PR28");
