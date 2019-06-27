@@ -115,6 +115,7 @@ class Simulator extends Template
         $this->publicKey = isset($config['pagantis_public_key']) ? $config['pagantis_public_key'] : '';
         $this->productSimulator = $config['product_simulator'];
         $this->extraConfig = $extraConfig->getExtraConfig();
+
         $this->minAmount = $this->extraConfig['PAGANTIS_DISPLAY_MIN_AMOUNT'];
         $this->minInstallments = $this->extraConfig['PAGANTIS_SIMULATOR_START_INSTALLMENTS'];
         $this->priceSelector = $this->extraConfig['PAGANTIS_SIMULATOR_CSS_PRICE_SELECTOR'];
@@ -129,6 +130,18 @@ class Simulator extends Template
     public function getLocale()
     {
         return strstr($this->store->getLocale(), '_', true);
+    }
+
+    /**
+     * @param $locale
+     *
+     * @return bool
+     */
+    public function getAllowedCountry($locale)
+    {
+        $locale = strtolower($locale);
+        $allowedCountries = unserialize($this->extraConfig['PAGANTIS_ALLOWED_COUNTRIES']);
+        return (in_array(strtolower($locale), $allowedCountries));
     }
 
     /**
