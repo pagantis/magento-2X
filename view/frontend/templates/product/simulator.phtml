@@ -3,60 +3,82 @@
  * @var \Pagantis\Pagantis\Block\Product\Simulator $block
  */
 if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->getPublicKey()) {
-?>
-<script>// <![CDATA[
-    require([
-        'jquery',
-        'https://cdn.pagantis.com/js/pg-v2/sdk.js'
-    ], function ($, pagantisSdk) {
-        var moduleEnabled = '<? echo $block->isEnabled();?>';
-        var simulatorEnabled = '<? echo $block->getProductSimulator();?>';
-        var publicKey = '<? echo $block->getPublicKey();?>';
-        var positionSelector = '<? echo $block->getPositionSelector();?>';
-        var priceSelector = '<? echo $block->getPriceSelector();?>';
-        var quantitySelector = '<? echo $block->getQuantitySelector();?>';
-        var simulatorType = '<? echo $block->getSimulatorType();?>';
+    ?>
+    <script>// <![CDATA[
+        require([
+            'jquery',
+            'https://cdn.pagamastarde.com/js/pmt-v2/sdk.js',
+            'https://cdn.pagantis.com/js/pg-v2/sdk.js'
+        ], function ($, pmtSdk, pgSdk) {
+            var moduleEnabled = '<? echo $block->isEnabled();?>';
+            var simulatorEnabled = '<? echo $block->getProductSimulator();?>';
+            var publicKey = '<? echo $block->getPublicKey();?>';
+            var positionSelector = '<? echo $block->getPositionSelector();?>';
+            var priceSelector = '<? echo $block->getPriceSelector();?>';
+            var quantitySelector = '<? echo $block->getQuantitySelector();?>';
+            var simulatorType = '<? echo $block->getSimulatorType();?>';
+            var locale = '<? echo $block->getLocale();?>';
+            var allowedCountry = '<? echo $block->getAllowedCountry($block->getLocale());?>';
 
-        if(moduleEnabled=='1' && simulatorEnabled=='1' && publicKey!='') {
-            var simulatorId = null;
+            if(moduleEnabled=='1' && simulatorEnabled=='1' && publicKey!='' && allowedCountry=='1') {
+                window.MGsimulatorId = null;
 
-            function loadSimulator() {
-                var positionSelector = '<? echo $block->getPositionSelector();?>';
-                if (positionSelector === 'default' || positionSelector === '') {
-                    positionSelector = '.pagantisSimulator';
+                if (locale == 'es' || locale=='')
+                {
+                    var pmt = pmtSdk;
+                } else {
+                    var pmt = pgSdk;
                 }
-                var priceSelector = '<? echo $block->getPriceSelector();?>';
-                if (priceSelector === 'default' || priceSelector === '') {
-                    priceSelector = 'div.price-final_price span.price-wrapper span.price';
+                function loadSimulator() {
+                    var pmtDiv = document.getElementsByClassName("pagantisSimulator");
+                    if(pmtDiv.length > 0) {
+                        var pmtElement = pmtDiv[0];
+                        if(pmtElement.innerHTML != '' )
+                        {
+                            clearInterval(window.MGsimulatorId);
+                            return true;
+                        }
+                    }
+
+                    var positionSelector = '<? echo $block->getPositionSelector();?>';
+                    if (positionSelector === 'default' || positionSelector === '') {
+                        positionSelector = '.pagantisSimulator';
+                    }
+
+                    var priceSelector = '<? echo $block->getPriceSelector();?>';
+                    if (priceSelector === 'default' || priceSelector === '') {
+                        priceSelector = 'div.price-final_price span.price-wrapper span.price';
+                    }
+                    var quantitySelector = '<? echo $block->getQuantitySelector();?>';
+                    if (quantitySelector === 'default' || quantitySelector === '') {
+                        quantitySelector = 'div.fieldset div.qty div.control input.qty';
+                    }
+                    var simulatorType = '<? echo $block->getSimulatorType();?>';
+                    if (simulatorType === 'default' || simulatorType === '') {
+                        simulatorType = 'div.fieldset div.qty div.control input.qty';
+                    }
+                    if (typeof pmt != 'undefined') {
+                        window.MGsimulatorId = pmt.simulator.init({
+                            publicKey: publicKey,
+                            type: simulatorType,
+                            selector: positionSelector,
+                            itemQuantitySelector: quantitySelector,
+                            itemAmountSelector: priceSelector,
+                            locale : locale
+                        });
+                    }
+
+                    return false;
                 }
-                var quantitySelector = '<? echo $block->getQuantitySelector();?>';
-                if (quantitySelector === 'default' || quantitySelector === '') {
-                    quantitySelector = 'div.fieldset div.qty div.control input.qty';
-                }
-                var simulatorType = '<? echo $block->getSimulatorType();?>';
-                if (simulatorType === 'default' || simulatorType === '') {
-                    simulatorType = 'div.fieldset div.qty div.control input.qty';
-                }
-                if (typeof pagantisSdk != 'undefined') {
-                    pagantisSdk.simulator.init({
-                        publicKey: publicKey,
-                        type: simulatorType,
-                        selector: positionSelector,
-                        itemQuantitySelector: quantitySelector,
-                        itemAmountSelector: priceSelector
-                    });
-                    clearInterval(simulatorId);
-                }
+
+                window.MGsimulatorId = setInterval(function () {
+                    loadSimulator();
+                }, 2000);
             }
-            simulatorId = setInterval(function () {
-                loadSimulator();
-            }, 2000);
-        }
-    });
-    // ]]>
-</script>
-<div class="pagantisSimulator"></div>
-<?php
+        });
+        // ]]>
+    </script>
+    <div class="pagantisSimulator"></div>
+    <?php
 }
 ?>
-

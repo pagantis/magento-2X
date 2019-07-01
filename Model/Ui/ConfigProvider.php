@@ -5,6 +5,7 @@ namespace Pagantis\Pagantis\Model\Ui;
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Checkout\Model\Session;
 use Pagantis\Pagantis\Helper\ExtraConfig;
+use Magento\Framework\Locale\Resolver;
 
 /**
  * Class ConfigProvider
@@ -34,17 +35,39 @@ final class ConfigProvider implements ConfigProviderInterface
      */
     protected $assetRepository;
 
+    /**
+     * @var String
+     */
+    protected $store;
 
+    /**
+     * @var Resolver
+     */
+    protected $resolver;
+
+    /**
+     * ConfigProvider constructor.
+     *
+     * @param \Magento\Payment\Helper\Data             $paymentHelper
+     * @param Session                                  $checkoutSession
+     * @param ExtraConfig                              $extraConfig
+     * @param \Magento\Framework\View\Asset\Repository $assetRepository
+     * @param Resolver                                 $resolver
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function __construct(
         \Magento\Payment\Helper\Data $paymentHelper,
         Session $checkoutSession,
         ExtraConfig $extraConfig,
-        \Magento\Framework\View\Asset\Repository $assetRepository
+        \Magento\Framework\View\Asset\Repository $assetRepository,
+        Resolver $resolver
     ) {
         $this->method = $paymentHelper->getMethodInstance(self::CODE);
         $this->checkoutSession = $checkoutSession;
         $this->extraConfig = $extraConfig->getExtraConfig();
         $this->assetRepository = $assetRepository;
+        $this->resolver = $resolver;
     }
 
     /**
@@ -60,10 +83,12 @@ final class ConfigProvider implements ConfigProviderInterface
             'payment' => [
                 self::CODE => [
                     'total' => $quote->getGrandTotal(),
-                    'displayMode' => $this->method->getConfigData('display_mode'),
+                    'enabled' => $this->method->getConfigData('active'),
                     'title' => __($this->extraConfig['PAGANTIS_TITLE']),
                     'subtitle' => __($this->extraConfig['PAGANTIS_TITLE_EXTRA']),
-                    'image' => $this->assetRepository->getUrl('Pagantis_Pagantis::logopagantis.png')
+                    'image' => $this->assetRepository->getUrl('Pagantis_Pagantis::logopagantis.png'),
+                    'publicKey' => $this->method->getConfigData('pagantis_public_key'),
+                    'locale' => strstr($this->resolver->getLocale(), '_', true)
                 ],
             ],
         ];

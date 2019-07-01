@@ -7,12 +7,14 @@ define(
         'Magento_Checkout/js/model/error-processor',
         'Magento_Checkout/js/model/full-screen-loader',
         'Magento_Checkout/js/model/quote',
+        '//cdn.pagantis.com/js/pg-v2/sdk.js',
+        '//cdn.pagamastarde.com/js/pmt-v2/sdk.js',
         'Magento_Checkout/js/action/select-payment-method',
         'Magento_Checkout/js/checkout-data',
         'Magento_Checkout/js/model/totals',
         'Magento_Catalog/js/price-utils'
     ],
-    function ($, Component, url, customerData, errorProcessor, fullScreenLoader, quote, selectPaymentMethodAction, checkoutData, totals, priceUtils) {
+    function ($, Component, url, customerData, errorProcessor, fullScreenLoader, quote, pgSDK, pmtSDK, selectPaymentMethodAction, checkoutData, totals, priceUtils) {
         'use strict';
 
         window.checkoutConfig.payment.pagantis.guestEmail = quote.guestEmail;
@@ -23,6 +25,35 @@ define(
                 },
 
                 redirectAfterPlaceOrder: false,
+
+                loadSimulator: function ()
+                {
+                    setTimeout(function(){
+                        if (window.checkoutConfig.payment.pagantis.enabled  !='0' &&
+                            window.checkoutConfig.payment.pagantis.publicKey!=''  &&
+                            window.checkoutConfig.payment.pagantis.secretKey!='')
+                        {
+
+                            var locale = window.checkoutConfig.payment.pagantis.locale;
+                            if (locale=='es'|| locale=='') {
+                                var sdk = pmtSDK;
+                            } else {
+                                var sdk = pgSDK;
+                            }
+
+                            if (typeof sdk !== 'undefined')
+                            {
+                                sdk.simulator.init({
+                                    publicKey: window.checkoutConfig.payment.pagantis.publicKey,
+                                    selector: '.pagantisSimulator',
+                                    totalAmount: window.checkoutConfig.payment.pagantis.total,
+                                    locale: window.checkoutConfig.payment.pagantis.locale
+                                });
+                                return false;
+                            }
+                        }
+                    }, 3000);
+                },
 
                 getTitle: function () {
                     return window.checkoutConfig.payment.pagantis.title
