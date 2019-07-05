@@ -55,15 +55,15 @@ Here you have a complete list of configurations you can change and it's explanat
  
  2 - Connect to wordpress database. (Frequently called wordpress)
  
- 3 - Launch a query to check if the table exists: select * from wp_pagantis_config
+ 3 - Launch a query to check if the table exists: select * from Pagantis_config
  ![Step 3](./sql_step3.png?raw=true "Step 1")
  
  4 - Find the config field to edit, in this example we are going to edit: PAGANTIS_TITlE 
  
- 5 - Launch a query to edit their value: Update wp_pagantis_config set value='New title' where config='PAGANTIS_TITLE'
+ 5 - Launch a query to edit their value: Update Pagantis_config set value='New title' where config='PAGANTIS_TITLE'
  ![Step 5](./sql_step5.png?raw=true "Step 5")
  
- 6 - After the modification, you can check it launching the query: "select * from wp_pagantis_config"
+ 6 - After the modification, you can check it launching the query: "select * from Pagantis_config"
  ![Step 6](./sql_step6.png?raw=true "Step 6")
  
  7 - Finally you can see the change in checkout page
