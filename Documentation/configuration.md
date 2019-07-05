@@ -53,7 +53,7 @@ Here you have a complete list of configurations you can change and it's explanat
  ##### Edit using database
  1 - Open your database management (Frequently Cpanel->phpmyadmin) 
  
- 2 - Connect to wordpress database. (Frequently called wordpress)
+ 2 - Connect to wordpress database.
  
  3 - Launch a query to check if the table exists: select * from Pagantis_config
  ![Step 3](./sql_step3.png?raw=true "Step 1")
