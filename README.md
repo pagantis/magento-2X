@@ -2,8 +2,10 @@
 
 CicleCI: [![CircleCI](https://circleci.com/gh/pagantis/magento-2X/tree/master.svg?style=svg)](https://circleci.com/gh/pagantis/magento-2X/tree/master)
 
+<!--
 [![Latest Stable Version](https://poser.pugx.org/pagantis/magento-2x/v/stable)](https://packagist.org/packages/pagantis/magento-2x)
 [![composer.lock](https://poser.pugx.org/pagantis/magento-2x/composerlock)](https://packagist.org/packages/pagantis/magento-2x)
+-->
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/pagantis/magento-2x/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/pagantis/magento-2x/?branch=master)
 
 ## :hand: Requirements
@@ -23,7 +25,7 @@ To install the module of Pagantis in your Magento shop, you can use Composer:
 ```
 
 ## :gear: Configuration
-Configure the module in Magento admin panel using the information found in your [Pagantis profile](https://bo.pagantis.com/shop). 
+Configure the module in Magento admin panel using the information found in your [Pagantis profile](https://bo.pagamastarde.com/shop). 
 
 For more information about how to config the module, see our [configuration section](/Documentation/configuration.md).
 

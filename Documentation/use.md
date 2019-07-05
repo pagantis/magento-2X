@@ -4,8 +4,6 @@
 
 If the module is enabled and configured rightly, you can see Pagantis like new payment method in checkout.
 
-![Step 1](./magento21_checkout1.png?raw=true "Step 1")
-
 The module have an installments simulator, this simulator can be watched on screen after press our payment method.
 In Pagantis admin panel we can modify title, description and installment simulator.
 
