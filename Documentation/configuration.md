@@ -19,8 +19,8 @@ In Pagantis admin panel, we can set the following options:
 | Field &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Description<br/><br/>
 | :------------- |:-------------| 
 | Enabled      | - Yes => Module enabled<br/> - No => Módule disabled (Por defecto)
-| Public API Key(*) |  String you can get from your [Pagantis profile](https://bo.pagantis.com/shop).
-| Secret API Key(*) |  String you can get from your [Pagantis profile](https://bo.pagantis.com/shop). 
+| Public API Key(*) |  String you can get from your [Pagantis profile](https://bo.pagamastarde.com/shop).
+| Secret API Key(*) |  String you can get from your [Pagantis profile](https://bo.pagamastarde.com/shop). 
 | Product Simulator    |  Choose if we want to use installments simulator inside product page.
 
 ## :clipboard: Advanced configuration:
@@ -87,7 +87,7 @@ Sending in the form data the key of the config you want to change and the new va
 
 3 - Set your request  
 3.1 - On the upper-left side, you need to set a POST request   
-3.2 - Fill the url field, setting your domain and your secret key (You can get in:http://bo.pagantis.com) 
+3.2 - Fill the url field, setting your domain and your secret key (You can get in:http://bo.pagamastarde.com) 
 3.3 - Set the config key to modify (see previous table) 
 3.4 - Set the value for the selected key 
 ![Step 3](./postman_step3.png?raw=true "Step 3")

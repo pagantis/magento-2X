@@ -11,11 +11,11 @@
                 <field id="backoffice_button" type="button" translate="button_label" sortOrder="2" showInDefault="1" showInWebsite="1">
                     <attribute type="button_label">Go to Pagantis</attribute>
                     <attribute type="button_url">
-                        <![CDATA[https://bo.pagantis.com]]>
+                        <![CDATA[https://bo.pagamastarde.com]]>
                     </attribute>
                     <attribute type="button_credentials_label">Get Credentials</attribute>
                     <attribute type="button_credentials_url">
-                        <![CDATA[https://bo.pagantis.com/shop]]>
+                        <![CDATA[https://bo.pagamastarde.com/shop]]>
                     </attribute>
                     <frontend_model>Pagantis\Pagantis\Model\Adminhtml\Source\ConfigButtonLinkType</frontend_model>
                 </field>

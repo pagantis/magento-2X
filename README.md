@@ -25,7 +25,7 @@ To install the module of Pagantis in your Magento shop, you can use Composer:
 ```
 
 ## :gear: Configuration
-Configure the module in Magento admin panel using the information found in your [Pagantis profile](https://bo.pagantis.com/shop). 
+Configure the module in Magento admin panel using the information found in your [Pagantis profile](https://bo.pagamastarde.com/shop). 
 
 For more information about how to config the module, see our [configuration section](/Documentation/configuration.md).
 
