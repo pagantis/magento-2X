@@ -230,7 +230,7 @@ class Index extends Action
                     ->setDescription($item->getName());
                 $details->addProduct($product);
 
-                $promotedProduct = $this->isPromoted($item['product_id']);
+                $promotedProduct = $this->isPromoted($item);
                 if ($promotedProduct == 'true') {
                     $promotedAmount+=$product->getAmount();
                     $promotedMessage = 'Promoted Item: ' . $item->getName() .
@@ -469,13 +469,15 @@ class Index extends Action
     }
 
     /**
-     * @param $product_id
+     * @param $item
      *
      * @return string
      */
-    private function isPromoted($product_id)
+    private function isPromoted($item)
     {
-        $metaProduct = get_post_meta($product_id);
-        return ($metaProduct['custom_product_pagantis_promoted']['0'] === 'yes') ? 'true' : 'false';
+        $magentoProductId = $item->getProductId();
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $product = $objectManager->create('Magento\Catalog\Model\Product')->load($magentoProductId);
+        return ($product->getData('pagantis_promoted') === '1') ? 'true' : 'false';
     }
 }
