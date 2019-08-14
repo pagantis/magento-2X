@@ -20,73 +20,66 @@ define(
         window.checkoutConfig.payment.pagantis.guestEmail = quote.guestEmail;
 
         return Component.extend({
-                defaults: {
-                    template: 'Pagantis_Pagantis/payment/checkout-form'
-                },
+            defaults: {
+                template: 'Pagantis_Pagantis/payment/checkout-form'
+            },
 
-                redirectAfterPlaceOrder: false,
+            redirectAfterPlaceOrder: false,
 
-                loadSimulator: function ()
-                {
-                    setTimeout(function(){
-                        if (window.checkoutConfig.payment.pagantis.enabled  !='0' &&
-                            window.checkoutConfig.payment.pagantis.publicKey!=''  &&
-                            window.checkoutConfig.payment.pagantis.secretKey!='')
-                        {
-
-                            var locale = window.checkoutConfig.payment.pagantis.locale;
-                            if (locale=='es'|| locale=='') {
-                                var sdk = pmtSDK;
-                            } else {
-                                var sdk = pgSDK;
-                            }
-
-                            if (typeof sdk !== 'undefined')
-                            {
-                                sdk.simulator.init({
-                                    publicKey: window.checkoutConfig.payment.pagantis.publicKey,
-                                    selector: '.pagantisSimulator',
-                                    totalAmount: window.checkoutConfig.payment.pagantis.total,
-                                    locale: window.checkoutConfig.payment.pagantis.locale
-                                });
-                                return false;
-                            }
+            loadSimulator: function () {
+                setTimeout(function () {
+                    if (window.checkoutConfig.payment.pagantis.enabled  !='0' &&
+                        window.checkoutConfig.payment.pagantis.publicKey!=''  &&
+                        window.checkoutConfig.payment.pagantis.secretKey!='') {
+                        var locale = window.checkoutConfig.payment.pagantis.locale;
+                        if (locale=='es'|| locale=='') {
+                            var sdk = pmtSDK;
+                        } else {
+                            var sdk = pgSDK;
                         }
-                    }, 3000);
-                },
 
-                getTitle: function () {
-                    return window.checkoutConfig.payment.pagantis.title
-                },
+                        var simulator_options = {
+                            publicKey: window.checkoutConfig.payment.pagantis.publicKey,
+                            selector: '.pagantisSimulator',
+                            totalAmount: window.checkoutConfig.payment.pagantis.total,
+                            locale: window.checkoutConfig.payment.pagantis.locale,
+                            totalPromotedAmount : window.checkoutConfig.payment.pagantis.promotedAmount
+                        };
 
-                getSubtitle: function () {
-                    return window.checkoutConfig.payment.pagantis.subtitle
-                },
+                        if (typeof sdk !== 'undefined') {
+                            window.MGSimulatorId = sdk.simulator.init(simulator_options);
+                            return false;
+                        }
+                    }
+                }, 3000);
+            },
 
-                getDisplayMode: function () {
-                    return window.checkoutConfig.payment.pagantis.displayMode
-                },
+            getTitle: function () {
+                return window.checkoutConfig.payment.pagantis.title
+            },
 
-                getImage: function () {
-                    return window.checkoutConfig.payment.pagantis.image
-                },
+            getSubtitle: function () {
+                return window.checkoutConfig.payment.pagantis.subtitle
+            },
 
-                selectPaymentMethod: function() {
-                    selectPaymentMethodAction(this.getData());
-                    checkoutData.setSelectedPaymentMethod(this.item.method);
-                    return true;
-                },
+            getDisplayMode: function () {
+                return window.checkoutConfig.payment.pagantis.displayMode
+            },
 
-                placeOrder: function () {
-                    var paymentUrl = url.build('pagantis/Payment');
-                    $.post(paymentUrl, { email: window.checkoutConfig.payment.pagantis.guestEmail }, 'json')
-                        .done(function (response) {
-                            window.location.replace(response);
-                        })
-                        .fail(function (response) {
-                            window.location.replace(response);
-                        })
-                },
+            getImage: function () {
+                return window.checkoutConfig.payment.pagantis.image
+            },
+
+            placeOrder: function () {
+                var paymentUrl = url.build('pagantis/Payment');
+                $.post(paymentUrl, { email: window.checkoutConfig.payment.pagantis.guestEmail }, 'json')
+                    .done(function (response) {
+                        window.location.replace(response);
+                    })
+                    .fail(function (response) {
+                        window.location.replace(response);
+                    })
+            },
             });
     }
 );

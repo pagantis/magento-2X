@@ -88,9 +88,42 @@ final class ConfigProvider implements ConfigProviderInterface
                     'subtitle' => __($this->extraConfig['PAGANTIS_TITLE_EXTRA']),
                     'image' => $this->assetRepository->getUrl('Pagantis_Pagantis::logopagantis.png'),
                     'publicKey' => $this->method->getConfigData('pagantis_public_key'),
-                    'locale' => strstr($this->resolver->getLocale(), '_', true)
+                    'locale' => strstr($this->resolver->getLocale(), '_', true),
+                    'promotedAmount' => $this->getPromotedAmount($quote)
                 ],
             ],
         ];
+    }
+
+    /**
+     * @param $quote
+     *
+     * @return int
+     */
+    private function getPromotedAmount($quote)
+    {
+        $promotedAmount = 0;
+        $items = $quote->getAllVisibleItems();
+        foreach ($items as $key => $item) {
+            $promotedProduct = $this->isPromoted($item);
+            if ($promotedProduct == 'true') {
+                $promotedAmount+=$item->getPrice()*$item->getQty();
+            }
+        }
+
+        return $promotedAmount;
+    }
+
+    /**
+     * @param $item
+     *
+     * @return string
+     */
+    private function isPromoted($item)
+    {
+        $magentoProductId = $item->getProductId();
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $product = $objectManager->create('Magento\Catalog\Model\Product')->load($magentoProductId);
+        return ($product->getData('pagantis_promoted') === '1') ? 'true' : 'false';
     }
 }
