@@ -456,7 +456,6 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
             $dbConnection = $this->dbObject->getConnection();
             $tableName    = $this->dbObject->getTableName(self::ORDERS_TABLE);
             $pagantisOrderId   = $this->pagantisOrderId;
-
             $query        = "select mg_order_id from $tableName where id='$this->quoteId' and order_id='$pagantisOrderId'";
             $queryResult  = $dbConnection->fetchRow($query);
             $this->magentoOrderId = $queryResult['mg_order_id'];
@@ -475,9 +474,21 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
         try {
             $this->paymentInterface->setMethod(self::PAYMENT_METHOD);
             $this->magentoOrderId = $this->quoteManagement->placeOrder($this->quoteId, $this->paymentInterface);
-            /** @var \Magento\Sales\Api\Data\OrderInterface magentoOrder */
+            /** @var OrderRepositoryInterface magentoOrder */
             $this->magentoOrder = $this->orderRepositoryInterface->get($this->magentoOrderId);
+            $metadataOrder = $this->pagantisOrder->getMetadata();
+            $metadataInfo = null;
+            foreach ($metadataOrder as $metadataKey => $metadataValue) {
+                if ($metadataKey == 'promotedProduct') {
+                    $metadataInfo.= "/Producto promocionado = $metadataValue";
+                }
+            }
+            $this->magentoOrder->addStatusHistoryComment($metadataInfo)->setIsCustomerNotified(false)->setEntityName('order')->save();
 
+            $comment = 'pagantisOrderId: ' . $this->pagantisOrder->getId(). ' ' .
+                       'pagantisOrderStatus: '. $this->pagantisOrder->getStatus(). ' ' .
+                       'via: '. $this->origin;
+            $this->magentoOrder->addStatusHistoryComment($comment)->setIsCustomerNotified(false)->setEntityName('order')->save();
             if ($this->magentoOrderId == '') {
                 throw new UnknownException('Order can not be saved');
             }
