@@ -232,7 +232,7 @@ class Index extends Action
 
                 $promotedProduct = $this->isPromoted($item);
                 if ($promotedProduct == 'true') {
-                    $promotedAmount+=$product->getAmount();
+                    $promotedAmount+=$product->getAmount()*$item->getQty();
                     $promotedMessage = 'Promoted Item: ' . $item->getName() .
                                        ' Price: ' . $item->getPrice() .
                                        ' Qty: ' . $item->getQty() .
