@@ -9,8 +9,8 @@ while true; do
     esac
 done
 while true; do
-    read -p "Do you wish to run version 2.2 or 2.3 [22|23]? " devtest
-    case $devtest in
+    read -p "Do you wish to run version 2.2 or 2.3 [22|23]? " version
+    case $version in
         [22]* ) version="22";test=false; break;;
         [23]* ) version="23";test=true; break;;
         * ) echo "Please answer 22 or 23.";;
@@ -79,8 +79,8 @@ then
 fi
 
     while true; do
-        read -p "Do you want to run full tests battery or only configure the module [full/install/none]? " devtest
-        case $devtest in
+        read -p "Do you want to run full tests battery or only configure the module [full/install/none]? " tests
+        case $tests in
             [full]* ) break;;
             [configure]* ) break;;
             [none]* ) break;;
@@ -93,7 +93,7 @@ then
     vendor/bin/phpunit --group magento-basic -d magentoVersion -d ${version} -d ${environment}
 
     #Only for TEST environment. DEV environment is already installed
-    if [ $tests = "test" ]
+    if [ $environment = "test" ]
     then
         vendor/bin/phpunit --group magento-install -d magentoVersion -d ${version} -d ${environment}
     else
