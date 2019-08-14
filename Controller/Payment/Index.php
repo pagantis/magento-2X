@@ -211,10 +211,17 @@ class Index extends Action
                 $orderUser->addOrderHistory($orderHistory);
             }
 
+            $metadataOrder = new Metadata();
+            $metadata = $this->getMetadata();
+            foreach ($metadata as $key => $metadatum) {
+                $metadataOrder->addMetadata($key, $metadatum);
+            }
+
             $details = new Details();
             $shippingCost = $quote->collectTotals()->getTotals()['shipping']->getData('value');
             $details->setShippingCost(intval(strval(100 * $shippingCost)));
             $items = $quote->getAllVisibleItems();
+            $promotedAmount = 0;
             foreach ($items as $key => $item) {
                 $product = new Product();
                 $product
@@ -222,6 +229,16 @@ class Index extends Action
                     ->setQuantity($item->getQty())
                     ->setDescription($item->getName());
                 $details->addProduct($product);
+
+                $promotedProduct = $this->isPromoted($item['product_id']);
+                if ($promotedProduct == 'true') {
+                    $promotedAmount+=$product->getAmount();
+                    $promotedMessage = 'Promoted Item: ' . $item->getName() .
+                                       ' Price: ' . $item->getPrice() .
+                                       ' Qty: ' . $item->getQty() .
+                                       ' Item ID: ' . $item->getItemId();
+                    $metadataOrder->addMetadata('promotedProduct', $promotedMessage);
+                }
             }
 
             $orderShoppingCart = new ShoppingCart();
@@ -231,12 +248,6 @@ class Index extends Action
                 ->setPromotedAmount(0)
                 ->setTotalAmount(intval(strval(100 * $quote->getGrandTotal())))
             ;
-
-            $metadataOrder = new Metadata();
-            $metadata = $this->getMetadata();
-            foreach ($metadata as $key => $metadatum) {
-                $metadataOrder->addMetadata($key, $metadatum);
-            }
 
             $orderConfigurationUrls = new Urls();
             $quoteId = $quote->getId();
@@ -455,5 +466,16 @@ class Index extends Action
         } else {
             return null;
         }
+    }
+
+    /**
+     * @param $product_id
+     *
+     * @return string
+     */
+    private function isPromoted($product_id)
+    {
+        $metaProduct = get_post_meta($product_id);
+        return ($metaProduct['custom_product_pagantis_promoted']['0'] === 'yes') ? 'true' : 'false';
     }
 }
