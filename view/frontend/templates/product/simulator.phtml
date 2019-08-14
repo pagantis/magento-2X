@@ -13,72 +13,131 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
             var moduleEnabled = '<? echo $block->isEnabled();?>';
             var simulatorEnabled = '<? echo $block->getProductSimulator();?>';
             var publicKey = '<? echo $block->getPublicKey();?>';
-            var positionSelector = '<? echo $block->getPositionSelector();?>';
-            var priceSelector = '<? echo $block->getPriceSelector();?>';
-            var quantitySelector = '<? echo $block->getQuantitySelector();?>';
-            var simulatorType = '<? echo $block->getSimulatorType();?>';
             var locale = '<? echo $block->getLocale();?>';
             var allowedCountry = '<? echo $block->getAllowedCountry($block->getLocale());?>';
+            var promotedProduct = '<? echo $block->getPromoted();?>';
+            var simulatorType = '<? echo $block->getSimulatorType();?>';
 
             if(moduleEnabled=='1' && simulatorEnabled=='1' && publicKey!='' && allowedCountry=='1') {
-                window.MGsimulatorId = null;
 
                 if (locale == 'es' || locale=='')
                 {
-                    var pmt = pmtSdk;
+                    window.sdk = pmtSdk;
                 } else {
-                    var pmt = pgSdk;
+                    window.sdk = pgSdk;
                 }
-                function loadSimulator() {
+
+                function checkSimulatorContent() {
+                    var simulatorLoaded = false;
                     var pmtDiv = document.getElementsByClassName("pagantisSimulator");
-                    if(pmtDiv.length > 0) {
+                    if (pmtDiv.length > 0) {
                         var pmtElement = pmtDiv[0];
-                        if(pmtElement.innerHTML != '' )
-                        {
-                            clearInterval(window.MGsimulatorId);
-                            return true;
+                        if (pmtElement.innerHTML != '') {
+                            simulatorLoaded = true;
                         }
                     }
+                    return simulatorLoaded;
+                }
 
+                function checkAttempts() {
+                    window.attempts = window.attempts + 1;
+                    return (window.attempts > 4)
+                }
+
+                function finishInterval() {
+                    clearInterval(window.loadingSimulator);
+                    return true;
+                }
+
+                function findPriceSelector()
+                {
+                    var priceSelector = '<? echo $block->getPriceSelector();?>';
+                    if (priceSelector === 'default' || priceSelector === '') {
+                        priceSelector = 'div.price-final_price span.price-wrapper span.price';
+                    }
+
+                    return priceSelector;
+                }
+
+                function findQuantitySelector()
+                {
+                    var quantitySelector = '<? echo $block->getQuantitySelector();?>';
+                    if (quantitySelector === 'default' || quantitySelector === '') {
+                        quantitySelector = 'div.fieldset div.qty div.control input.qty';
+                    }
+
+                    return quantitySelector;
+                }
+
+                function findPositionSelector() {
                     var positionSelector = '<? echo $block->getPositionSelector();?>';
                     if (positionSelector === 'default' || positionSelector === '') {
                         positionSelector = '.pagantisSimulator';
                     }
 
-                    var priceSelector = '<? echo $block->getPriceSelector();?>';
-                    if (priceSelector === 'default' || priceSelector === '') {
-                        priceSelector = 'div.price-final_price span.price-wrapper span.price';
+                    return positionSelector;
+                }
+
+                function loadSimulator() {
+                    if(typeof window.sdk == 'undefined')
+                    {
+                        return false;
                     }
-                    var quantitySelector = '<? echo $block->getQuantitySelector();?>';
-                    if (quantitySelector === 'default' || quantitySelector === '') {
-                        quantitySelector = 'div.fieldset div.qty div.control input.qty';
+
+                    if (checkAttempts() || checkSimulatorContent())
+                    {
+                        return finishInterval();
                     }
-                    var simulatorType = '<? echo $block->getSimulatorType();?>';
-                    if (simulatorType === 'default' || simulatorType === '') {
-                        simulatorType = 'div.fieldset div.qty div.control input.qty';
+
+                    var priceSelector = findPriceSelector();
+                    var quantitySelector = findQuantitySelector();
+                    var positionSelector = findPositionSelector();
+
+                    simulator_options = {
+                        publicKey: publicKey,
+                        type: simulatorType,
+                        selector: positionSelector,
+                        itemQuantitySelector: quantitySelector,
+                        itemAmountSelector: priceSelector,
+                        locale : locale
+                    };
+
+                    if (promotedProduct == 'true') {
+                        simulator_options.itemPromotedAmountSelector = priceSelector;
                     }
-                    if (typeof pmt != 'undefined') {
-                        window.MGsimulatorId = pmt.simulator.init({
-                            publicKey: publicKey,
-                            type: simulatorType,
-                            selector: positionSelector,
-                            itemQuantitySelector: quantitySelector,
-                            itemAmountSelector: priceSelector,
-                            locale : locale
-                        });
+
+                    if (typeof window.sdk != 'undefined') {
+                        window.MGSimulatorId = window.sdk.simulator.init(simulator_options);
+                        return false;
                     }
 
                     return false;
                 }
 
-                window.MGsimulatorId = setInterval(function () {
+                window.attempts = 0;
+                window.loadingSimulator = setInterval(function () {
                     loadSimulator();
                 }, 2000);
             }
         });
         // ]]>
     </script>
+    <style>
+        .pmt-no-interest{
+            color: #00c1d5
+        }
+        .promoted{
+            width: 75%;
+            margin: auto;
+        }
+    </style>
+    <?php
+        if ($block->getPromoted() == 'true') {
+            echo $block->promotedMessage;
+        }
+    ?>
     <div class="pagantisSimulator"></div>
+    <p></p>
     <?php
 }
 ?>
