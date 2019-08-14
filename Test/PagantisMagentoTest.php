@@ -176,7 +176,7 @@ abstract class PagantisMagentoTest extends TestCase
         }
 
         $this->version = $_SERVER['argv'][6];
-        $this->environment = ($_SERVER['argv'][8]) ? ($_SERVER['argv'][8]) : 'test';
+        $this->environment = isset($_SERVER['argv'][8]) ? ($_SERVER['argv'][8]) : 'test';
         $this->configuration['magentoUrl'] = 'http://magento'.$this->version.'-'.$this->environment.'.docker:'.
             $this->versionsPort[$this->version][$this->environment].'/index.php';
         $this->configuration['email'] = "john.doe+".microtime(true)."@pagantis.com";
