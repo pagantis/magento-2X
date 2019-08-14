@@ -15,12 +15,24 @@ use Facebook\WebDriver\WebDriverBy;
 class pagantisMgInstallTest extends AbstractMg21Selenium
 {
     /**
+     * @group woocommerce3-install
      * @throws \Exception
      */
     public function testpagantisMg21InstallTest()
     {
         $this->loginToBackOffice();
         $this->getpagantisBackOffice();
+        $this->configurepagantis();
+        $this->quit();
+    }
+
+    /**
+     * testConfigurePagantisInWoocommerce3
+     * @group magento-configure
+     */
+    public function testConfigurePagantisInMagento2()
+    {
+        $this->loginToBackOffice();
         $this->configurepagantis();
         $this->quit();
     }
