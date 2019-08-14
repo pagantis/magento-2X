@@ -184,7 +184,7 @@ abstract class PagantisMagentoTest extends TestCase
         $this->configuration['magentoUrl'] = 'http://magento'.$this->version.'-'.$this->environment.'.docker:'.
             $this->versionsPort[$this->version][$this->environment].'/index.php';
         $this->configuration['email'] = "john.doe+".microtime(true)."@pagantis.com";
-var_dump($this->configuration['magentoUrl']);
+
         return parent::__construct();
     }
 
