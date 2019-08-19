@@ -1,18 +1,18 @@
 #!/bin/bash
 
 while true; do
-    read -p "Do you wish to run dev or test [test|dev]? " devtest
-    case $devtest in
-        [dev]* ) environment="dev";test=false; break;;
-        [test]* ) environment="test";test=true; break;;
+    read -p "Do you wish to run dev or test [test|dev]? " environment
+    case $environment in
+        [dev]* ) break;;
+        [test]* ) break;;
         * ) echo "Please answer dev or test.";;
     esac
 done
 while true; do
     read -p "Do you wish to run version 2.2 or 2.3 [22|23]? " version
     case $version in
-        [22]* ) version="22";test=false; break;;
-        [23]* ) version="23";test=true; break;;
+        [22]* ) break;;
+        [23]* ) break;;
         * ) echo "Please answer 22 or 23.";;
     esac
 done
