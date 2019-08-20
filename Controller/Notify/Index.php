@@ -483,7 +483,7 @@ class Index extends Action
             $metadataInfo = null;
             foreach ($metadataOrder as $metadataKey => $metadataValue) {
                 if ($metadataKey == 'promotedProduct') {
-                    $metadataInfo.= "/Producto promocionado = $metadataValue";
+                    $metadataInfo.= " Producto promocionado = $metadataValue //";
                 }
             }
             $this->magentoOrder->addStatusHistoryComment($metadataInfo)->setIsCustomerNotified(false)->setEntityName('order')->save();
