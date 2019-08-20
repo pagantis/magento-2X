@@ -104,6 +104,9 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
     /** @var ExtraConfig $extraConfig */
     protected $extraConfig;
 
+    /** @var mixed $origin */
+    protected $origin;
+
     /**
      * Index constructor.
      *
@@ -140,6 +143,7 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
         $this->orderRepositoryInterface = $orderRepositoryInterface;
         $this->dbObject = $dbObject;
         $this->checkoutSession = $checkoutSession;
+        $this->origin = ($_SERVER['REQUEST_METHOD'] == 'POST') ? 'Notification' : 'Order';
     }
 
     /**
@@ -483,12 +487,14 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
                     $metadataInfo.= "/Producto promocionado = $metadataValue";
                 }
             }
+
             $this->magentoOrder->addStatusHistoryComment($metadataInfo)->setIsCustomerNotified(false)->setEntityName('order')->save();
 
             $comment = 'pagantisOrderId: ' . $this->pagantisOrder->getId(). ' ' .
                        'pagantisOrderStatus: '. $this->pagantisOrder->getStatus(). ' ' .
                        'via: '. $this->origin;
             $this->magentoOrder->addStatusHistoryComment($comment)->setIsCustomerNotified(false)->setEntityName('order')->save();
+
             if ($this->magentoOrderId == '') {
                 throw new UnknownException('Order can not be saved');
             }
