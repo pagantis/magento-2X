@@ -147,7 +147,7 @@ class pagantisMgBuyRegisteredTest extends AbstractMg21Selenium
             $this->configuration['secretKey']
         );
         $response = Request::get($logUrl)->expects('json')->send();
-        $this->assertEquals(3, count($response->body), "PR57=>".$logUrl." = ".count($response->body));
+        $this->assertEquals(3, count($response->body), "PR57=>".$logUrl." = ".print_r($response->body, true));
 
         $configUrl = sprintf(
             "%s%s%s%s%s",

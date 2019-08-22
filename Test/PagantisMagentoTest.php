@@ -133,13 +133,18 @@ abstract class PagantisMagentoTest extends TestCase
     protected $version;
 
     /**
+     * @var String
+     */
+    protected $environment;
+
+    /**
      * Magento version testing url port based on magento version
      *
      * @var array
      */
     protected $versionsPort = array(
-        '22' => '8085',
-        '23' => '8084',
+        '22' => array('test'=>'8085', 'dev' =>'8086'),
+        '23' => array('test'=>'8084', 'dev' =>'8087')
     );
 
     /**
@@ -171,8 +176,9 @@ abstract class PagantisMagentoTest extends TestCase
         }
 
         $this->version = $_SERVER['argv'][6];
-        $this->configuration['magentoUrl'] = 'http://magento'.$this->version.'-test.docker:'.
-            $this->versionsPort[$this->version].'/index.php';
+        $this->environment = isset($_SERVER['argv'][8]) ? ($_SERVER['argv'][8]) : 'test';
+        $this->configuration['magentoUrl'] = 'http://magento'.$this->version.'-'.$this->environment.'.docker:'.
+            $this->versionsPort[$this->version][$this->environment].'/index.php';
         $this->configuration['email'] = "john.doe+".microtime(true)."@pagantis.com";
 
         return parent::__construct();

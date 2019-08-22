@@ -9,6 +9,7 @@ use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Pagantis\Pagantis\Helper\ExtraConfig;
 use Magento\Framework\Locale\Resolver;
+use Zend\Db\Sql\Ddl\Column\Boolean;
 
 /**
  * Class Simulator
@@ -89,6 +90,11 @@ class Simulator extends Template
     protected $store;
 
     /**
+     * @var Boolean
+     */
+    protected $promoted;
+
+    /**
      * Simulator constructor.
      *
      * @param Context        $context
@@ -122,6 +128,9 @@ class Simulator extends Template
         $this->quantitySelector = $this->extraConfig['PAGANTIS_SIMULATOR_CSS_QUANTITY_SELECTOR'];
         $this->positionSelector = $this->extraConfig['PAGANTIS_SIMULATOR_CSS_POSITION_SELECTOR'];
         $this->simulatorType = $this->extraConfig['PAGANTIS_SIMULATOR_DISPLAY_TYPE'];
+        $this->promotedMessage = $this->extraConfig['PAGANTIS_PROMOTION_EXTRA'];
+
+        $this->promoted = $this->isProductInPromotion();
     }
 
     /**
@@ -186,16 +195,10 @@ class Simulator extends Template
     public function isProductInPromotion()
     {
         try {
-            /** @var Category $category */
-            $category = $this->getProduct()->getCategoryCollection()->addFieldToFilter(
-                'name',
-                array('eq' => self::PROMOTIONS_CATEGORY)
-            )->getFirstItem();
+            return ($this->getProduct()->getData('pagantis_promoted') === '1') ? 'true' : 'false';
         } catch (\Exception $exception) {
-            return false;
+            return 'false';
         }
-
-        return $category->getName() === self::PROMOTIONS_CATEGORY ? 1 : 0;
     }
 
     /**
@@ -317,5 +320,21 @@ class Simulator extends Template
     public function setSimulatorType($simulatorType)
     {
         $this->simulatorType = $simulatorType;
+    }
+
+    /**
+     * @return Boolean
+     */
+    public function getPromoted()
+    {
+        return $this->promoted;
+    }
+
+    /**
+     * @param Boolean $promoted
+     */
+    public function setPromoted($promoted)
+    {
+        $this->promoted = $promoted;
     }
 }

@@ -101,6 +101,9 @@ class Index extends Action
     /** @var ExtraConfig $extraConfig */
     protected $extraConfig;
 
+    /** @var mixed $origin */
+    protected $origin;
+
     /**
      * Index constructor.
      *
@@ -137,6 +140,7 @@ class Index extends Action
         $this->orderRepositoryInterface = $orderRepositoryInterface;
         $this->dbObject = $dbObject;
         $this->checkoutSession = $checkoutSession;
+        $this->origin = ($_SERVER['REQUEST_METHOD'] == 'POST') ? 'Notification' : 'Order';
     }
 
     /**
@@ -472,8 +476,22 @@ class Index extends Action
         try {
             $this->paymentInterface->setMethod(self::PAYMENT_METHOD);
             $this->magentoOrderId = $this->quoteManagement->placeOrder($this->quoteId, $this->paymentInterface);
-            /** @var \Magento\Sales\Api\Data\OrderInterface magentoOrder */
+
+            /** @var OrderRepositoryInterface magentoOrder */
             $this->magentoOrder = $this->orderRepositoryInterface->get($this->magentoOrderId);
+            $metadataOrder = $this->pagantisOrder->getMetadata();
+            $metadataInfo = null;
+            foreach ($metadataOrder as $metadataKey => $metadataValue) {
+                if ($metadataKey == 'promotedProduct') {
+                    $metadataInfo.= " Producto promocionado = $metadataValue //";
+                }
+            }
+            $this->magentoOrder->addStatusHistoryComment($metadataInfo)->setIsCustomerNotified(false)->setEntityName('order')->save();
+
+            $comment = 'pagantisOrderId: '.$this->pagantisOrder->getId(). ' ' .
+                       'pagantisOrderStatus: '.$this->pagantisOrder->getStatus(). ' ' .
+                       'via: '.$this->origin;
+            $this->magentoOrder->addStatusHistoryComment($comment)->setIsCustomerNotified(false)->setEntityName('order')->save();
 
             if ($this->magentoOrderId == '') {
                 throw new UnknownException('Order can not be saved');

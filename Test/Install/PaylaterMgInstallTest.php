@@ -10,17 +10,29 @@ use Facebook\WebDriver\WebDriverBy;
  * Class pagantisMgInstallTest
  * @package Pagantis\Test\Install
  *
- * @group magento-install
  */
 class pagantisMgInstallTest extends AbstractMg21Selenium
 {
     /**
+     * testPagantisMg21InstallTest
+     * @group magento-install
      * @throws \Exception
      */
-    public function testpagantisMg21InstallTest()
+    public function testPagantisMg21InstallTest()
     {
         $this->loginToBackOffice();
         $this->getpagantisBackOffice();
+        $this->configurepagantis();
+        $this->quit();
+    }
+
+    /**
+     * testPagantisMg21ConfigureTest
+     * @group magento-configure
+     */
+    public function testPagantisMg21ConfigureTest()
+    {
+        $this->loginToBackOffice();
         $this->configurepagantis();
         $this->quit();
     }
