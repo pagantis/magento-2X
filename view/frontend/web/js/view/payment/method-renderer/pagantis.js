@@ -43,7 +43,11 @@ define(
                             selector: '.pagantisSimulator',
                             totalAmount: window.checkoutConfig.payment.pagantis.total,
                             locale: window.checkoutConfig.payment.pagantis.locale,
-                            totalPromotedAmount : window.checkoutConfig.payment.pagantis.promotedAmount
+                            totalPromotedAmount : window.checkoutConfig.payment.pagantis.promotedAmount,
+                            amountParserConfig:  {
+                                thousandSeparator: window.checkoutConfig.payment.pagantis.thousandSeparator,
+                                decimalSeparator: window.checkoutConfig.payment.pagantis.decimalSeparator
+                            }
                         };
 
                         if (typeof sdk !== 'undefined') {
