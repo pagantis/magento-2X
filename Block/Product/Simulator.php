@@ -95,6 +95,21 @@ class Simulator extends Template
     protected $promoted;
 
     /**
+     * @var String
+     */
+    protected $promotedMessage;
+
+    /**
+     * @var String
+     */
+    protected $thousandSeparator;
+
+    /**
+     * @var String
+     */
+    protected $decimalSeparator;
+
+    /**
      * Simulator constructor.
      *
      * @param Context        $context
@@ -129,6 +144,8 @@ class Simulator extends Template
         $this->positionSelector = $this->extraConfig['PAGANTIS_SIMULATOR_CSS_POSITION_SELECTOR'];
         $this->simulatorType = $this->extraConfig['PAGANTIS_SIMULATOR_DISPLAY_TYPE'];
         $this->promotedMessage = $this->extraConfig['PAGANTIS_PROMOTION_EXTRA'];
+        $this->thousandSeparator = $this->extraConfig['PAGANTIS_SIMULATOR_THOUSANDS_SEPARATOR'];
+        $this->decimalSeparator = $this->extraConfig['PAGANTIS_SIMULATOR_DECIMAL_SEPARATOR'];
 
         $this->promoted = $this->isProductInPromotion();
     }
@@ -336,5 +353,53 @@ class Simulator extends Template
     public function setPromoted($promoted)
     {
         $this->promoted = $promoted;
+    }
+
+    /**
+     * @return String
+     */
+    public function getPromotedMessage()
+    {
+        return $this->promotedMessage;
+    }
+
+    /**
+     * @param String $promotedMessage
+     */
+    public function setPromotedMessage($promotedMessage)
+    {
+        $this->promotedMessage = $promotedMessage;
+    }
+
+    /**
+     * @return String
+     */
+    public function getThousandSeparator()
+    {
+        return $this->thousandSeparator;
+    }
+
+    /**
+     * @param String $thousandSeparator
+     */
+    public function setThousandSeparator($thousandSeparator)
+    {
+        $this->thousandSeparator = $thousandSeparator;
+    }
+
+    /**
+     * @return String
+     */
+    public function getDecimalSeparator()
+    {
+        return $this->decimalSeparator;
+    }
+
+    /**
+     * @param String $decimalSeparator
+     */
+    public function setDecimalSeparator($decimalSeparator)
+    {
+        $this->decimalSeparator = $decimalSeparator;
     }
 }

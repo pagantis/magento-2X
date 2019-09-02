@@ -17,6 +17,8 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
             var allowedCountry = '<? echo $block->getAllowedCountry($block->getLocale());?>';
             var promotedProduct = '<? echo $block->getPromoted();?>';
             var simulatorType = '<? echo $block->getSimulatorType();?>';
+            var thousandSeparator = '<? echo $block->getThousandSeparator();?>';
+            var decimalSeparator = '<? echo $block->getDecimalSeparator();?>';
 
             if(moduleEnabled=='1' && simulatorEnabled=='1' && publicKey!='' && allowedCountry=='1') {
 
@@ -99,7 +101,11 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
                         selector: positionSelector,
                         itemQuantitySelector: quantitySelector,
                         itemAmountSelector: priceSelector,
-                        locale : locale
+                        locale : locale,
+                        amountParserConfig :  {
+                            thousandSeparator: thousandSeparator,
+                            decimalSeparator: decimalSeparator
+                        }
                     };
 
                     if (promotedProduct == 'true') {
@@ -133,7 +139,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
     </style>
     <?php
         if ($block->getPromoted() == 'true') {
-            echo $block->promotedMessage;
+            echo $block->getPromotedMessage();
         }
     ?>
     <div class="pagantisSimulator"></div>
