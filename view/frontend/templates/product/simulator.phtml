@@ -19,6 +19,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
             var simulatorType = '<? echo $block->getSimulatorType();?>';
             var thousandSeparator = '<? echo $block->getThousandSeparator();?>';
             var decimalSeparator = '<? echo $block->getDecimalSeparator();?>';
+            var numInstallments = '<? echo $block->getMinInstallments();?>';
 
             if(moduleEnabled=='1' && simulatorEnabled=='1' && publicKey!='' && allowedCountry=='1') {
 
@@ -31,8 +32,9 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
 
                 function checkSimulatorContent() {
                     var simulatorLoaded = false;
-                    var pmtDiv = document.getElementsByClassName("pagantisSimulator");
-                    if (pmtDiv.length > 0) {
+                    var positionSelector = findPositionSelector();
+                    var pmtDiv = document.querySelectorAll(positionSelector);
+                    if (pmtDiv.length>0 && typeof window.MGSimulatorId!='undefined') {
                         var pmtElement = pmtDiv[0];
                         if (pmtElement.innerHTML != '') {
                             simulatorLoaded = true;
@@ -94,8 +96,8 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
                     var priceSelector = findPriceSelector();
                     var quantitySelector = findQuantitySelector();
                     var positionSelector = findPositionSelector();
-
                     simulator_options = {
+                        numInstalments : numInstallments,
                         publicKey: publicKey,
                         type: simulatorType,
                         selector: positionSelector,
