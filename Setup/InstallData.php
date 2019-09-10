@@ -17,13 +17,13 @@ class InstallData implements InstallDataInterface
      */
     public $defaultConfigs = array(
        'PAGANTIS_TITLE'=>'Instant Financing',
-       'PAGANTIS_SIMULATOR_DISPLAY_TYPE'=>'pgSDK.simulator.types.SIMPLE',
-       'PAGANTIS_SIMULATOR_DISPLAY_SKIN'=>'pgSDK.simulator.skins.BLUE',
+       'PAGANTIS_SIMULATOR_DISPLAY_TYPE'=>'sdk.simulator.types.SIMPLE',
+       'PAGANTIS_SIMULATOR_DISPLAY_SKIN'=>'sdk.simulator.skins.BLUE',
        'PAGANTIS_SIMULATOR_DISPLAY_POSITION'=>'hookDisplayProductButtons',
        'PAGANTIS_SIMULATOR_START_INSTALLMENTS'=>3,
        'PAGANTIS_SIMULATOR_MAX_INSTALLMENTS'=>12,
        'PAGANTIS_SIMULATOR_CSS_POSITION_SELECTOR'=>'default',
-       'PAGANTIS_SIMULATOR_DISPLAY_CSS_POSITION'=>'pgSDK.simulator.positions.INNER',
+       'PAGANTIS_SIMULATOR_DISPLAY_CSS_POSITION'=>'sdk.simulator.positions.INNER',
        'PAGANTIS_SIMULATOR_CSS_PRICE_SELECTOR'=>'default',
        'PAGANTIS_SIMULATOR_CSS_QUANTITY_SELECTOR'=>'default',
        'PAGANTIS_FORM_DISPLAY_TYPE'=>0,
