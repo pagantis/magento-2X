@@ -27,7 +27,7 @@ define(
             redirectAfterPlaceOrder: false,
 
             loadSimulator: function () {
-                setTimeout(function () {
+                window.loadingSimulator = setTimeout(function () {
                     if (window.checkoutConfig.payment.pagantis.enabled  !='0' &&
                         window.checkoutConfig.payment.pagantis.publicKey!=''  &&
                         window.checkoutConfig.payment.pagantis.secretKey!='') {
@@ -39,15 +39,14 @@ define(
                         }
 
                         var simulator_options = {
+                            numInstalments : window.checkoutConfig.payment.pagantis.quotesStart,
+                            type : eval(window.checkoutConfig.payment.pagantis.type),
+                            skin : eval(window.checkoutConfig.payment.pagantis.skin),
                             publicKey: window.checkoutConfig.payment.pagantis.publicKey,
-                            selector: '.pagantisSimulator',
+                            selector: window.checkoutConfig.payment.pagantis.position,
                             totalAmount: window.checkoutConfig.payment.pagantis.total,
                             locale: window.checkoutConfig.payment.pagantis.locale,
-                            totalPromotedAmount : window.checkoutConfig.payment.pagantis.promotedAmount,
-                            amountParserConfig:  {
-                                thousandSeparator: window.checkoutConfig.payment.pagantis.thousandSeparator,
-                                decimalSeparator: window.checkoutConfig.payment.pagantis.decimalSeparator
-                            }
+                            totalPromotedAmount : window.checkoutConfig.payment.pagantis.promotedAmount
                         };
 
                         if (typeof sdk !== 'undefined') {
