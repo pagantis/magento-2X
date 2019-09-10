@@ -79,6 +79,11 @@ final class ConfigProvider implements ConfigProviderInterface
     {
         $quote = $this->checkoutSession->getQuote();
 
+        $positionSelector = $this->extraConfig['PAGANTIS_SIMULATOR_CSS_POSITION_SELECTOR'];
+        if ($positionSelector == 'default') {
+            $positionSelector = '.pagantisSimulator';
+        }
+
         return [
             'payment' => [
                 self::CODE => [
@@ -91,7 +96,11 @@ final class ConfigProvider implements ConfigProviderInterface
                     'locale' => strstr($this->resolver->getLocale(), '_', true),
                     'promotedAmount' => $this->getPromotedAmount($quote),
                     'thousandSeparator' => $this->extraConfig['PAGANTIS_SIMULATOR_THOUSANDS_SEPARATOR'],
-                    'decimalSeparator' => $this->extraConfig['PAGANTIS_SIMULATOR_DECIMAL_SEPARATOR']
+                    'decimalSeparator' => $this->extraConfig['PAGANTIS_SIMULATOR_DECIMAL_SEPARATOR'],
+                    'quotesStart' => $this->extraConfig['PAGANTIS_SIMULATOR_START_INSTALLMENTS'],
+                    'type'      => $this->extraConfig['PAGANTIS_SIMULATOR_DISPLAY_TYPE'],
+                    'skin'      => $this->extraConfig['PAGANTIS_SIMULATOR_DISPLAY_SKIN'],
+                    'position'  => $positionSelector
                 ],
             ],
         ];
