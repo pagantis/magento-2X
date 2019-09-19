@@ -46,7 +46,7 @@ define(
                             selector: window.checkoutConfig.payment.pagantis.position,
                             totalAmount: window.checkoutConfig.payment.pagantis.total,
                             locale: window.checkoutConfig.payment.pagantis.locale,
-                            country: window.checkoutConfig.payment.pagantis.locale,
+                            country: window.checkoutConfig.payment.pagantis.country,
                             totalPromotedAmount : window.checkoutConfig.payment.pagantis.promotedAmount
                         };
 
