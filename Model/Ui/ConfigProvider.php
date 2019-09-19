@@ -94,6 +94,7 @@ final class ConfigProvider implements ConfigProviderInterface
                     'image' => $this->assetRepository->getUrl('Pagantis_Pagantis::logopagantis.png'),
                     'publicKey' => $this->method->getConfigData('pagantis_public_key'),
                     'locale' => strstr($this->resolver->getLocale(), '_', true),
+                    'country' => strstr($this->resolver->getLocale(), '_', true),
                     'promotedAmount' => $this->getPromotedAmount($quote),
                     'thousandSeparator' => $this->extraConfig['PAGANTIS_SIMULATOR_THOUSANDS_SEPARATOR'],
                     'decimalSeparator' => $this->extraConfig['PAGANTIS_SIMULATOR_DECIMAL_SEPARATOR'],

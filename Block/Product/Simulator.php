@@ -159,6 +159,14 @@ class Simulator extends Template
     }
 
     /**
+     * @return string
+     */
+    public function getCountry()
+    {
+        return strstr($this->store->getLocale(), '_', true);
+    }
+
+    /**
      * @param $locale
      *
      * @return bool
