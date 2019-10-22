@@ -145,7 +145,7 @@ class Index extends Action
             $userAddress
                 ->setZipCode($shippingAddress->getPostcode())
                 ->setFullName($shippingAddress->getFirstname()." ".$shippingAddress->getLastname())
-                ->setCountryCode('ES')
+                ->setCountryCode($shippingAddress->getCountry())
                 ->setCity($shippingAddress->getCity())
                 ->setAddress($shippingAddress->getStreetFull())
             ;
@@ -155,7 +155,7 @@ class Index extends Action
             $orderShippingAddress
                 ->setZipCode($shippingAddress->getPostcode())
                 ->setFullName($shippingAddress->getFirstname()." ".$shippingAddress->getLastname())
-                ->setCountryCode('ES')
+                ->setCountryCode($shippingAddress->getCountry())
                 ->setCity($shippingAddress->getCity())
                 ->setAddress($shippingAddress->getStreetFull())
                 ->setFixPhone($shippingAddress->getTelephone())
@@ -168,7 +168,7 @@ class Index extends Action
             $orderBillingAddress
                 ->setZipCode($billingAddress->getPostcode())
                 ->setFullName($billingAddress->getFirstname()." ".$shippingAddress->getLastname())
-                ->setCountryCode('ES')
+                ->setCountryCode($billingAddress->getCountry())
                 ->setCity($billingAddress->getCity())
                 ->setAddress($billingAddress->getStreetFull())
                 ->setFixPhone($billingAddress->getTelephone())
