@@ -38,6 +38,8 @@ then
     docker-compose exec -u www-data ${container} php /var/www/html/bin/magento \
         module:enable Pagantis_Pagantis --clear-static-content
     docker-compose exec -u www-data ${container} composer install -d /var/www/html/app/code/Pagantis/Pagantis
+    docker-compose exec -u www-data ${container} composer require "pagantis/orders-api-client"
+    docker-compose exec -u www-data ${container} composer require "pagantis/module-utils"
 else
     package="dev-master"
     if [ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]
