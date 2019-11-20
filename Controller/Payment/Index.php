@@ -272,8 +272,8 @@ class Index extends Action
                 ->setAssistedSale(false)
                 ->setType(Channel::ONLINE)
             ;
-            
-            $haystack  = $this->store->getLocale();
+
+            $haystack  = ($this->store->getLocale()!=null) ? $this->store->getLocale() : $this->getResolverCountry();
             $language = strstr($haystack, '_', true);
             $orderConfiguration = new Configuration();
             $orderConfiguration
@@ -479,5 +479,20 @@ class Index extends Action
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $product = $objectManager->create('Magento\Catalog\Model\Product')->load($magentoProductId);
         return ($product->getData('pagantis_promoted') === '1') ? 'true' : 'false';
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getResolverCountry()
+    {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $store = $objectManager->get('Magento\Framework\Locale\Resolver');
+
+        if (method_exists($store, 'getLocale')) {
+            return $store->getLocale();
+        }
+
+        return null;
     }
 }
