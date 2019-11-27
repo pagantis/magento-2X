@@ -255,7 +255,10 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
     private function getPagantisOrder()
     {
         try {
-            $this->orderClient = new Client($this->config['pagantis_public_key'], $this->config['pagantis_private_key']);
+            $this->orderClient = new Client(
+                $this->config['pagantis_public_key'],
+                $this->config['pagantis_private_key']
+            );
             $this->pagantisOrder = $this->orderClient->getOrder($this->pagantisOrderId);
         } catch (\Exception $e) {
             throw new OrderNotFoundException();
@@ -361,7 +364,7 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
             /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
             $dbConnection = $this->dbObject->getConnection();
             $tableName    = $this->dbObject->getTableName(self::CONCURRENCY_TABLE);
-            $query        = "CREATE TABLE IF NOT EXISTS $tableName(`id` int not null,`timestamp` int not null,PRIMARY KEY (`id`))";
+            $query = "CREATE TABLE IF NOT EXISTS $tableName(`id` int not null,`timestamp` int not null,PRIMARY KEY (`id`))";
 
             return $dbConnection->query($query);
         } catch (\Exception $e) {
@@ -382,9 +385,19 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
             if (!$dbConnection->isTableExists($tableName)) {
                 $table = $dbConnection
                     ->newTable($tableName)
-                    ->addColumn('id', Table::TYPE_SMALLINT, null, array('nullable'=>false, 'auto_increment'=>true, 'primary'=>true))
+                    ->addColumn(
+                        'id',
+                        Table::TYPE_SMALLINT,
+                        null,
+                        array('nullable'=>false, 'auto_increment'=>true, 'primary'=>true)
+                    )
                     ->addColumn('log', Table::TYPE_TEXT, null, array('nullable'=>false))
-                    ->addColumn('createdAt', Table::TYPE_TIMESTAMP, null, array('nullable'=>false, 'default'=>Table::TIMESTAMP_INIT));
+                    ->addColumn(
+                        'createdAt',
+                        Table::TYPE_TIMESTAMP,
+                        null,
+                        array('nullable'=>false, 'default'=>Table::TIMESTAMP_INIT)
+                    );
                 return $dbConnection->createTable($table);
             }
 
@@ -522,12 +535,18 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
                 }
             }
 
-            $this->magentoOrder->addStatusHistoryComment($metadataInfo)->setIsCustomerNotified(false)->setEntityName('order')->save();
+            $this->magentoOrder->addStatusHistoryComment($metadataInfo)
+                               ->setIsCustomerNotified(false)
+                               ->setEntityName('order')
+                               ->save();
 
             $comment = 'pagantisOrderId: ' . $this->pagantisOrder->getId(). ' ' .
                        'pagantisOrderStatus: '. $this->pagantisOrder->getStatus(). ' ' .
                        'via: '. $this->origin;
-            $this->magentoOrder->addStatusHistoryComment($comment)->setIsCustomerNotified(false)->setEntityName('order')->save();
+            $this->magentoOrder->addStatusHistoryComment($comment)
+                               ->setIsCustomerNotified(false)
+                               ->setEntityName('order')
+                               ->save();
 
             if ($this->magentoOrderId == '') {
                 throw new UnknownException('Order can not be saved');

@@ -252,7 +252,10 @@ class Index extends Action
     private function getPagantisOrder()
     {
         try {
-            $this->orderClient = new Client($this->config['pagantis_public_key'], $this->config['pagantis_private_key']);
+            $this->orderClient = new Client(
+                $this->config['pagantis_public_key'],
+                $this->config['pagantis_private_key']
+            );
             $this->pagantisOrder = $this->orderClient->getOrder($this->pagantisOrderId);
         } catch (\Exception $e) {
             throw new OrderNotFoundException();
@@ -379,9 +382,19 @@ class Index extends Action
             if (!$dbConnection->isTableExists($tableName)) {
                 $table = $dbConnection
                     ->newTable($tableName)
-                    ->addColumn('id', Table::TYPE_SMALLINT, null, array('nullable'=>false, 'auto_increment'=>true, 'primary'=>true))
+                    ->addColumn(
+                        'id',
+                        Table::TYPE_SMALLINT,
+                        null,
+                        array('nullable'=>false, 'auto_increment'=>true, 'primary'=>true)
+                    )
                     ->addColumn('log', Table::TYPE_TEXT, null, array('nullable'=>false))
-                    ->addColumn('createdAt', Table::TYPE_TIMESTAMP, null, array('nullable'=>false, 'default'=>Table::TIMESTAMP_INIT));
+                    ->addColumn(
+                        'createdAt',
+                        Table::TYPE_TIMESTAMP,
+                        null,
+                        array('nullable'=>false, 'default'=>Table::TIMESTAMP_INIT)
+                    );
                 return $dbConnection->createTable($table);
             }
 
@@ -515,12 +528,19 @@ class Index extends Action
                     $metadataInfo.= " Producto promocionado = $metadataValue //";
                 }
             }
-            $this->magentoOrder->addStatusHistoryComment($metadataInfo)->setIsCustomerNotified(false)->setEntityName('order')->save();
+
+            $this->magentoOrder->addStatusHistoryComment($metadataInfo)
+                               ->setIsCustomerNotified(false)
+                               ->setEntityName('order')
+                               ->save();
 
             $comment = 'pagantisOrderId: '.$this->pagantisOrder->getId(). ' ' .
                        'pagantisOrderStatus: '.$this->pagantisOrder->getStatus(). ' ' .
                        'via: '.$this->origin;
-            $this->magentoOrder->addStatusHistoryComment($comment)->setIsCustomerNotified(false)->setEntityName('order')->save();
+            $this->magentoOrder->addStatusHistoryComment($comment)
+                               ->setIsCustomerNotified(false)
+                               ->setEntityName('order')
+                               ->save();
 
             if ($this->magentoOrderId == '') {
                 throw new UnknownException('Order can not be saved');
