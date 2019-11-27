@@ -202,6 +202,7 @@ class Index extends Action
      */
 
     /**
+     * @throws ConcurrencyException
      * @throws QuoteNotFoundException
      * @throws UnknownException
      */

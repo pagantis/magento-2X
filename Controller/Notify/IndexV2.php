@@ -205,6 +205,7 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
      */
 
     /**
+     * @throws ConcurrencyException
      * @throws QuoteNotFoundException
      * @throws UnknownException
      */
