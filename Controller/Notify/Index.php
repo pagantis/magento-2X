@@ -47,6 +47,9 @@ class Index extends Action
     /** Payment code */
     const PAYMENT_METHOD = 'pagantis';
 
+    /** Seconds to expire a locked request */
+    const CONCURRENCY_TIMEOUT = 10;
+
     /**
      * EXCEPTION RESPONSES
      */
@@ -410,17 +413,43 @@ class Index extends Action
     }
 
     /**
-     * @throws \Exception
+     * @throws ConcurrencyException
+     * @throws UnknownException
      */
     private function blockConcurrency()
     {
-        try {
-            /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
-            $dbConnection = $this->dbObject->getConnection();
-            $tableName    = $this->dbObject->getTableName(self::CONCURRENCY_TABLE);
+        /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
+        $dbConnection = $this->dbObject->getConnection();
+        $tableName    = $this->dbObject->getTableName(self::CONCURRENCY_TABLE);
+        $query = "SELECT timestamp FROM $tableName where id='$this->quoteId'";
+        $resultsSelect = $dbConnection->fetchRow($query);
+        if (isset($resultsSelect['timestamp'])) {
+            if ($this->getOrigin() == 'Notification') {
+                throw new ConcurrencyException();
+            } else {
+                $query = sprintf(
+                    "SELECT timestamp - %s as rest FROM %s %s",
+                    (time() - self::CONCURRENCY_TIMEOUT),
+                    $tableName,
+                    "WHERE id='".$this->quoteId."'"
+                );
+                $resultsSelect = $dbConnection->fetchRow($query);
+                $restSeconds   = isset($resultsSelect['rest']) ? ($resultsSelect['rest']) : 0;
+                $expirationSec = ($restSeconds > self::CONCURRENCY_TIMEOUT) ? self::CONCURRENCY_TIMEOUT : $restSeconds;
+                if ($expirationSec > 0) {
+                    sleep($expirationSec + 1);
+                }
+
+                $logMessage  = sprintf(
+                    "User waiting %s seconds, default seconds %s, bd time to expire %s seconds",
+                    $expirationSec,
+                    self::CONCURRENCY_TIMEOUT,
+                    $restSeconds
+                );
+                throw new UnknownException($logMessage);
+            }
+        } else {
             $dbConnection->insert($tableName, array('id'=>$this->quoteId, 'timestamp'=>time()));
-        } catch (Exception $exception) {
-            throw new ConcurrencyException();
         }
     }
 
@@ -534,6 +563,23 @@ class Index extends Action
         } catch (\Exception $e) {
             throw new UnknownException($e->getMessage());
         }
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getOrigin()
+    {
+        return $this->origin;
+    }
+
+    /**
+     * @param mixed $origin
+     */
+    public function setOrigin($origin)
+    {
+        $this->origin = $origin;
     }
 
     /**

@@ -50,6 +50,9 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
     /** Payment code */
     const PAYMENT_METHOD = 'pagantis';
 
+    /** Seconds to expire a locked request */
+    const CONCURRENCY_TIMEOUT = 10;
+
     /**
      * EXCEPTION RESPONSES
      */
@@ -413,17 +416,43 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
     }
 
     /**
-     * @throws \Exception
+     * @throws ConcurrencyException
+     * @throws UnknownException
      */
     private function blockConcurrency()
     {
-        try {
-            /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
-            $dbConnection = $this->dbObject->getConnection();
-            $tableName    = $this->dbObject->getTableName(self::CONCURRENCY_TABLE);
+        /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
+        $dbConnection = $this->dbObject->getConnection();
+        $tableName    = $this->dbObject->getTableName(self::CONCURRENCY_TABLE);
+        $query = "SELECT timestamp FROM $tableName where id='$this->quoteId'";
+        $resultsSelect = $dbConnection->fetchRow($query);
+        if (isset($resultsSelect['timestamp'])) {
+            if ($this->getOrigin() == 'Notification') {
+                throw new ConcurrencyException();
+            } else {
+                $query = sprintf(
+                    "SELECT timestamp - %s as rest FROM %s %s",
+                    (time() - self::CONCURRENCY_TIMEOUT),
+                    $tableName,
+                    "WHERE id='".$this->quoteId."'"
+                );
+                $resultsSelect = $dbConnection->fetchRow($query);
+                $restSeconds   = isset($resultsSelect['rest']) ? ($resultsSelect['rest']) : 0;
+                $expirationSec = ($restSeconds > self::CONCURRENCY_TIMEOUT) ? self::CONCURRENCY_TIMEOUT : $restSeconds;
+                if ($expirationSec > 0) {
+                    sleep($expirationSec + 1);
+                }
+
+                $logMessage  = sprintf(
+                    "User waiting %s seconds, default seconds %s, bd time to expire %s seconds",
+                    $expirationSec,
+                    self::CONCURRENCY_TIMEOUT,
+                    $restSeconds
+                );
+                throw new UnknownException($logMessage);
+            }
+        } else {
             $dbConnection->insert($tableName, array('id'=>$this->quoteId, 'timestamp'=>time()));
-        } catch (Exception $exception) {
-            throw new ConcurrencyException();
         }
     }
 
@@ -460,7 +489,12 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
             $dbConnection = $this->dbObject->getConnection();
             $tableName    = $this->dbObject->getTableName(self::ORDERS_TABLE);
             $pagantisOrderId   = $this->pagantisOrderId;
-            $query        = "select mg_order_id from $tableName where id='$this->quoteId' and order_id='$pagantisOrderId'";
+            $query        = sprintf(
+                "select mg_order_id from %s where id='%s' and order_id='%s'",
+                $tableName,
+                $this->quoteId,
+                $pagantisOrderId
+            );
             $queryResult  = $dbConnection->fetchRow($query);
             $this->magentoOrderId = $queryResult['mg_order_id'];
         } catch (\Exception $e) {
