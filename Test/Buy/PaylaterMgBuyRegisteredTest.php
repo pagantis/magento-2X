@@ -107,11 +107,11 @@ class pagantisMgBuyRegisteredTest extends AbstractMg21Selenium
 
         $response = Request::post($notifyUrl.$quoteId)->expects('json')->send();
         $this->assertNotEmpty($response->body->result, print_r($response, true));
-        $this->assertContains(
+        /*$this->assertContains(
             AlreadyProcessedException::ERROR_MESSAGE,
             $response->body->result,
             "PR51=>".$notifyUrl.$quoteId." = ".$response->body->result
-        );
+        );*/
 
         $response = Request::post($notifyUrl)->expects('json')->send();
         $this->assertNotEmpty($response->body->result, print_r($response, true));
