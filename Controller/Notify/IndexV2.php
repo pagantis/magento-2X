@@ -36,7 +36,7 @@ use Magento\Framework\App\Request\InvalidRequestException;
  * Class Index
  * @package Pagantis\Pagantis\Controller\Notify
  */
-class IndexV2 extends Action implements CsrfAwareActionInterface
+class IndexV2 extends Action
 {
     /** Orders tablename */
     const ORDERS_TABLE = 'cart_process';
@@ -147,6 +147,15 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
         $this->dbObject = $dbObject;
         $this->checkoutSession = $checkoutSession;
         $this->origin = ($_SERVER['REQUEST_METHOD'] == 'POST') ? 'Notification' : 'Order';
+
+        // CsrfAwareAction Magento2.3 compatibility
+        if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
+            $request = $this->getRequest();
+            if ($request instanceof HttpRequest && $request->isPost() && empty($request->getParam('form_key'))) {
+                $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
+                $request->setParam('form_key', $formKey->getFormKey());
+            }
+        }
     }
 
     /**
