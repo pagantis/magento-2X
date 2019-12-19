@@ -47,9 +47,6 @@ commands:
             echo $package
             docker-compose exec -u www-data magento${VERSION}-test composer require pagantis/magento-2x:$package -d /var/www/html
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento module:enable Pagantis_Pagantis
-            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento setup:upgrade
-            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento deploy:mode:set production
-            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cache:flush
   sample_data:
     description: "Sample Data + DI + SetupUpgrade + Clear Cache"
     steps:
@@ -63,7 +60,8 @@ commands:
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento sampledata:deploy
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento setup:upgrade
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cron:run
-            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cache:enable
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento deploy:mode:set production
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cache:flush
             containerPort=$(docker container port magento${VERSION}-test)
   basic_test:
     description: "Basic Test"
