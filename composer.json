@@ -46,8 +46,10 @@
     "files": [ "registration.php" ],
     "psr-4": {
       "Pagantis\\Pagantis\\": ""
-    },
-    "exclude-from-classmap": ["/Test/"]
+    }
+  },
+  "archive": {
+    "exclude": ["Test", "/Test"]
   },
   "minimum-stability": "dev"
 }
