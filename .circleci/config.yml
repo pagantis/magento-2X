@@ -47,6 +47,9 @@ commands:
             echo $package
             docker-compose exec -u www-data magento${VERSION}-test composer require pagantis/magento-2x:$package -d /var/www/html
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento module:enable Pagantis_Pagantis --clear-static-content
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento setup:upgrade
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento deploy:mode:set production
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cache:flush
   sample_data:
     description: "Sample Data + DI + SetupUpgrade + Clear Cache"
     steps:
@@ -109,8 +112,8 @@ jobs:
       - host_and_docker_compose
       - install_dependencies
       - docker_up
-      - install_module
       - sample_data
+      - install_module
       - basic_test
       - magento_install
       - magento_buy_unregistered
@@ -127,8 +130,8 @@ jobs:
       - host_and_docker_compose
       - install_dependencies
       - docker_up
-      - install_module
       - sample_data
+      - install_module
       - basic_test
       - magento_install
       - magento_buy_unregistered
