@@ -41,28 +41,18 @@ then
     docker-compose exec -u www-data ${container} composer require "pagantis/orders-api-client"
     docker-compose exec -u www-data ${container} composer require "pagantis/module-utils"
 else
-    package="dev-master"
-    if [ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]
-    then
-        echo "This is the branch of the pull request" ${TRAVIS_PULL_REQUEST_BRANCH}
-        package=${TRAVIS_PULL_REQUEST_BRANCH}'.x-dev'
-    fi
 
-    if [ ! -z "$TRAVIS_TAG" ]
-    then
-        echo "This is the branch of the tag:" ${TRAVIS_TAG}
-        package=${TRAVIS_TAG}
-    fi
-    if [ ! -z "$TRAVIS_BRANCH" ]
-    then
-        echo "This is the branch of the branch:" ${TRAVIS_BRANCH}
-        package='dev-master'
-    fi
-
+    package='dev-transfer_factory_error'
     echo 'Package: '$package
     docker-compose exec -u www-data ${container} composer require pagantis/magento-2x:$package -d /var/www/html
     docker-compose exec -u www-data ${container} \
         php /var/www/html/bin/magento module:enable Pagantis_Pagantis
+    docker-compose exec -u www-data ${container} \
+        php /var/www/html/bin/magento setup:upgrade
+    docker-compose exec -u www-data ${container} \
+        php /var/www/html/bin/magento setup:di:compile
+    docker-compose exec -u www-data ${container} \
+        php /var/www/html/bin/magento cache:flush
 fi
 
 docker-compose exec -u www-data ${container} composer config http-basic.repo.magento.com \
@@ -71,13 +61,8 @@ docker-compose exec -u www-data ${container} composer config http-basic.repo.mag
 docker-compose exec -u www-data ${container} php /var/www/html/bin/magento sampledata:deploy
 docker-compose exec -u www-data ${container} php /var/www/html/bin/magento setup:upgrade
 docker-compose exec -u www-data ${container} php /var/www/html/bin/magento cron:run
-
-
-if [ $environment = "dev" ]
-    docker-compose exec -u www-data ${container} php /var/www/html/bin/magento deploy:mode:set developer
-then
-    docker-compose exec -u www-data ${container} php /var/www/html/bin/magento cache:enable
-fi
+docker-compose exec -u www-data ${container} php /var/www/html/bin/magento deploy:mode:set production
+docker-compose exec -u www-data ${container} php /var/www/html/bin/magento cache:flush
 
     while true; do
         read -p "Do you want to run full tests battery or only configure the module [full/install/none]? " tests
