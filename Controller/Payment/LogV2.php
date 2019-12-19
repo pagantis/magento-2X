@@ -8,7 +8,7 @@ use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 
-class LogV2 extends Action implements CsrfAwareActionInterface
+class LogV2 extends Action
 {
     /** Concurrency tablename */
     const LOGS_TABLE = 'Pagantis_logs';
