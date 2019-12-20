@@ -46,7 +46,7 @@ else
     echo 'Package: '$package
     docker-compose exec -u www-data ${container} composer require pagantis/magento-2x:$package -d /var/www/html
     docker-compose exec -u www-data ${container} \
-        php /var/www/html/bin/magento module:enable Pagantis_Pagantis
+        php /var/www/html/bin/magento module:enable Pagantis_Pagantis --clear-static-content
     docker-compose exec -u www-data ${container} \
         php /var/www/html/bin/magento setup:upgrade
     docker-compose exec -u www-data ${container} \
