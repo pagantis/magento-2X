@@ -73,7 +73,7 @@ commands:
           name: Unzip Test Folder & Composer Require
           command: |
             unzip Test.zip -d Test
-            composer require "pagantis/selenium-form-utils"
+            composer require "facebook/webdriver"
   basic_test:
     description: "Basic Test"
     steps:
