@@ -66,7 +66,7 @@ commands:
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento deploy:mode:set production
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cache:flush
             containerPort=$(docker container port magento${VERSION}-test)
-  unzip file:
+  unzip_file:
     description: "Unzip Test Folder & Composer Require"
     steps:
       - run:
@@ -123,7 +123,7 @@ jobs:
       - docker_up
       - sample_data
       - install_module
-      - unzip file
+      - unzip_file
       - basic_test
       - magento_install
       - magento_buy_unregistered
@@ -142,7 +142,7 @@ jobs:
       - docker_up
       - sample_data
       - install_module
-      - unzip file
+      - unzip_file
       - basic_test
       - magento_install
       - magento_buy_unregistered
