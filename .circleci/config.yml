@@ -73,7 +73,6 @@ commands:
           name: Unzip Test Folder & Composer Require
           command: |
             unzip Test.zip
-            composer require pagantis/selenium-form-utils "^3.0"
   basic_test:
     description: "Basic Test"
     steps:
