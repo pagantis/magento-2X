@@ -21,7 +21,7 @@ commands:
             sudo apt install -y software-properties-common
             sudo add-apt-repository -y ppa:ondrej/php
             sudo apt-get update
-            sudo apt-get install -y php7.2-fpm php7.2-gd php7.2-curl php7.2-mysql php7.2-dev php7.2-cli php7.2-common php7.2-mbstring php7.2-intl php7.2-zip php7.2-bcmath php7.2-dom npm
+            sudo apt-get install -y php7.2-fpm php7.2-gd php7.2-curl php7.2-mysql php7.2-dev php7.2-cli php7.2-common php7.2-mbstring php7.2-intl php7.2-zip php7.2-bcmath php7.2-dom npm zip
             curl -s https://getcomposer.org/installer | php
             sudo mv composer.phar /usr/local/bin/composer
             composer install
@@ -66,6 +66,14 @@ commands:
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento deploy:mode:set production
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cache:flush
             containerPort=$(docker container port magento${VERSION}-test)
+  unzip file:
+    description: "Unzip Test Folder & Composer Require"
+    steps:
+      - run:
+          name: Unzip Test Folder & Composer Require
+          command: |
+            unzip Test.zip -d Test
+            composer require "pagantis/selenium-form-utils"
   basic_test:
     description: "Basic Test"
     steps:
@@ -115,6 +123,7 @@ jobs:
       - docker_up
       - sample_data
       - install_module
+      - unzip file
       - basic_test
       - magento_install
       - magento_buy_unregistered
@@ -133,6 +142,7 @@ jobs:
       - docker_up
       - sample_data
       - install_module
+      - unzip file
       - basic_test
       - magento_install
       - magento_buy_unregistered
