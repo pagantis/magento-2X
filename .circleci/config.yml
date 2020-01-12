@@ -63,7 +63,7 @@ commands:
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento sampledata:deploy
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento setup:upgrade
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cron:run
-            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento deploy:mode:set production
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento deploy:mode:show
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cache:flush
             containerPort=$(docker container port magento${VERSION}-test)
   unzip_file:
