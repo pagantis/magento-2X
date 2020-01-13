@@ -149,7 +149,7 @@ class IndexV2 extends Action
         $this->origin = ($_SERVER['REQUEST_METHOD'] == 'POST') ? 'Notification' : 'Order';
 
         // CsrfAwareAction Magento2.3 compatibility
-        if (!$_POST && interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
+        if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
             $request = $this->getRequest();
             if ($request instanceof HttpRequest && $request->isPost() && empty($request->getParam('form_key'))) {
                 $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
