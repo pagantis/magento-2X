@@ -136,7 +136,6 @@ class IndexV2 extends Action
         Session $checkoutSession,
         ExtraConfig $extraConfig
     ) {
-        parent::__construct($context);
         $this->quote = $quote;
         $this->quoteManagement = $quoteManagement;
         $this->paymentInterface = $paymentInterface;
@@ -156,6 +155,8 @@ class IndexV2 extends Action
                 $request->setParam('form_key', $formKey->getFormKey());
             }
         }
+
+        parent::__construct($context);
     }
 
     /**
