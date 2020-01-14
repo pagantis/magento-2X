@@ -110,27 +110,19 @@ class IndexV2 extends Action
     /** @var mixed $origin */
     protected $origin;
 
-    /** @var string $request */
-    protected $request;
-
-    /** @var string $formKey */
-    protected $formKey;
-
     /**
      * IndexV2 constructor.
      *
-     * @param Context                              $context
-     * @param Quote                                $quote
-     * @param QuoteManagement                      $quoteManagement
-     * @param PaymentInterface                     $paymentInterface
-     * @param Config                               $config
-     * @param QuoteRepository                      $quoteRepository
-     * @param OrderRepositoryInterface             $orderRepositoryInterface
-     * @param ResourceConnection                   $dbObject
-     * @param Session                              $checkoutSession
-     * @param ExtraConfig                          $extraConfig
-     * @param \Magento\Framework\Data\Form\FormKey $formKey
-     * @param \Magento\Framework\App\Request\Http  $request
+     * @param Context                  $context
+     * @param Quote                    $quote
+     * @param QuoteManagement          $quoteManagement
+     * @param PaymentInterface         $paymentInterface
+     * @param Config                   $config
+     * @param QuoteRepository          $quoteRepository
+     * @param OrderRepositoryInterface $orderRepositoryInterface
+     * @param ResourceConnection       $dbObject
+     * @param Session                  $checkoutSession
+     * @param ExtraConfig              $extraConfig
      */
     public function __construct(
         Context $context,
@@ -142,9 +134,7 @@ class IndexV2 extends Action
         OrderRepositoryInterface $orderRepositoryInterface,
         ResourceConnection $dbObject,
         Session $checkoutSession,
-        ExtraConfig $extraConfig,
-        \Magento\Framework\Data\Form\FormKey $formKey,
-        \Magento\Framework\App\Request\Http $request
+        ExtraConfig $extraConfig
     ) {
         $this->quote = $quote;
         $this->quoteManagement = $quoteManagement;
@@ -158,13 +148,13 @@ class IndexV2 extends Action
         $this->origin = ($_SERVER['REQUEST_METHOD'] == 'POST') ? 'Notification' : 'Order';
 
         // CsrfAwareAction Magento2.3 compatibility
-        if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
+        /*if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
             $this->request = $request;
             $this->formKey = $formKey;
             if ($request instanceof HttpRequest && $request->isPost() && empty($request->getParam('form_key'))) {
                 $this->request->setParam('form_key', $this->formKey->getFormKey());
             }
-        }
+        }*/
 
         parent::__construct($context);
     }
