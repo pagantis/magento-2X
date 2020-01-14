@@ -111,7 +111,7 @@ class IndexV2 extends Action
     protected $origin;
 
     /**
-     * IndexV2 constructor.
+     * Index constructor.
      *
      * @param Context                  $context
      * @param Quote                    $quote
@@ -148,13 +148,13 @@ class IndexV2 extends Action
         $this->origin = ($_SERVER['REQUEST_METHOD'] == 'POST') ? 'Notification' : 'Order';
 
         // CsrfAwareAction Magento2.3 compatibility
-        /*if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
-            $this->request = $request;
-            $this->formKey = $formKey;
+        if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
+            $request = $this->getRequest();
             if ($request instanceof HttpRequest && $request->isPost() && empty($request->getParam('form_key'))) {
-                $this->request->setParam('form_key', $this->formKey->getFormKey());
+                $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
+                $request->setParam('form_key', $formKey->getFormKey());
             }
-        }*/
+        }
 
         parent::__construct($context);
     }
