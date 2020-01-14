@@ -110,19 +110,27 @@ class IndexV2 extends Action
     /** @var mixed $origin */
     protected $origin;
 
+    /** @var string $request */
+    protected $request;
+
+    /** @var string $formKey */
+    protected $formKey;
+
     /**
-     * Index constructor.
+     * IndexV2 constructor.
      *
-     * @param Context                  $context
-     * @param Quote                    $quote
-     * @param QuoteManagement          $quoteManagement
-     * @param PaymentInterface         $paymentInterface
-     * @param Config                   $config
-     * @param QuoteRepository          $quoteRepository
-     * @param OrderRepositoryInterface $orderRepositoryInterface
-     * @param ResourceConnection       $dbObject
-     * @param Session                  $checkoutSession
-     * @param ExtraConfig              $extraConfig
+     * @param Context                              $context
+     * @param Quote                                $quote
+     * @param QuoteManagement                      $quoteManagement
+     * @param PaymentInterface                     $paymentInterface
+     * @param Config                               $config
+     * @param QuoteRepository                      $quoteRepository
+     * @param OrderRepositoryInterface             $orderRepositoryInterface
+     * @param ResourceConnection                   $dbObject
+     * @param Session                              $checkoutSession
+     * @param ExtraConfig                          $extraConfig
+     * @param \Magento\Framework\Data\Form\FormKey $formKey
+     * @param \Magento\Framework\App\Request\Http  $request
      */
     public function __construct(
         Context $context,
@@ -134,7 +142,9 @@ class IndexV2 extends Action
         OrderRepositoryInterface $orderRepositoryInterface,
         ResourceConnection $dbObject,
         Session $checkoutSession,
-        ExtraConfig $extraConfig
+        ExtraConfig $extraConfig,
+        \Magento\Framework\Data\Form\FormKey $formKey,
+        \Magento\Framework\App\Request\Http $request
     ) {
         $this->quote = $quote;
         $this->quoteManagement = $quoteManagement;
@@ -149,10 +159,10 @@ class IndexV2 extends Action
 
         // CsrfAwareAction Magento2.3 compatibility
         if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
-            $request = $this->getRequest();
+            $this->request = $request;
+            $this->formKey = $formKey;
             if ($request instanceof HttpRequest && $request->isPost() && empty($request->getParam('form_key'))) {
-                $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
-                $request->setParam('form_key', $formKey->getFormKey());
+                $this->request->setParam('form_key', $this->formKey->getFormKey());
             }
         }
 
