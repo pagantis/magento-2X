@@ -36,7 +36,7 @@ use Magento\Framework\App\Request\InvalidRequestException;
  * Class Index
  * @package Pagantis\Pagantis\Controller\Notify
  */
-class IndexV2 extends Action
+class IndexV2 extends Action implements CsrfAwareActionInterface
 {
     /** Orders tablename */
     const ORDERS_TABLE = 'cart_process';
@@ -136,6 +136,8 @@ class IndexV2 extends Action
         Session $checkoutSession,
         ExtraConfig $extraConfig
     ) {
+        parent::__construct($context);
+
         $this->quote = $quote;
         $this->quoteManagement = $quoteManagement;
         $this->paymentInterface = $paymentInterface;
@@ -155,8 +157,6 @@ class IndexV2 extends Action
                 $request->setParam('form_key', $formKey->getFormKey());
             }
         }
-
-        parent::__construct($context);
     }
 
     /**
