@@ -36,7 +36,7 @@ use Magento\Framework\App\Request\InvalidRequestException;
  * Class Index
  * @package Pagantis\Pagantis\Controller\Notify
  */
-class IndexV2 extends Action implements CsrfAwareActionInterface
+class IndexV2 extends Action
 {
     /** Orders tablename */
     const ORDERS_TABLE = 'cart_process';
