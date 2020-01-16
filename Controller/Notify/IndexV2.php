@@ -110,6 +110,7 @@ class IndexV2 extends Action
     /** @var mixed $origin */
     protected $origin;
 
+
     /**
      * IndexV2 constructor.
      *

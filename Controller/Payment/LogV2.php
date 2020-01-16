@@ -20,24 +20,27 @@ class LogV2 extends Action
     protected $dbObject;
 
     /**
-     * Log constructor.
+     * LogV2 constructor.
      *
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Pagantis\Pagantis\Helper\Config      $pagantisConfig
      * @param ResourceConnection                    $dbObject
+     * @param RequestInterface                      $request
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Pagantis\Pagantis\Helper\Config $pagantisConfig,
-        ResourceConnection $dbObject
+        ResourceConnection $dbObject,
+        \Magento\Framework\App\RequestInterface $request
     ) {
         $this->config = $pagantisConfig->getConfig();
         $this->dbObject = $dbObject;
 
         // CsrfAwareAction Magento2.3 compatibility
         if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
-            $request = $this->getRequest();
-            if ($request instanceof HttpRequest && $request->isPost() && empty($request->getParam('form_key'))) {
+            //$request = $this->getRequest();
+            //$request instanceof HttpRequest &&
+            if ($request->isPost() && empty($request->getParam('form_key'))) {
                 $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
                 $request->setParam('form_key', $formKey->getFormKey());
             }
