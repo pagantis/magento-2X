@@ -37,11 +37,12 @@ class ConfigV2 extends Action
     );
 
     /**
-     * Log constructor.
+     * ConfigV2 constructor.
      *
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Pagantis\Pagantis\Helper\Config      $pagantisConfig
      * @param ResourceConnection                    $dbObject
+     * @param RequestInterface                      $request
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
