@@ -2,11 +2,12 @@
 namespace Pagantis\Pagantis\Controller\Payment;
 
 use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Ddl\Table;
-use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
+use \Pagantis\Pagantis\Helper\Config;
 
 class LogV2 extends Action
 {
@@ -22,24 +23,22 @@ class LogV2 extends Action
     /**
      * LogV2 constructor.
      *
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Pagantis\Pagantis\Helper\Config      $pagantisConfig
-     * @param ResourceConnection                    $dbObject
-     * @param RequestInterface                      $request
+     * @param Context            $context
+     * @param Config             $pagantisConfig
+     * @param ResourceConnection $dbObject
+     * @param RequestInterface   $request
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Pagantis\Pagantis\Helper\Config $pagantisConfig,
+        Context $context,
+        Config $pagantisConfig,
         ResourceConnection $dbObject,
-        \Magento\Framework\App\RequestInterface $request
+        RequestInterface $request
     ) {
         $this->config = $pagantisConfig->getConfig();
         $this->dbObject = $dbObject;
 
         // CsrfAwareAction Magento2.3 compatibility
         if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
-            //$request = $this->getRequest();
-            //$request instanceof HttpRequest &&
             if ($request->isPost() && empty($request->getParam('form_key'))) {
                 $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
                 $request->setParam('form_key', $formKey->getFormKey());

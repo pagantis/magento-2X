@@ -110,7 +110,6 @@ class IndexV2 extends Action
     /** @var mixed $origin */
     protected $origin;
 
-
     /**
      * IndexV2 constructor.
      *
@@ -137,7 +136,7 @@ class IndexV2 extends Action
         ResourceConnection $dbObject,
         Session $checkoutSession,
         ExtraConfig $extraConfig,
-        \Magento\Framework\App\RequestInterface $request
+        RequestInterface $request
     ) {
         parent::__construct($context);
 
@@ -154,8 +153,6 @@ class IndexV2 extends Action
 
         // CsrfAwareAction Magento2.3 compatibility
         if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
-            //$request = $this->getRequest();
-            //$request instanceof HttpRequest &&
             if ($request->isPost() && empty($request->getParam('form_key'))) {
                 $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
                 $request->setParam('form_key', $formKey->getFormKey());
