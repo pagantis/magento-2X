@@ -13,6 +13,9 @@ class ConfigV2 extends Action
     /** Config tablename */
     const CONFIG_TABLE = 'Pagantis_config';
 
+    /** @var mixed $config */
+    protected $config;
+
     /** @var ResourceConnection $dbObject */
     protected $dbObject;
 
