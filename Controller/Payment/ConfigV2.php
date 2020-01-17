@@ -4,7 +4,6 @@ namespace Pagantis\Pagantis\Controller\Payment;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ResourceConnection;
-use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 use Pagantis\Pagantis\Helper\Config;
@@ -41,10 +40,10 @@ class ConfigV2 extends Action
     /**
      * ConfigV2 constructor.
      *
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Pagantis\Pagantis\Helper\Config      $pagantisConfig
-     * @param ResourceConnection                    $dbObject
-     * @param RequestInterface                      $request
+     * @param Context            $context
+     * @param Config             $pagantisConfig
+     * @param ResourceConnection $dbObject
+     * @param RequestInterface   $request
      */
     public function __construct(
         Context $context,
