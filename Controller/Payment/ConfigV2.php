@@ -117,7 +117,7 @@ class ConfigV2 extends Action
             header("HTTP/1.1 ".$response['status'], true, $response['status']);
             header('Content-Type: application/json', true);
             header('Content-Length: '.strlen($result));
-            echo($result);
+            echo((object)$result);
             exit();
         } catch (\Exception $e) {
             die($e->getMessage());
