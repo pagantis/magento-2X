@@ -7,7 +7,6 @@ use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 use Pagantis\Pagantis\Helper\Config;
-use Magento\Framework\App\CsrfAwareActionInterface;
 
 class ConfigV2 extends Action
 {

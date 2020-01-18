@@ -28,7 +28,6 @@ use Pagantis\ModuleUtils\Model\Response\JsonSuccessResponse;
 use Pagantis\ModuleUtils\Model\Response\JsonExceptionResponse;
 use Pagantis\ModuleUtils\Exception\AlreadyProcessedException;
 use Pagantis\ModuleUtils\Model\Log\LogEntry;
-use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 
@@ -153,7 +152,7 @@ class IndexV2 extends Action
 
         // CsrfAwareAction Magento2.3 compatibility
         if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
-            if ($request->isPost() && empty($request->getParam('form_key'))) {
+            if (isset($request) && $request->isPost() && empty($request->getParam('form_key'))) {
                 $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
                 $request->setParam('form_key', $formKey->getFormKey());
             }
