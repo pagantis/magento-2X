@@ -114,6 +114,7 @@ class ConfigV2 extends Action
                 $response['result'] = $formattedResult;
             }
             $result = json_encode($response['result']);
+            $result = array_pop($result);
             header("HTTP/1.1 ".$response['status'], true, $response['status']);
             header('Content-Type: application/json', true);
             header('Content-Length: '.strlen($result));
