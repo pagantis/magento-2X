@@ -77,7 +77,7 @@ class ConfigV2 extends Action
         try {
             $response = array('status'=>null);
             $tableName = $this->dbObject->getTableName(self::CONFIG_TABLE);
-            $secretKey = $this->getRequest()->getParam('secret');
+            $secretKey = $this->_request->getParam('secret');
             $privateKey = isset($this->config['pagantis_private_key']) ? $this->config['pagantis_private_key'] : null;
 
             /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
@@ -85,7 +85,7 @@ class ConfigV2 extends Action
             if ($privateKey != $secretKey) {
                 $response['status'] = 401;
                 $response['result'] = 'Unauthorized';
-            } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            } elseif ($this->_request->isPost()) {
                 if (count($_POST)) {
                     foreach ($_POST as $config => $value) {
                         if (isset($this->defaultConfigs[$config]) && $response['status']==null) {
