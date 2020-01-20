@@ -60,7 +60,8 @@ class ConfigV2 extends Action
         // CsrfAwareAction Magento2.3 compatibility
         if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
             if (isset($request) && $request->isPost() && empty($request->getParam('form_key'))) {
-                $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
+                $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+                $formKey = $objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
                 $request->setParam('form_key', $formKey->getFormKey());
             }
         }
