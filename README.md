@@ -18,8 +18,7 @@ To install the module of Pagantis in your Magento shop, you can use Composer:
     composer require pagantis/magento-2x
     bin/magento module:enable Pagantis_Pagantis
     bin/magento setup:upgrade
-    bin/magento deploy:mode:set production
-    bin/magento cache:flush
+    bin/magento setup:di:compile
 ```
 
 ## :gear: Configuration
