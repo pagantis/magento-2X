@@ -2,15 +2,19 @@
 namespace Pagantis\Pagantis\Controller\Payment;
 
 use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ResourceConnection;
-use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
+use Pagantis\Pagantis\Helper\Config;
 
-class ConfigV2 extends Action implements CsrfAwareActionInterface
+class ConfigV2 extends Action
 {
     /** Config tablename */
     const CONFIG_TABLE = 'Pagantis_config';
+
+    /** @var mixed $config */
+    protected $config;
 
     /** @var ResourceConnection $dbObject */
     protected $dbObject;
@@ -37,25 +41,27 @@ class ConfigV2 extends Action implements CsrfAwareActionInterface
     );
 
     /**
-     * Log constructor.
+     * ConfigV2 constructor.
      *
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Pagantis\Pagantis\Helper\Config      $pagantisConfig
-     * @param ResourceConnection                    $dbObject
+     * @param Context            $context
+     * @param Config             $pagantisConfig
+     * @param ResourceConnection $dbObject
+     * @param RequestInterface   $request
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Pagantis\Pagantis\Helper\Config $pagantisConfig,
-        ResourceConnection $dbObject
+        Context $context,
+        Config $pagantisConfig,
+        ResourceConnection $dbObject,
+        RequestInterface $request
     ) {
         $this->config = $pagantisConfig->getConfig();
         $this->dbObject = $dbObject;
 
         // CsrfAwareAction Magento2.3 compatibility
         if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
-            $request = $this->getRequest();
-            if ($request instanceof HttpRequest && $request->isPost() && empty($request->getParam('form_key'))) {
-                $formKey = $this->_objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
+            if (isset($request) && $request->isPost() && empty($request->getParam('form_key'))) {
+                $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+                $formKey = $objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
                 $request->setParam('form_key', $formKey->getFormKey());
             }
         }
@@ -72,7 +78,7 @@ class ConfigV2 extends Action implements CsrfAwareActionInterface
         try {
             $response = array('status'=>null);
             $tableName = $this->dbObject->getTableName(self::CONFIG_TABLE);
-            $secretKey = $this->getRequest()->getParam('secret');
+            $secretKey = $this->_request->getParam('secret');
             $privateKey = isset($this->config['pagantis_private_key']) ? $this->config['pagantis_private_key'] : null;
 
             /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
@@ -80,7 +86,7 @@ class ConfigV2 extends Action implements CsrfAwareActionInterface
             if ($privateKey != $secretKey) {
                 $response['status'] = 401;
                 $response['result'] = 'Unauthorized';
-            } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            } elseif ($this->_request->isPost()) {
                 if (count($_POST)) {
                     foreach ($_POST as $config => $value) {
                         if (isset($this->defaultConfigs[$config]) && $response['status']==null) {

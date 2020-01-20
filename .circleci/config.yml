@@ -21,7 +21,7 @@ commands:
             sudo apt install -y software-properties-common
             sudo add-apt-repository -y ppa:ondrej/php
             sudo apt-get update
-            sudo apt-get install -y php7.2-fpm php7.2-gd php7.2-curl php7.2-mysql php7.2-dev php7.2-cli php7.2-common php7.2-mbstring php7.2-intl php7.2-zip php7.2-bcmath php7.2-dom npm
+            sudo apt-get install -y php7.2-fpm php7.2-gd php7.2-curl php7.2-mysql php7.2-dev php7.2-cli php7.2-common php7.2-mbstring php7.2-intl php7.2-zip php7.2-bcmath php7.2-dom npm zip
             curl -s https://getcomposer.org/installer | php
             sudo mv composer.phar /usr/local/bin/composer
             composer install
@@ -47,6 +47,9 @@ commands:
             echo $package
             docker-compose exec -u www-data magento${VERSION}-test composer require pagantis/magento-2x:$package -d /var/www/html
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento module:enable Pagantis_Pagantis --clear-static-content
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento setup:upgrade
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento setup:di:compile
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cache:flush
   sample_data:
     description: "Sample Data + DI + SetupUpgrade + Clear Cache"
     steps:
@@ -60,8 +63,17 @@ commands:
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento sampledata:deploy
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento setup:upgrade
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cron:run
-            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cache:enable
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento deploy:mode:show
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cache:flush
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cache:clean
             containerPort=$(docker container port magento${VERSION}-test)
+  unzip_file:
+    description: "Unzip Test Folder & Composer Require"
+    steps:
+      - run:
+          name: Unzip Test Folder & Composer Require
+          command: |
+            unzip Test.zip
   basic_test:
     description: "Basic Test"
     steps:
@@ -109,8 +121,9 @@ jobs:
       - host_and_docker_compose
       - install_dependencies
       - docker_up
-      - install_module
       - sample_data
+      - install_module
+      - unzip_file
       - basic_test
       - magento_install
       - magento_buy_unregistered
@@ -127,8 +140,9 @@ jobs:
       - host_and_docker_compose
       - install_dependencies
       - docker_up
-      - install_module
       - sample_data
+      - install_module
+      - unzip_file
       - basic_test
       - magento_install
       - magento_buy_unregistered

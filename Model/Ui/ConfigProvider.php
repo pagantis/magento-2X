@@ -89,6 +89,7 @@ final class ConfigProvider implements ConfigProviderInterface
                 self::CODE => [
                     'total' => $quote->getGrandTotal(),
                     'enabled' => $this->method->getConfigData('active'),
+                    'product_simulator' => $this->method->getConfigData('product_simulator'),
                     'title' => __($this->extraConfig['PAGANTIS_TITLE']),
                     'subtitle' => __($this->extraConfig['PAGANTIS_TITLE_EXTRA']),
                     'image' => $this->assetRepository->getUrl('Pagantis_Pagantis::logopagantis.png'),

@@ -2,13 +2,14 @@
 namespace Pagantis\Pagantis\Controller\Payment;
 
 use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Ddl\Table;
-use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
+use \Pagantis\Pagantis\Helper\Config;
 
-class LogV2 extends Action implements CsrfAwareActionInterface
+class LogV2 extends Action
 {
     /** Concurrency tablename */
     const LOGS_TABLE = 'Pagantis_logs';
@@ -20,20 +21,30 @@ class LogV2 extends Action implements CsrfAwareActionInterface
     protected $dbObject;
 
     /**
-     * Log constructor.
+     * LogV2 constructor.
      *
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Pagantis\Pagantis\Helper\Config      $pagantisConfig
-     * @param ResourceConnection                    $dbObject
+     * @param Context            $context
+     * @param Config             $pagantisConfig
+     * @param ResourceConnection $dbObject
+     * @param RequestInterface   $request
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Pagantis\Pagantis\Helper\Config $pagantisConfig,
-        ResourceConnection $dbObject
+        Context $context,
+        Config $pagantisConfig,
+        ResourceConnection $dbObject,
+        RequestInterface $request
     ) {
         $this->config = $pagantisConfig->getConfig();
         $this->dbObject = $dbObject;
 
+        // CsrfAwareAction Magento2.3 compatibility
+        if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
+            if (isset($request) && $request->isPost() && empty($request->getParam('form_key'))) {
+                $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+                $formKey = $objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
+                $request->setParam('form_key', $formKey->getFormKey());
+            }
+        }
 
         return parent::__construct($context);
     }

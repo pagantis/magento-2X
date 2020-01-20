@@ -28,7 +28,6 @@ use Pagantis\ModuleUtils\Model\Response\JsonSuccessResponse;
 use Pagantis\ModuleUtils\Model\Response\JsonExceptionResponse;
 use Pagantis\ModuleUtils\Exception\AlreadyProcessedException;
 use Pagantis\ModuleUtils\Model\Log\LogEntry;
-use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 
@@ -36,7 +35,7 @@ use Magento\Framework\App\Request\InvalidRequestException;
  * Class Index
  * @package Pagantis\Pagantis\Controller\Notify
  */
-class IndexV2 extends Action implements CsrfAwareActionInterface
+class IndexV2 extends Action
 {
     /** Orders tablename */
     const ORDERS_TABLE = 'cart_process';
@@ -111,7 +110,7 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
     protected $origin;
 
     /**
-     * Index constructor.
+     * IndexV2 constructor.
      *
      * @param Context                  $context
      * @param Quote                    $quote
@@ -123,6 +122,7 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
      * @param ResourceConnection       $dbObject
      * @param Session                  $checkoutSession
      * @param ExtraConfig              $extraConfig
+     * @param RequestInterface         $request
      */
     public function __construct(
         Context $context,
@@ -134,9 +134,11 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
         OrderRepositoryInterface $orderRepositoryInterface,
         ResourceConnection $dbObject,
         Session $checkoutSession,
-        ExtraConfig $extraConfig
+        ExtraConfig $extraConfig,
+        RequestInterface $request
     ) {
         parent::__construct($context);
+
         $this->quote = $quote;
         $this->quoteManagement = $quoteManagement;
         $this->paymentInterface = $paymentInterface;
@@ -147,6 +149,15 @@ class IndexV2 extends Action implements CsrfAwareActionInterface
         $this->dbObject = $dbObject;
         $this->checkoutSession = $checkoutSession;
         $this->origin = ($_SERVER['REQUEST_METHOD'] == 'POST') ? 'Notification' : 'Order';
+
+        // CsrfAwareAction Magento2.3 compatibility
+        if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
+            if (isset($request) && $request->isPost() && empty($request->getParam('form_key'))) {
+                $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+                $formKey = $objectManager->get(\Magento\Framework\Data\Form\FormKey::class);
+                $request->setParam('form_key', $formKey->getFormKey());
+            }
+        }
     }
 
     /**
