@@ -42,7 +42,7 @@ then
     docker-compose exec -u www-data ${container} composer require "pagantis/module-utils"
 else
 
-    package='dev-transfer_factory_error'
+    package='dev-xxx'
     echo 'Package: '$package
     docker-compose exec -u www-data ${container} composer require pagantis/magento-2x:$package -d /var/www/html
     docker-compose exec -u www-data ${container} \
