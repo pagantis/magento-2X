@@ -23,7 +23,7 @@ class ConfigV2 extends Action
      * Variable which contains extra configuration.
      * @var array $defaultConfigs
      */
-    public $defaultConfigs = array('PAGANTIS_TITLE'=>'Instant Financing',
+    public $defaultConfigs = array('PAGANTIS_TITLE'=>'Paga en cuotas',
                                    'PAGANTIS_SIMULATOR_DISPLAY_TYPE'=>'pgSDK.simulator.types.SIMPLE',
                                    'PAGANTIS_SIMULATOR_DISPLAY_SKIN'=>'pgSDK.simulator.skins.BLUE',
                                    'PAGANTIS_SIMULATOR_DISPLAY_POSITION'=>'hookDisplayProductButtons',

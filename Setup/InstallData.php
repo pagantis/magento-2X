@@ -16,7 +16,7 @@ class InstallData implements InstallDataInterface
      * @var array $defaultConfigs
      */
     public $defaultConfigs = array(
-       'PAGANTIS_TITLE'=>'Instant Financing',
+       'PAGANTIS_TITLE'=>'Paga en cuotas',
        'PAGANTIS_SIMULATOR_DISPLAY_TYPE'=>'sdk.simulator.types.SIMPLE',
        'PAGANTIS_SIMULATOR_DISPLAY_SKIN'=>'sdk.simulator.skins.BLUE',
        'PAGANTIS_SIMULATOR_DISPLAY_POSITION'=>'hookDisplayProductButtons',
