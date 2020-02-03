@@ -39,6 +39,16 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
                     return simulatorLoaded;
                 }
 
+                function prependSeparator()
+                {
+                    var node = document.querySelector(findPositionSelector());
+                    var textnode = document.createTextNode(<?php echo json_encode($separator);?>);
+                    var spannode = document.createElement("span");
+                    spannode.style.cssText = 'margin-right:5px';
+                    spannode.appendChild(textnode);
+                    node.prepend(spannode);
+                }
+
                 function checkAttempts() {
                     window.attempts = window.attempts + 1;
                     return (window.attempts > 4)
