@@ -24,12 +24,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
 
             if(moduleEnabled=='1' && simulatorEnabled=='1' && publicKey!='' && allowedCountry=='1') {
 
-                if (locale == 'es' || locale=='')
-                {
-                    window.sdk = pmtSdk;
-                } else {
-                    window.sdk = pgSdk;
-                }
+                window.sdk = pgSdk;
 
                 function checkSimulatorContent() {
                     var simulatorLoaded = false;
@@ -133,7 +128,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
         // ]]>
     </script>
     <style>
-        .pmt-no-interest{
+        .pg-no-interest{
             color: #00c1d5
         }
         .promoted{

@@ -8,13 +8,12 @@ define(
         'Magento_Checkout/js/model/full-screen-loader',
         'Magento_Checkout/js/model/quote',
         '//cdn.pagantis.com/js/pg-v2/sdk.js',
-        '//cdn.pagamastarde.com/js/pmt-v2/sdk.js',
         'Magento_Checkout/js/action/select-payment-method',
         'Magento_Checkout/js/checkout-data',
         'Magento_Checkout/js/model/totals',
         'Magento_Catalog/js/price-utils'
     ],
-    function ($, Component, url, customerData, errorProcessor, fullScreenLoader, quote, pgSDK, pmtSDK, selectPaymentMethodAction, checkoutData, totals, priceUtils) {
+    function ($, Component, url, customerData, errorProcessor, fullScreenLoader, quote, pgSDK, selectPaymentMethodAction, checkoutData, totals, priceUtils) {
         'use strict';
 
         window.checkoutConfig.payment.pagantis.guestEmail = quote.guestEmail;
@@ -33,11 +32,7 @@ define(
                         window.checkoutConfig.payment.pagantis.secretKey!='' &&
                         window.checkoutConfig.payment.pagantis.product_simulator!='') {
                         var locale = window.checkoutConfig.payment.pagantis.locale;
-                        if (locale=='es'|| locale=='') {
-                            var sdk = pmtSDK;
-                        } else {
-                            var sdk = pgSDK;
-                        }
+                        var sdk = pgSDK;
 
                         var simulator_options = {
                             numInstalments : window.checkoutConfig.payment.pagantis.quotesStart,
