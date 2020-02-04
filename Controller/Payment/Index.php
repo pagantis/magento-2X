@@ -255,15 +255,20 @@ class Index extends Action
                 'pagantis/notify/index',
                 ['_query' => ['quoteId'=>$quoteId]]
             );
+
+            $okUrlRoute = 'pagantis/notify/index';
             if (version_compare($metadata['magento'], '2.3.0') >= 0) {
-                $okUrl = $this->_url->getUrl('pagantis/notify/indexV2', ['_query' => ['quoteId'=>$quoteId]]);
+                $okUrlRoute = 'pagantis/notify/indexV2';
             }
+
+            $okUrlUser = $this->_url->getUrl($okUrlRoute, ['_query' => ['quoteId'=>$quoteId,'origin'=>'redirect']]);
+            $okUrlNot  = $this->_url->getUrl($okUrlRoute, ['_query' => ['quoteId'=>$quoteId,'origin'=>'notification']]);
 
             $orderConfigurationUrls
                 ->setCancel($cancelUrl)
                 ->setKo($okUrl)
-                ->setAuthorizedNotificationCallback($okUrl)
-                ->setOk($okUrl)
+                ->setAuthorizedNotificationCallback($okUrlNot)
+                ->setOk($okUrlUser)
             ;
 
             $orderChannel = new Channel();
