@@ -42,7 +42,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
                 function prependSeparator()
                 {
                     var node = document.querySelector(findPositionSelector());
-                    var textnode = document.createTextNode(<?php echo json_encode($separator);?>);
+                    var textnode = document.createTextNode(<?php echo $block->getSeparator();?>);
                     var spannode = document.createElement("span");
                     spannode.style.cssText = 'margin-right:5px';
                     spannode.appendChild(textnode);
