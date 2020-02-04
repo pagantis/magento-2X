@@ -263,7 +263,6 @@ class Index extends Action
                 ->setCancel($cancelUrl)
                 ->setKo($okUrl)
                 ->setAuthorizedNotificationCallback($okUrl)
-                ->setRejectedNotificationCallback($okUrl)
                 ->setOk($okUrl)
             ;
 
