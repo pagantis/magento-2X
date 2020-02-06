@@ -64,6 +64,11 @@ docker-compose exec -u www-data ${container} php /var/www/html/bin/magento cron:
 docker-compose exec -u www-data ${container} php /var/www/html/bin/magento deploy:mode:set production
 docker-compose exec -u www-data ${container} php /var/www/html/bin/magento cache:flush
 
+if [ $environment = "dev" ]
+then
+    docker-compose exec -u www-data ${container} php /var/www/html/bin/magento maintenance:disabled
+fi
+
     while true; do
         read -p "Do you want to run full tests battery or only configure the module [full/install/none]? " tests
         case $tests in

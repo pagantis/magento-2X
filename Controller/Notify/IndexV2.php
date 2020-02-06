@@ -167,6 +167,10 @@ class IndexV2 extends Action
     public function execute()
     {
         try {
+            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $_GET['origin'] == 'notification') {
+                $returnUrl = $this->_url->getUrl('checkout', ['_fragment' => 'payment']);
+                $this->_redirect($returnUrl);
+            }
             $this->checkConcurrency();
             $this->getMerchantOrder();
             $this->getPagantisOrderId();

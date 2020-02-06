@@ -7,9 +7,9 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
     <script>// <![CDATA[
         require([
             'jquery',
-            'https://cdn.pagamastarde.com/js/pmt-v2/sdk.js',
             'https://cdn.pagantis.com/js/pg-v2/sdk.js'
-        ], function ($, pmtSdk, pgSdk) {
+        ], function ($, pgSdk)
+        {
             var moduleEnabled = '<? echo $block->isEnabled();?>';
             var simulatorEnabled = '<? echo $block->getProductSimulator();?>';
             var publicKey = '<? echo $block->getPublicKey();?>';
@@ -24,12 +24,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
 
             if(moduleEnabled=='1' && simulatorEnabled=='1' && publicKey!='' && allowedCountry=='1') {
 
-                if (locale == 'es' || locale=='')
-                {
-                    window.sdk = pmtSdk;
-                } else {
-                    window.sdk = pgSdk;
-                }
+                window.sdk = pgSdk;
 
                 function checkSimulatorContent() {
                     var simulatorLoaded = false;
@@ -44,14 +39,36 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
                     return simulatorLoaded;
                 }
 
+                function prependSeparator()
+                {
+                    var node = document.querySelector(findPositionSelector());
+                    var textnode = document.createTextNode("<?php echo $block->getSeparator();?>");
+                    var spannode = document.createElement("span");
+                    spannode.style.cssText = 'margin-right:5px; margin-top: 5px';
+                    spannode.appendChild(textnode);
+                    node.prepend(spannode);
+                    return true;
+                }
+
+                function moveToPrice()
+                {
+                    if (simulatorType === 'sdk.simulator.types.SELECTABLE_TEXT_CUSTOM') {
+                        var simnode = document.querySelector(findPositionSelector());
+
+                        var detailnode = document.getElementsByClassName('product-add-form');
+                        detailnode = detailnode['0'];
+
+                        detailnode.parentNode.insertBefore(simnode, detailnode)
+                    }
+                }
+
                 function checkAttempts() {
                     window.attempts = window.attempts + 1;
                     return (window.attempts > 4)
                 }
 
                 function finishInterval() {
-                    clearInterval(window.loadingSimulator);
-                    return true;
+                    return clearInterval(window.loadingSimulator);
                 }
 
                 function findPriceSelector()
@@ -84,7 +101,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
                 }
 
                 function loadSimulator() {
-                    if(typeof window.sdk == 'undefined')
+                    if (typeof window.sdk == 'undefined')
                     {
                         return false;
                     }
@@ -93,22 +110,24 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
                     {
                         return finishInterval();
                     }
-
-                    var priceSelector = findPriceSelector();
-                    var quantitySelector = findQuantitySelector();
-                    var positionSelector = findPositionSelector();
-                    simulator_options = {
-                        numInstalments : numInstallments,
-                        publicKey: publicKey,
-                        type: simulatorType,
-                        selector: positionSelector,
-                        itemQuantitySelector: quantitySelector,
-                        itemAmountSelector: priceSelector,
-                        locale : locale,
-                        country : country,
-                        amountParserConfig :  {
-                            thousandSeparator: thousandSeparator,
-                            decimalSeparator: decimalSeparator
+                    else
+                    {
+                        var priceSelector = findPriceSelector();
+                        var quantitySelector = findQuantitySelector();
+                        var positionSelector = findPositionSelector();
+                        simulator_options = {
+                            numInstalments: numInstallments,
+                            publicKey: publicKey,
+                            type: <? echo $block->getSimulatorType();?>,
+                            selector: positionSelector,
+                            itemQuantitySelector: quantitySelector,
+                            itemAmountSelector: priceSelector,
+                            locale: locale,
+                            country: country,
+                            amountParserConfig: {
+                                thousandSeparator: thousandSeparator,
+                                decimalSeparator: decimalSeparator
+                            }
                         }
                     };
 
@@ -118,6 +137,8 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
 
                     if (typeof window.sdk != 'undefined') {
                         window.MGSimulatorId = window.sdk.simulator.init(simulator_options);
+                        moveToPrice();
+                        prependSeparator();
                         return false;
                     }
 
@@ -133,7 +154,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
         // ]]>
     </script>
     <style>
-        .pmt-no-interest{
+        .pg-no-interest{
             color: #00c1d5
         }
         .promoted{
@@ -146,7 +167,12 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
             echo $block->getPromotedMessage();
         }
     ?>
-    <div class="pagantisSimulator"></div>
+    <style>
+        select.pg-sim-custom-selector-control {
+            width: 55px;
+        }
+    </style>
+    <div class="pagantisSimulator" style="display: flex"></div>
     <p></p>
     <?php
 }

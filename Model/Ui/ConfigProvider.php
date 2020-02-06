@@ -92,7 +92,7 @@ final class ConfigProvider implements ConfigProviderInterface
                     'product_simulator' => $this->method->getConfigData('product_simulator'),
                     'title' => __($this->extraConfig['PAGANTIS_TITLE']),
                     'subtitle' => __($this->extraConfig['PAGANTIS_TITLE_EXTRA']),
-                    'image' => $this->assetRepository->getUrl('Pagantis_Pagantis::logopagantis.png'),
+                    'image' => 'https://cdn.digitalorigin.com/assets/master/logos/pg-130x30.svg',
                     'publicKey' => $this->method->getConfigData('pagantis_public_key'),
                     'locale' => strstr($this->resolver->getLocale(), '_', true),
                     'country' => strstr($this->resolver->getLocale(), '_', true),
