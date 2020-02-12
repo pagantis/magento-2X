@@ -30,7 +30,7 @@ define(
                     if (window.checkoutConfig.payment.pagantis.enabled  !='0' &&
                         window.checkoutConfig.payment.pagantis.publicKey!=''  &&
                         window.checkoutConfig.payment.pagantis.secretKey!='' &&
-                        window.checkoutConfig.payment.pagantis.product_simulator!='') {
+                        window.checkoutConfig.payment.pagantis.product_simulator=='1') {
                         var locale = window.checkoutConfig.payment.pagantis.locale;
                         var sdk = pgSDK;
 

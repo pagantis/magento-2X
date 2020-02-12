@@ -66,7 +66,7 @@ docker-compose exec -u www-data ${container} php /var/www/html/bin/magento cache
 
 if [ $environment = "dev" ]
 then
-    docker-compose exec -u www-data ${container} php /var/www/html/bin/magento maintenance:disabled
+    docker-compose exec -u www-data ${container} php /var/www/html/bin/magento maintenance:disable
 fi
 
     while true; do
