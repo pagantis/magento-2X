@@ -590,7 +590,6 @@ class Index extends Action
         }
     }
 
-
     /**
      * @return mixed
      */
