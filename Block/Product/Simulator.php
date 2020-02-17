@@ -460,21 +460,10 @@ class Simulator extends Template
      */
     public function checkValidAmount()
     {
-        $isValid = false;
         $maxAmount = $this->getMaxAmount();
         $minAmount = $this->getMinAmount();
-        $finalPrice = $this->getFinalPrice();
+        $totalPrice = (string) floor($this->getFinalPrice());
 
-        if (isset($maxAmount, $minAmount, $finalPrice) && $maxAmount!='0') {
-            if ($finalPrice>=$minAmount && $finalPrice<=$maxAmount) {
-                $isValid = true;
-            }
-        } elseif (isset($minAmount, $finalPrice) && $maxAmount=='0') {
-            if ($finalPrice>=$minAmount) {
-                $isValid = true;
-            }
-        }
-
-        return $isValid;
+        return ($totalPrice>=$minAmount && ($totalPrice<=$maxAmount||$maxAmount=='0'));
     }
 }
