@@ -40,14 +40,19 @@ class Simulator extends Template
     protected $promotionProductExtra;
 
     /**
-     * @var Product
+     * @var float
      */
-    protected $product;
+    protected $minAmount;
 
     /**
      * @var float
      */
-    protected $minAmount;
+    protected $maxAmount;
+
+    /**
+     * @var Product
+     */
+    protected $product;
 
     /**
      * @var int
@@ -143,6 +148,7 @@ class Simulator extends Template
         $this->extraConfig = $extraConfig->getExtraConfig();
 
         $this->minAmount = $this->extraConfig['PAGANTIS_DISPLAY_MIN_AMOUNT'];
+        $this->maxAmount = $this->extraConfig['PAGANTIS_DISPLAY_MAX_AMOUNT'];
         $this->minInstallments = $this->extraConfig['PAGANTIS_SIMULATOR_START_INSTALLMENTS'];
         $this->priceSelector = $this->extraConfig['PAGANTIS_SIMULATOR_CSS_PRICE_SELECTOR'];
         $this->quantitySelector = $this->extraConfig['PAGANTIS_SIMULATOR_CSS_QUANTITY_SELECTOR'];
@@ -270,6 +276,22 @@ class Simulator extends Template
     public function setMinAmount($minAmount)
     {
         $this->minAmount = $minAmount;
+    }
+
+    /**
+     * @return float
+     */
+    public function getMaxAmount()
+    {
+        return $this->maxAmount;
+    }
+
+    /**
+     * @param float $maxAmount
+     */
+    public function setMaxAmount($maxAmount)
+    {
+        $this->maxAmount = $maxAmount;
     }
 
     /**
@@ -431,5 +453,28 @@ class Simulator extends Template
     public function setSeparator($separator)
     {
         $this->separator = $separator;
+    }
+
+    /**
+     * @return bool
+     */
+    public function checkValidAmount()
+    {
+        $isValid = false;
+        $maxAmount = $this->getMaxAmount();
+        $minAmount = $this->getMinAmount();
+        $finalPrice = $this->getFinalPrice();
+
+        if (isset($maxAmount, $minAmount, $finalPrice) && $maxAmount!='0') {
+            if ($finalPrice>=$minAmount && $finalPrice<=$maxAmount) {
+                $isValid = true;
+            }
+        } elseif (isset($minAmount, $finalPrice) && $maxAmount=='0') {
+            if ($finalPrice>=$minAmount) {
+                $isValid = true;
+            }
+        }
+
+        return $isValid;
     }
 }
