@@ -608,6 +608,22 @@ class IndexV2 extends Action
     }
 
     /**
+     * @return mixed
+     */
+    public function getOrigin()
+    {
+        return $this->origin;
+    }
+
+    /**
+     * @param mixed $origin
+     */
+    public function setOrigin($origin)
+    {
+        $this->origin = $origin;
+    }
+
+    /**
      * @return string
      */
     private function getRedirectUrl()

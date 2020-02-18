@@ -21,8 +21,11 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
             var thousandSeparator = '<? echo $block->getThousandSeparator();?>';
             var decimalSeparator = '<? echo $block->getDecimalSeparator();?>';
             var numInstallments = '<? echo $block->getMinInstallments();?>';
+            var validAmount = '<? echo $block->checkValidAmount();?>';
+            var minAmount = '<? echo $block->getMinAmount();?>';
+            var maxAmount = '<? echo $block->getMaxAmount();?>';
 
-            if(moduleEnabled=='1' && simulatorEnabled=='1' && publicKey!='' && allowedCountry=='1') {
+            if(moduleEnabled=='1' && simulatorEnabled=='1' && publicKey!='' && allowedCountry=='1' && validAmount=='1'){
 
                 window.sdk = pgSdk;
 
@@ -137,8 +140,10 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
 
                     if (typeof window.sdk != 'undefined') {
                         window.MGSimulatorId = window.sdk.simulator.init(simulator_options);
-                        moveToPrice();
-                        prependSeparator();
+                        if(window.MGSimulatorId != '') {
+                            moveToPrice();
+                            prependSeparator();
+                        }
                         return false;
                     }
 

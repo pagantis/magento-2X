@@ -53,9 +53,11 @@ class UpgradeData implements UpgradeDataInterface
     {
         $setup->startSetup();
 
-        if (version_compare($context->getVersion(), '7.2.0') < 0) {
+        if (version_compare($context->getVersion(), '8.3.1') < 0) {
             $newConfigs = array(
-                /* INSERT NEW CONFIGS PARAMS HERE:'config'=>'<config>','value'=>'<value>'*/);
+                /* INSERT NEW CONFIGS PARAMS HERE:'config'=>'<value>'*/
+            'PAGANTIS_DISPLAY_MAX_AMOUNT' => 0
+            );
             foreach ($newConfigs as $config => $value) {
                 $setup->getConnection()->insert(self::CONFIG_TABLE, array('config'=>$config, 'value'=>$value));
             }

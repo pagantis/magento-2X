@@ -28,6 +28,7 @@ class InstallData implements InstallDataInterface
        'PAGANTIS_SIMULATOR_CSS_QUANTITY_SELECTOR'=>'default',
        'PAGANTIS_FORM_DISPLAY_TYPE'=>0,
        'PAGANTIS_DISPLAY_MIN_AMOUNT'=>1,
+       'PAGANTIS_DISPLAY_MAX_AMOUNT'=>0,
        'PAGANTIS_URL_OK'=>'',
        'PAGANTIS_URL_KO'=>'',
        'PAGANTIS_TITLE_EXTRA' => 'Pay up to 12 comfortable installments with Pagantis. Completely online and sympathetic request, and the answer is immediate!',

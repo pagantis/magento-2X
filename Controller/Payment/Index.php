@@ -278,12 +278,20 @@ class Index extends Action
             ;
 
             $haystack  = ($this->store->getLocale()!=null) ? $this->store->getLocale() : $this->getResolverCountry();
-            $language = strstr($haystack, '_', true);
+            $langCountry = strtolower(strstr($haystack, '_', true));
+            $allowedCountries = unserialize($this->extraConfig['PAGANTIS_ALLOWED_COUNTRIES']);
+
+            $purchaseCountry =
+                in_array($langCountry, $allowedCountries) ? $langCountry :
+                in_array(strtolower($shippingAddress->getCountry()), $allowedCountries)? $shippingAddress->getCountry():
+                in_array(strtolower($billingAddress->getCountry()), $allowedCountries)? $billingAddress->getCountry() :
+                null;
+
             $orderConfiguration = new Configuration();
             $orderConfiguration
                 ->setChannel($orderChannel)
                 ->setUrls($orderConfigurationUrls)
-                ->setPurchaseCountry($language)
+                ->setPurchaseCountry($purchaseCountry)
             ;
 
 
