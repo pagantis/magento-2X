@@ -16,7 +16,7 @@ define(
     function ($, Component, url, customerData, errorProcessor, fullScreenLoader, quote, pgSDK, selectPaymentMethodAction, checkoutData, totals, priceUtils) {
         'use strict';
 
-        window.checkoutConfig.payment.pagantis.guestEmail = quote.guestEmail;
+        window.checkoutConfig.payment.pagantis.fullQuote = quote;
 
         return Component.extend({
             defaults: {
@@ -72,7 +72,10 @@ define(
 
             placeOrder: function () {
                 var paymentUrl = url.build('pagantis/Payment');
-                $.post(paymentUrl, { email: window.checkoutConfig.payment.pagantis.guestEmail }, 'json')
+
+                var guestEmail = window.checkoutConfig.payment.pagantis.fullQuote.guestEmail;
+
+                $.post(paymentUrl, { email: guestEmail }, 'json')
                     .done(function (response) {
                         window.location.replace(response);
                     })
