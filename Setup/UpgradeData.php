@@ -63,6 +63,22 @@ class UpgradeData implements UpgradeDataInterface
             }
         }
 
+        if (version_compare($context->getVersion(), '8.3.2') < 0) {
+            $newConfigs = array(
+                /* INSERT NEW CONFIGS PARAMS HERE:'config'=>'<value>'*/
+                'PAGANTIS_SIMULATOR_DISPLAY_TYPE_CHECKOUT' => 'sdk.simulator.types.CHECKOUT_PAGE'
+            );
+            foreach ($newConfigs as $config => $value) {
+                $setup->getConnection()->insert(self::CONFIG_TABLE, array('config'=>$config, 'value'=>$value));
+            }
+            $setup->getConnection()->update(
+                self::CONFIG_TABLE,
+                array('value' => 'sdk.simulator.types.PRODUCT_PAGE'),
+                "config='PAGANTIS_SIMULATOR_DISPLAY_TYPE'"
+            );
+
+        }
+
         $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
         $eavSetup->addAttribute(
             \Magento\Catalog\Model\Product::ENTITY,

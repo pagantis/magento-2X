@@ -102,7 +102,7 @@ final class ConfigProvider implements ConfigProviderInterface
                     'thousandSeparator' => $this->extraConfig['PAGANTIS_SIMULATOR_THOUSANDS_SEPARATOR'],
                     'decimalSeparator' => $this->extraConfig['PAGANTIS_SIMULATOR_DECIMAL_SEPARATOR'],
                     'quotesStart' => $this->extraConfig['PAGANTIS_SIMULATOR_START_INSTALLMENTS'],
-                    'type'      => $this->extraConfig['PAGANTIS_SIMULATOR_DISPLAY_TYPE'],
+                    'type'      => $this->extraConfig['PAGANTIS_SIMULATOR_DISPLAY_TYPE_CHECKOUT'],
                     'skin'      => $this->extraConfig['PAGANTIS_SIMULATOR_DISPLAY_SKIN'],
                     'position'  => $positionSelector
                 ],
