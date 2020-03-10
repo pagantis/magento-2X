@@ -70,7 +70,7 @@ services:
 
   db22-dev:
     container_name: db22-dev
-    image: mysql:5.6.24
+    image: mysql:5.6.23
     volumes:
       - db-data:/var/lib/mysql/data
     environment:
@@ -79,7 +79,7 @@ services:
 
   db23-dev:
     container_name: db23-dev
-    image: mysql:5.6.24
+    image: mysql:5.6.23
     volumes:
       - db-data:/var/lib/mysql/data
     environment:
@@ -152,7 +152,7 @@ services:
 
   db22-test:
     container_name: db22-test
-    image: mysql:5.6.24
+    image: mysql:5.6.23
     volumes:
       - db-data:/var/lib/mysql/data
     environment:
@@ -161,7 +161,7 @@ services:
 
   db23-test:
     container_name: db23-test
-    image: mysql:5.6.24
+    image: mysql:5.6.23
     volumes:
       - db-data:/var/lib/mysql/data
     environment:
