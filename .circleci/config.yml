@@ -95,13 +95,6 @@ commands:
           name: Buy Unregistered
           command: |
             vendor/bin/phpunit --group magento-buy-unregistered -d magentoVersion -d ${VERSION}
-  magento_register:
-    description: "Register Test"
-    steps:
-      - run:
-          name: Register Test
-          command: |
-            vendor/bin/phpunit --group magento-register -d magentoVersion -d ${VERSION}
   magento_buy_registered:
     description: "Buy Registered Test"
     steps:
