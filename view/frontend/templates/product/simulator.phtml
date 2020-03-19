@@ -42,20 +42,10 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
                     return simulatorLoaded;
                 }
 
-                function prependSeparator()
-                {
-                    var node = document.querySelector(findPositionSelector());
-                    var textnode = document.createTextNode("<?php echo $block->getSeparator();?>");
-                    var spannode = document.createElement("span");
-                    spannode.style.cssText = 'margin-right:5px; margin-top: 5px';
-                    spannode.appendChild(textnode);
-                    node.prepend(spannode);
-                    return true;
-                }
-
                 function moveToPrice()
                 {
-                    if (simulatorType === 'sdk.simulator.types.SELECTABLE_TEXT_CUSTOM') {
+                    if (simulatorType === 'sdk.simulator.types.SELECTABLE_TEXT_CUSTOM' ||
+                        simulatorType === 'sdk.simulator.types.PRODUCT_PAGE') {
                         var simnode = document.querySelector(findPositionSelector());
 
                         var detailnode = document.getElementsByClassName('product-add-form');
@@ -142,7 +132,6 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
                         window.MGSimulatorId = window.sdk.simulator.init(simulator_options);
                         if(window.MGSimulatorId != '') {
                             moveToPrice();
-                            prependSeparator();
                         }
                         return false;
                     }

@@ -115,11 +115,6 @@ class Simulator extends Template
     protected $decimalSeparator;
 
     /**
-     * @var String
-     */
-    protected $separator;
-
-    /**
      * Simulator constructor.
      *
      * @param Context        $context
@@ -157,7 +152,6 @@ class Simulator extends Template
         $this->promotedMessage = $this->extraConfig['PAGANTIS_PROMOTION_EXTRA'];
         $this->thousandSeparator = $this->extraConfig['PAGANTIS_SIMULATOR_THOUSANDS_SEPARATOR'];
         $this->decimalSeparator = $this->extraConfig['PAGANTIS_SIMULATOR_DECIMAL_SEPARATOR'];
-        $this->separator = __('ó');
 
         $this->promoted = $this->isProductInPromotion();
     }
@@ -437,22 +431,6 @@ class Simulator extends Template
     public function setDecimalSeparator($decimalSeparator)
     {
         $this->decimalSeparator = $decimalSeparator;
-    }
-
-    /**
-     * @return String
-     */
-    public function getSeparator()
-    {
-        return $this->separator;
-    }
-
-    /**
-     * @param String $separator
-     */
-    public function setSeparator($separator)
-    {
-        $this->separator = $separator;
     }
 
     /**

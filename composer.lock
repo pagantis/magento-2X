@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4a510a3fe03bc4ff073ae60d3dae7137",
+    "content-hash": "f13fc54ff3c513460328c448268ba638",
     "packages": [
         {
             "name": "nategood/httpful",
@@ -3250,16 +3250,16 @@
         },
         {
             "name": "pagantis/selenium-form-utils",
-            "version": "v3.0.2",
+            "version": "v3.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pagantis/selenium-form-utils.git",
-                "reference": "a2b3cd9c3d7d92998ea7603eaa7c9359b518d889"
+                "reference": "d549b0a1ac18c4069c7e4aa6492b12ad68cb8a01"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pagantis/selenium-form-utils/zipball/a2b3cd9c3d7d92998ea7603eaa7c9359b518d889",
-                "reference": "a2b3cd9c3d7d92998ea7603eaa7c9359b518d889",
+                "url": "https://api.github.com/repos/pagantis/selenium-form-utils/zipball/d549b0a1ac18c4069c7e4aa6492b12ad68cb8a01",
+                "reference": "d549b0a1ac18c4069c7e4aa6492b12ad68cb8a01",
                 "shasum": ""
             },
             "require": {
@@ -3287,7 +3287,7 @@
                 }
             ],
             "description": "Pagantis PHP Library. Selenium helper to end a test purchase. Helper to test the payment validation and redirection",
-            "time": "2019-10-20T19:44:26+00:00"
+            "time": "2020-03-16T12:19:59+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
