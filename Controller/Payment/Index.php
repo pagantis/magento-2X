@@ -408,14 +408,14 @@ class Index extends Action
      */
     private function getMetadata()
     {
-        $curlInfo = curl_version();
-        $curlVersion = $curlInfo['version'];
         $magentoVersion = $this->productMetadataInterface->getVersion();
         $moduleInfo = $this->moduleList->getOne('Pagantis_Pagantis');
-        return array(  'magento' => $magentoVersion,
-                       'pagantis' => $moduleInfo['setup_version'],
-                       'php' => phpversion(),
-                       'curl' => $curlVersion);
+        return array(
+            'pg_module' => 'magento2x',
+            'pg_version' => $moduleInfo['setup_version'],
+            'ec_module' => 'magento',
+            'ec_version' => $magentoVersion
+        );
     }
 
     /**
