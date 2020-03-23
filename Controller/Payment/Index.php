@@ -257,7 +257,7 @@ class Index extends Action
             );
 
             $okUrlRoute = 'pagantis/notify/index';
-            if (version_compare($metadata['magento'], '2.3.0') >= 0) {
+            if (version_compare($metadata['pg_version'], '2.3.0') >= 0) {
                 $okUrlRoute = 'pagantis/notify/indexV2';
             }
 
@@ -408,14 +408,14 @@ class Index extends Action
      */
     private function getMetadata()
     {
-        $curlInfo = curl_version();
-        $curlVersion = $curlInfo['version'];
         $magentoVersion = $this->productMetadataInterface->getVersion();
         $moduleInfo = $this->moduleList->getOne('Pagantis_Pagantis');
-        return array(  'magento' => $magentoVersion,
-                       'pagantis' => $moduleInfo['setup_version'],
-                       'php' => phpversion(),
-                       'curl' => $curlVersion);
+        return array(
+            'pg_module' => 'magento2x',
+            'pg_version' => $moduleInfo['setup_version'],
+            'ec_module' => 'magento',
+            'ec_version' => $magentoVersion
+        );
     }
 
     /**
