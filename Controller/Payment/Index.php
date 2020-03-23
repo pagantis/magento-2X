@@ -257,7 +257,7 @@ class Index extends Action
             );
 
             $okUrlRoute = 'pagantis/notify/index';
-            if (version_compare($metadata['magento'], '2.3.0') >= 0) {
+            if (version_compare($metadata['pg_version'], '2.3.0') >= 0) {
                 $okUrlRoute = 'pagantis/notify/indexV2';
             }
 
