@@ -19,7 +19,7 @@ class InstallData implements InstallDataInterface
        'PAGANTIS_TITLE'=>'Pago en cuotas',
        'PAGANTIS_SIMULATOR_DISPLAY_TYPE'=>'sdk.simulator.types.PRODUCT_PAGE',
        'PAGANTIS_SIMULATOR_DISPLAY_TYPE_CHECKOUT'=>'sdk.simulator.types.CHECKOUT_PAGE',
-       'PAGANTIS_SIMULATOR_DISPLAY_SKIN'=>'sdk.simulator.skins.BLUE',
+       'PAGANTIS_SIMULATOR_DISPLAY_SKIN'=>'sdk.simulator.skins.GREEN',
        'PAGANTIS_SIMULATOR_DISPLAY_POSITION'=>'hookDisplayProductButtons',
        'PAGANTIS_SIMULATOR_START_INSTALLMENTS'=>3,
        'PAGANTIS_SIMULATOR_MAX_INSTALLMENTS'=>12,

@@ -7,13 +7,13 @@ define(
         'Magento_Checkout/js/model/error-processor',
         'Magento_Checkout/js/model/full-screen-loader',
         'Magento_Checkout/js/model/quote',
-        '//cdn.pagantis.com/js/pg-v2/sdk.js',
+        '//cdn.pagantis.com/js/encuotas-v2/sdk.js',
         'Magento_Checkout/js/action/select-payment-method',
         'Magento_Checkout/js/checkout-data',
         'Magento_Checkout/js/model/totals',
         'Magento_Catalog/js/price-utils'
     ],
-    function ($, Component, url, customerData, errorProcessor, fullScreenLoader, quote, pgSDK, selectPaymentMethodAction, checkoutData, totals, priceUtils) {
+    function ($, Component, url, customerData, errorProcessor, fullScreenLoader, quote, encuotasSDK, selectPaymentMethodAction, checkoutData, totals, priceUtils) {
         'use strict';
 
         window.checkoutConfig.payment.pagantis.fullQuote = quote;
@@ -32,7 +32,7 @@ define(
                         window.checkoutConfig.payment.pagantis.secretKey!='' &&
                         window.checkoutConfig.payment.pagantis.product_simulator=='1') {
                         var locale = window.checkoutConfig.payment.pagantis.locale;
-                        var sdk = pgSDK;
+                        var sdk = encuotasSDK;
 
                         var simulator_options = {
                             numInstalments : window.checkoutConfig.payment.pagantis.quotesStart,
@@ -74,7 +74,7 @@ define(
                 var paymentUrl = url.build('pagantis/Payment');
 
                 var guestEmail = window.checkoutConfig.payment.pagantis.fullQuote.guestEmail;
-
+console.log(guestEmail);
                 $.post(paymentUrl, { email: guestEmail }, 'json')
                     .done(function (response) {
                         window.location.replace(response);
