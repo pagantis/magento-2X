@@ -30,7 +30,7 @@
                 <field id="product_simulator" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Simulator</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Use installment simulator in cheeckout page (Disabled for product for Magento V2.3)</comment>
+                    <comment>Use installment simulator in checkout page (Disabled for product for Magento V2.3)</comment>
                 </field>
             </group>
         </section>
