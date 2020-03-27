@@ -3,19 +3,19 @@
     <system>
         <section id="payment">
             <group id="pagantis" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Pagantis</label>
+                <label>Encuotas</label>
                 <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="backoffice_button" type="button" translate="button_label" sortOrder="2" showInDefault="1" showInWebsite="1">
-                    <attribute type="button_label">Go to Pagantis</attribute>
+                    <attribute type="button_label">Go to backoffice</attribute>
                     <attribute type="button_url">
-                        <![CDATA[https://bo.pagamastarde.com]]>
+                        <![CDATA[https://bo.pagantis.com]]>
                     </attribute>
                     <attribute type="button_credentials_label">Get Credentials</attribute>
                     <attribute type="button_credentials_url">
-                        <![CDATA[https://bo.pagamastarde.com/shop]]>
+                        <![CDATA[https://bo.pagantis.com/shop]]>
                     </attribute>
                     <frontend_model>Pagantis\Pagantis\Model\Adminhtml\Source\ConfigButtonLinkType</frontend_model>
                 </field>
