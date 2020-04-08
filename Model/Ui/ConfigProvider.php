@@ -11,7 +11,7 @@ use Magento\Framework\Locale\Resolver;
  * Class ConfigProvider
  * @package Pagantis\Pagantis\Model\Ui
  */
-final class ConfigProvider implements ConfigProviderInterface
+class ConfigProvider implements ConfigProviderInterface
 {
     const CODE = 'pagantis';
 
