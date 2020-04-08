@@ -74,7 +74,7 @@ define(
                 var paymentUrl = url.build('pagantis/Payment');
 
                 var guestEmail = window.checkoutConfig.payment.pagantis.fullQuote.guestEmail;
-console.log(guestEmail);
+
                 $.post(paymentUrl, { email: guestEmail }, 'json')
                     .done(function (response) {
                         window.location.replace(response);
