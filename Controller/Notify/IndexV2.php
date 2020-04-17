@@ -517,6 +517,11 @@ class IndexV2 extends Action
             /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
             $dbConnection = $this->dbObject->getConnection();
             $tableName    = $this->dbObject->getTableName(self::ORDERS_TABLE);
+
+            if ($this->pagantisOrderId == '') {
+                $this->getPagantisOrderId();
+            }
+
             $pagantisOrderId   = $this->pagantisOrderId;
             $query        = sprintf(
                 "select mg_order_id from %s where id='%s' and order_id='%s'",
@@ -630,6 +635,11 @@ class IndexV2 extends Action
     {
         //$returnUrl = 'checkout/#payment';
         $returnUrl = $this->_url->getUrl('checkout', ['_fragment' => 'payment']);
+
+        if ($this->pagantisOrderId == '') {
+            $this->getPagantisOrderId();
+        }
+
         if ($this->magentoOrderId!='') {
             /** @var Order $this->magentoOrder */
             $this->magentoOrder = $this->orderRepositoryInterface->get($this->magentoOrderId);
