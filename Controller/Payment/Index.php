@@ -252,14 +252,14 @@ class Index extends Action
             $orderConfigurationUrls = new Urls();
             $quoteId = $quote->getId();
 
-            $okUrlRoute = 'pagantis/notify/index';
+            $uriRoute = 'pagantis/notify/index';
             if (version_compare($metadata['pg_version'], '2.3.0') >= 0) {
                 $uriRoute = 'pagantis/notify/indexV2';
             }
 
             $okUrlUser = $this->_url->getUrl($uriRoute, ['_query' => ['quoteId'=>$quoteId,'origin'=>'redirect']]);
             $okUrlNot  = $this->_url->getUrl($uriRoute, ['_query' => ['quoteId'=>$quoteId,'origin'=>'notification']]);
-            $okUrl     = $this->_url->getUrl($uriRoute, ['_query' => ['quoteId'=>$quoteId]]);
+            $okUrl     = $this->_url->getUrl($uriRoute, ['_query' => ['quoteId'=>$quoteId,'origin'=>'redirect']]);
 
             $orderConfigurationUrls
                 ->setCancel($cancelUrl)
