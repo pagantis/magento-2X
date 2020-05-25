@@ -648,6 +648,7 @@ class IndexV2 extends Action
 
     /**
      * @return string
+     * @throws UnknownException
      */
     private function getRedirectUrl()
     {

@@ -527,7 +527,7 @@ class Index extends Action
             }
             $pagantisOrderId   = $this->pagantisOrderId;
 
-            $query        = "select mg_order_id from $tableName where id='$this->quoteId' and order_id='$pagantisOrderId'";
+            $query = "select mg_order_id from $tableName where id='$this->quoteId' and order_id='$pagantisOrderId'";
             $queryResult  = $dbConnection->fetchRow($query);
             $this->magentoOrderId = $queryResult['mg_order_id'];
         } catch (\Exception $e) {
