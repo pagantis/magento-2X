@@ -174,7 +174,7 @@ class IndexV2 extends Action
 
             if ($_SERVER['REQUEST_METHOD'] == 'GET' && $_GET['origin'] == 'redirect') {
                 $redirectMessage = sprintf(
-                    "[%s][%s]",
+                    "[origin=%s][quoteId=%s]",
                     $_GET['origin'],
                     $this->getRequest()->getParam('quoteId')
                 );
@@ -222,7 +222,7 @@ class IndexV2 extends Action
         } else {
             $returnUrl = $this->getRedirectUrl();
             $returnMessage = sprintf(
-                "[%s][%s][%s][%s]",
+                "[origin=%s][quoteId=%s][orderId=%s][returnUrl=%s]",
                 $_GET['origin'],
                 $this->quoteId,
                 $this->magentoOrderId,
