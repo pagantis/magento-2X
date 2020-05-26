@@ -157,6 +157,16 @@ class Index extends Action
                 $returnUrl = $this->_url->getUrl('checkout', ['_fragment' => 'payment']);
                 $this->_redirect($returnUrl);
             }
+
+            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $_GET['origin'] == 'redirect') {
+                $redirectMessage = sprintf(
+                    "[origin=%s][quoteId=%s]",
+                    $_GET['origin'],
+                    $this->getRequest()->getParam('quoteId')
+                );
+                $this->insertLog(null, $redirectMessage);
+            }
+
             $this->checkConcurrency();
             $this->getMerchantOrder();
             $this->getPagantisOrderId();
@@ -197,6 +207,14 @@ class Index extends Action
             $jsonResponse->printResponse();
         } else {
             $returnUrl = $this->getRedirectUrl();
+            $returnMessage = sprintf(
+                "[origin=%s][quoteId=%s][orderId=%s][returnUrl=%s]",
+                $_GET['origin'],
+                $this->quoteId,
+                $this->magentoOrderId,
+                $returnUrl
+            );
+            $this->insertLog(null, $returnMessage);
             $this->_redirect($returnUrl);
         }
     }
@@ -509,7 +527,7 @@ class Index extends Action
             }
             $pagantisOrderId   = $this->pagantisOrderId;
 
-            $query        = "select mg_order_id from $tableName where id='$this->quoteId' and order_id='$pagantisOrderId'";
+            $query = "select mg_order_id from $tableName where id='$this->quoteId' and order_id='$pagantisOrderId'";
             $queryResult  = $dbConnection->fetchRow($query);
             $this->magentoOrderId = $queryResult['mg_order_id'];
         } catch (\Exception $e) {
@@ -612,6 +630,7 @@ class Index extends Action
 
     /**
      * @return string
+     * @throws UnknownException
      */
     private function getRedirectUrl()
     {
@@ -657,18 +676,25 @@ class Index extends Action
     }
 
     /**
-     * @param $exceptionMessage
+     * @param null $exceptionMessage
+     * @param null $logMessage
      *
      * @throws UnknownException
      */
-    private function insertLog($exceptionMessage)
+    private function insertLog($exceptionMessage = null, $logMessage = null)
     {
         try {
+            $this->checkDbLogTable();
+            $logEntryJson = '';
             if ($exceptionMessage instanceof \Exception) {
-                $this->checkDbLogTable();
-                $logEntry = new LogEntry();
+                $logEntry     = new LogEntry();
                 $logEntryJson = $logEntry->error($exceptionMessage)->toJson();
+            } elseif ($logMessage != null) {
+                $logEntry     = new LogEntry();
+                $logEntryJson = $logEntry->info($logMessage)->toJson();
+            }
 
+            if ($logEntryJson != '') {
                 /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
                 $dbConnection = $this->dbObject->getConnection();
                 $tableName    = $this->dbObject->getTableName(self::LOGS_TABLE);
