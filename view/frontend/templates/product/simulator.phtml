@@ -111,7 +111,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
                         simulator_options = {
                             numInstalments: numInstallments,
                             publicKey: publicKey,
-                            type: <?php echo $block->getSimulatorType();?>,
+                            type: eval(simulatorType),
                             selector: positionSelector,
                             itemQuantitySelector: quantitySelector,
                             itemAmountSelector: priceSelector,
