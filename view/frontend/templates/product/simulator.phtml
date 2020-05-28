@@ -113,7 +113,6 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
                             publicKey: publicKey,
                             type: eval(simulatorType),
                             selector: positionSelector,
-                            itemQuantitySelector: quantitySelector,
                             itemAmountSelector: priceSelector,
                             locale: locale,
                             country: country,
@@ -122,6 +121,11 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
                                 decimalSeparator: decimalSeparator
                             }
                         }
+                        
+                        if(document.querySelector(quantitySelector) == null)
+                        { simulator_options.itemQuantity = 1; }
+                        else
+                        { simulator_options.itemQuantitySelector = quantitySelector; }
                     };
 
                     if (promotedProduct == 'true') {
