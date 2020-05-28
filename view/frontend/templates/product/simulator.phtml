@@ -10,20 +10,20 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
             'https://cdn.pagantis.com/js/pg-v2/sdk.js'
         ], function ($, pgSdk)
         {
-            var moduleEnabled = '<? echo $block->isEnabled();?>';
-            var simulatorEnabled = '<? echo $block->getProductSimulator();?>';
-            var publicKey = '<? echo $block->getPublicKey();?>';
-            var locale = '<? echo $block->getLocale();?>';
-            var country = '<? echo $block->getCountry();?>';
-            var allowedCountry = '<? echo $block->getAllowedCountry($block->getLocale());?>';
-            var promotedProduct = '<? echo $block->getPromoted();?>';
-            var simulatorType = '<? echo $block->getSimulatorType();?>';
-            var thousandSeparator = '<? echo $block->getThousandSeparator();?>';
-            var decimalSeparator = '<? echo $block->getDecimalSeparator();?>';
-            var numInstallments = '<? echo $block->getMinInstallments();?>';
-            var validAmount = '<? echo $block->checkValidAmount();?>';
-            var minAmount = '<? echo $block->getMinAmount();?>';
-            var maxAmount = '<? echo $block->getMaxAmount();?>';
+            var moduleEnabled = '<?php echo $block->isEnabled();?>';
+            var simulatorEnabled = '<?php echo $block->getProductSimulator();?>';
+            var publicKey = '<?php echo $block->getPublicKey();?>';
+            var locale = '<?php echo $block->getLocale();?>';
+            var country = '<?php echo $block->getCountry();?>';
+            var allowedCountry = '<?php echo $block->getAllowedCountry($block->getLocale());?>';
+            var promotedProduct = '<?php echo $block->getPromoted();?>';
+            var simulatorType = '<?php echo $block->getSimulatorType();?>';
+            var thousandSeparator = '<?php echo $block->getThousandSeparator();?>';
+            var decimalSeparator = '<?php echo $block->getDecimalSeparator();?>';
+            var numInstallments = '<?php echo $block->getMinInstallments();?>';
+            var validAmount = '<?php echo $block->checkValidAmount();?>';
+            var minAmount = '<?php echo $block->getMinAmount();?>';
+            var maxAmount = '<?php echo $block->getMaxAmount();?>';
 
             if(moduleEnabled=='1' && simulatorEnabled=='1' && publicKey!='' && allowedCountry=='1' && validAmount=='1'){
 
@@ -66,7 +66,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
 
                 function findPriceSelector()
                 {
-                    var priceSelector = '<? echo $block->getPriceSelector();?>';
+                    var priceSelector = '<?php echo $block->getPriceSelector();?>';
                     if (priceSelector === 'default' || priceSelector === '') {
                         priceSelector = 'div.price-final_price span.price-wrapper span.price';
                     }
@@ -76,7 +76,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
 
                 function findQuantitySelector()
                 {
-                    var quantitySelector = '<? echo $block->getQuantitySelector();?>';
+                    var quantitySelector = '<?php echo $block->getQuantitySelector();?>';
                     if (quantitySelector === 'default' || quantitySelector === '') {
                         quantitySelector = 'div.fieldset div.qty div.control input.qty';
                     }
@@ -85,7 +85,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
                 }
 
                 function findPositionSelector() {
-                    var positionSelector = '<? echo $block->getPositionSelector();?>';
+                    var positionSelector = '<?php echo $block->getPositionSelector();?>';
                     if (positionSelector === 'default' || positionSelector === '') {
                         positionSelector = '.pagantisSimulator';
                     }
@@ -111,7 +111,7 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
                         simulator_options = {
                             numInstalments: numInstallments,
                             publicKey: publicKey,
-                            type: <? echo $block->getSimulatorType();?>,
+                            type: <?php echo $block->getSimulatorType();?>,
                             selector: positionSelector,
                             itemQuantitySelector: quantitySelector,
                             itemAmountSelector: priceSelector,
