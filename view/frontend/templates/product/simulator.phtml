@@ -122,10 +122,11 @@ if($block->isEnabled()==='1' && $block->getProductSimulator()==='1' && $block->g
                             }
                         }
                         
-                        if(document.querySelector(quantitySelector) == null)
-                        { simulator_options.itemQuantity = 1; }
-                        else
+                        var qtyDiv = document.querySelectorAll(quantitySelector);
+                        if(qtyDiv.length > 0)
                         { simulator_options.itemQuantitySelector = quantitySelector; }
+                        else
+                        { simulator_options.itemQuantity = 1; }
                     };
 
                     if (promotedProduct == 'true') {
