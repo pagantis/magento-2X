@@ -13,5 +13,10 @@
                    template="Pagantis_Pagantis::product/simulator.phtml"
                    after="product.info.addtocart"/>
         </referenceContainer>
+        <container name="product.info.addtocart">
+            <block class="Pagantis\Pagantis\Block\Product\Simulator"
+                   name="product.view.simulator"
+                   template="Pagantis_Pagantis::product/simulator.phtml"/>
+        </container>
     </body>
 </page>
