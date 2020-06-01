@@ -13,10 +13,11 @@
                    template="Pagantis_Pagantis::product/simulator.phtml"
                    after="product.info.addtocart" />
         </referenceBlock>
-        <referenceBlock name="product.info.addtocart">
+        <referenceBlock name="product.info.extrahint">
             <block class="Pagantis\Pagantis\Block\Product\Simulator"
                    name="product.view.simulator"
-                   template="Pagantis_Pagantis::product/simulator.phtml">
+                   template="Pagantis_Pagantis::product/simulator.phtml"
+                   after="-" >
             </block>
         </referenceBlock>
     </body>
