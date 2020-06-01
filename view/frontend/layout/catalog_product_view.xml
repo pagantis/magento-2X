@@ -3,19 +3,19 @@
         <referenceContainer name="product.info.addtocart">
             <block class="Pagantis\Pagantis\Block\Product\Simulator"
                    name="product.view.simulator"
-                   as="product_simulator"
-                   template="Pagantis_Pagantis::product/simulator.phtml" />
+                   template="Pagantis_Pagantis::product/simulator.phtml"
+                   after="-" />
         </referenceContainer>
         <referenceBlock name="product.info.main">
             <block class="Pagantis\Pagantis\Block\Product\Simulator"
-                   name="extra"
+                   name="product.view.simulator2"
                    template="Pagantis_Pagantis::product/simulator.phtml"
                    after="product.info.addtocart" />
         </referenceBlock>
-        <!--container name="product.info.addtocart">
+        <referenceBlock name="product.info.addtocart">
             <block class="Pagantis\Pagantis\Block\Product\Simulator"
-                   name="product.view.simulator"
+                   name="product.view.simulator3"
                    template="Pagantis_Pagantis::product/simulator.phtml"/>
-        </container-->
+        </referenceBlock>
     </body>
 </page>
