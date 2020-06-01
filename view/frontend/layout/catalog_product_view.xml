@@ -7,15 +7,15 @@
                    template="Pagantis_Pagantis::product/simulator.phtml"
                    after="-" />
         </referenceContainer>
-        <referenceBlock name="product.info.main">
+        <referenceContainer name="product.info.main">
             <block class="Pagantis\Pagantis\Block\Product\Simulator"
-                   name="product.view.simulator2"
+                   name="product.view.simulator"
                    template="Pagantis_Pagantis::product/simulator.phtml"
                    after="product.info.addtocart" />
-        </referenceBlock>
+        </referenceContainer>
         <referenceBlock name="product.info.addtocart">
             <block class="Pagantis\Pagantis\Block\Product\Simulator"
-                   name="product.view.simulator3"
+                   name="product.view.simulator"
                    template="Pagantis_Pagantis::product/simulator.phtml">
             </block>
         </referenceBlock>
