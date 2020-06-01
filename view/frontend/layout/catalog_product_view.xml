@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <page layout="1column" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
-        <referenceContainer name="product.info.addtocart">
+        <referenceBlock name="product.info.addtocart">
             <block class="Pagantis\Pagantis\Block\Product\Simulator"
                    name="product.view.simulator"
                    template="Pagantis_Pagantis::product/simulator.phtml"
                    after="-" />
-        </referenceContainer>
-        <referenceContainer name="product.info.main">
+        </referenceBlock>
+        <referenceBlock name="product.info.main">
             <block class="Pagantis\Pagantis\Block\Product\Simulator"
                    name="product.view.simulator"
                    template="Pagantis_Pagantis::product/simulator.phtml"
                    after="product.info.addtocart" />
-        </referenceContainer>
+        </referenceBlock>
         <referenceBlock name="product.info.addtocart">
             <block class="Pagantis\Pagantis\Block\Product\Simulator"
                    name="product.view.simulator"
