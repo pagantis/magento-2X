@@ -1,24 +1,12 @@
 <?xml version="1.0"?>
-<page layout="1column" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
-        <referenceBlock name="product.info.addtocart">
+        <container name="product.info.main" htmlTag="div" htmlClass="product-info-main">
             <block class="Pagantis\Pagantis\Block\Product\Simulator"
                    name="product.view.simulator"
                    template="Pagantis_Pagantis::product/simulator.phtml"
-                   after="-" />
-        </referenceBlock>
-        <referenceBlock name="product.info.main">
-            <block class="Pagantis\Pagantis\Block\Product\Simulator"
-                   name="product.view.simulator"
-                   template="Pagantis_Pagantis::product/simulator.phtml"
-                   after="product.info.addtocart" />
-        </referenceBlock>
-        <referenceBlock name="product.info.extrahint">
-            <block class="Pagantis\Pagantis\Block\Product\Simulator"
-                   name="product.view.simulator"
-                   template="Pagantis_Pagantis::product/simulator.phtml"
-                   after="-" >
+                   after="product.info.price">
             </block>
-        </referenceBlock>
+        </container>
     </body>
 </page>
