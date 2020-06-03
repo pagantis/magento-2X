@@ -222,10 +222,11 @@ class IndexV2 extends Action
         } else {
             $returnUrl = $this->getRedirectUrl();
             $returnMessage = sprintf(
-                "[origin=%s][quoteId=%s][orderId=%s][returnUrl=%s]",
+                "[origin=%s][quoteId=%s][magentoOrderId=%s][pagantisOrderId=%s][returnUrl=%s]",
                 $_GET['origin'],
                 $this->quoteId,
                 $this->magentoOrderId,
+                $this->pagantisOrderId,
                 $returnUrl
             );
             $this->insertLog(null, $returnMessage);
@@ -239,6 +240,7 @@ class IndexV2 extends Action
 
     /**
      * @throws ConcurrencyException
+     * @throws MerchantOrderNotFoundException
      * @throws QuoteNotFoundException
      * @throws UnknownException
      */
@@ -464,6 +466,7 @@ class IndexV2 extends Action
 
     /**
      * @throws ConcurrencyException
+     * @throws MerchantOrderNotFoundException
      * @throws UnknownException
      */
     private function blockConcurrency()
@@ -490,11 +493,16 @@ class IndexV2 extends Action
                     sleep($expirationSec + 1);
                 }
 
+                $this->getMerchantOrder();
+                $this->getPagantisOrderId();
+
                 $logMessage  = sprintf(
-                    "User waiting %s seconds, default seconds %s, bd time to expire %s seconds",
+                    "User waiting %s seconds, default seconds %s, bd time to expire %s seconds[quoteId=%s][origin=%s]",
                     $expirationSec,
                     self::CONCURRENCY_TIMEOUT,
-                    $restSeconds
+                    $restSeconds,
+                    $this->quoteId,
+                    $_GET['origin']
                 );
                 throw new UnknownException($logMessage);
             }
