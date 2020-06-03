@@ -2,7 +2,7 @@
   "name": "pagantis/magento-2x",
   "description": "Pagantis Magento 2 module",
   "type": "magento2-module",
-  "version": "8.3.6",
+  "version": "8.3.7",
   "keywords": [
     "api",
     "rest",
