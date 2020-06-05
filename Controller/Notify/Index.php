@@ -143,7 +143,9 @@ class Index extends Action
         $this->orderRepositoryInterface = $orderRepositoryInterface;
         $this->dbObject = $dbObject;
         $this->checkoutSession = $checkoutSession;
-        $this->origin = ($_SERVER['REQUEST_METHOD'] == 'POST') ? 'Notification' : 'Order';
+        $this->origin = (
+            $_SERVER['REQUEST_METHOD']=='POST' || $this->getRequest()->getParam('origin')=='notification'
+        ) ? 'Notification' : 'Order';
     }
 
     /**
@@ -152,16 +154,17 @@ class Index extends Action
      */
     public function execute()
     {
+        $thrownException = false;
         try {
-            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $_GET['origin'] == 'notification') {
-                $returnUrl = $this->_url->getUrl('checkout', ['_fragment' => 'payment']);
-                $this->_redirect($returnUrl);
+            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->getOrigin() == 'Notification') {
+                echo 'OK';
+                die;
             }
 
-            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $_GET['origin'] == 'redirect') {
+            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->getOrigin() == 'Order') {
                 $redirectMessage = sprintf(
                     "[origin=%s][quoteId=%s]",
-                    $_GET['origin'],
+                    $this->getOrigin(),
                     $this->getRequest()->getParam('quoteId')
                 );
                 $this->insertLog(null, $redirectMessage);
@@ -176,16 +179,16 @@ class Index extends Action
             $this->validateAmount();
             $this->processMerchantOrder();
         } catch (\Exception $exception) {
+            $thrownException = true;
             $jsonResponse = new JsonExceptionResponse();
             $jsonResponse->setMerchantOrderId($this->magentoOrderId);
             $jsonResponse->setpagantisOrderId($this->pagantisOrderId);
             $jsonResponse->setException($exception);
-            $response = $jsonResponse->toJson();
             $this->insertLog($exception);
         }
 
         try {
-            if (!isset($response)) {
+            if (!$thrownException) {
                 $this->confirmpagantisOrder();
                 $jsonResponse = new JsonSuccessResponse();
                 $jsonResponse->setMerchantOrderId($this->magentoOrderId);
@@ -203,13 +206,13 @@ class Index extends Action
 
         $this->unblockConcurrency(true);
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if ($this->getOrigin()=='Notification') {
             $jsonResponse->printResponse();
         } else {
             $returnUrl = $this->getRedirectUrl();
             $returnMessage = sprintf(
                 "[origin=%s][quoteId=%s][magentoOrderId=%s][pagantisOrderId=%s][returnUrl=%s]",
-                $_GET['origin'],
+                $this->getOrigin(),
                 $this->quoteId,
                 $this->magentoOrderId,
                 $this->pagantisOrderId,
@@ -226,7 +229,6 @@ class Index extends Action
 
     /**
      * @throws ConcurrencyException
-     * @throws MerchantOrderNotFoundException
      * @throws QuoteNotFoundException
      * @throws UnknownException
      */
@@ -452,7 +454,6 @@ class Index extends Action
 
     /**
      * @throws ConcurrencyException
-     * @throws MerchantOrderNotFoundException
      * @throws UnknownException
      */
     private function blockConcurrency()
@@ -488,7 +489,7 @@ class Index extends Action
                     self::CONCURRENCY_TIMEOUT,
                     $restSeconds,
                     $this->quoteId,
-                    $_GET['origin']
+                    $this->getOrigin()
                 );
                 throw new UnknownException($logMessage);
             }
@@ -647,6 +648,10 @@ class Index extends Action
 
         if ($this->pagantisOrderId == '') {
             $this->getPagantisOrderId();
+        }
+
+        if ($this->magentoOrderId == '') {
+            $this->getMagentoOrderId();
         }
 
         if ($this->magentoOrderId!='') {
