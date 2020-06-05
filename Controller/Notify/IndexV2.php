@@ -493,8 +493,8 @@ class IndexV2 extends Action
                     sleep($expirationSec + 1);
                 }
 
-                $this->getMerchantOrder();
                 $this->getPagantisOrderId();
+                $this->getMagentoOrderId();
 
                 $logMessage  = sprintf(
                     "User waiting %s seconds, default seconds %s, bd time to expire %s seconds[quoteId=%s][origin=%s]",
