@@ -168,8 +168,8 @@ class IndexV2 extends Action
     {
         try {
             if ($_SERVER['REQUEST_METHOD'] == 'GET' && $_GET['origin'] == 'notification') {
-                $returnUrl = $this->_url->getUrl('checkout', ['_fragment' => 'payment']);
-                $this->_redirect($returnUrl);
+                echo 'OK';
+                die;
             }
 
             if ($_SERVER['REQUEST_METHOD'] == 'GET' && $_GET['origin'] == 'redirect') {
@@ -217,7 +217,7 @@ class IndexV2 extends Action
 
         $this->unblockConcurrency(true);
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' || $this->getOrigin()=='Notification') {
             $jsonResponse->printResponse();
         } else {
             $returnUrl = $this->getRedirectUrl();
@@ -240,7 +240,6 @@ class IndexV2 extends Action
 
     /**
      * @throws ConcurrencyException
-     * @throws MerchantOrderNotFoundException
      * @throws QuoteNotFoundException
      * @throws UnknownException
      */
@@ -466,7 +465,6 @@ class IndexV2 extends Action
 
     /**
      * @throws ConcurrencyException
-     * @throws MerchantOrderNotFoundException
      * @throws UnknownException
      */
     private function blockConcurrency()
