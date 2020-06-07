@@ -52,12 +52,6 @@ class IndexV2 extends Action
     /** Seconds to expire a locked request */
     const CONCURRENCY_TIMEOUT = 10;
 
-    /**
-     * EXCEPTION RESPONSES
-     */
-    const CPO_ERR_MSG = 'Order not confirmed';
-    const CPO_OK_MSG = 'Order confirmed';
-
     /** @var QuoteManagement */
     protected $quoteManagement;
 
@@ -366,7 +360,7 @@ class IndexV2 extends Action
         try {
             $this->pagantisOrder = $this->orderClient->confirmOrder($this->pagantisOrderId);
         } catch (\Exception $e) {
-            throw new UnknownException($e->getMessage());
+            throw new UnknownException(sprintf("[%s]%s", $this->getOrigin(), $e->getMessage()));
         }
 
         $jsonResponse = new JsonSuccessResponse();
