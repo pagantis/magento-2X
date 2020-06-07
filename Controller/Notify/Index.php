@@ -145,7 +145,7 @@ class Index extends Action
         $this->checkoutSession = $checkoutSession;
         $this->origin = (
             $_SERVER['REQUEST_METHOD']=='POST' || $this->getRequest()->getParam('origin')=='notification'
-        ) ? 'Notification' : 'Order';
+                        ) ? 'Notification' : 'Order';
     }
 
     /**
@@ -156,12 +156,12 @@ class Index extends Action
     {
         $thrownException = false;
         try {
-            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->getOrigin() == 'Notification') {
+            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->isNotification()) {
                 echo 'OK';
                 die;
             }
 
-            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->getOrigin() == 'Order') {
+            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->isRedirect()) {
                 $redirectMessage = sprintf(
                     "[origin=%s][quoteId=%s]",
                     $this->getOrigin(),
@@ -206,7 +206,7 @@ class Index extends Action
 
         $this->unblockConcurrency(true);
 
-        if ($this->getOrigin()=='Notification') {
+        if ($this->isNotification()) {
             $jsonResponse->printResponse();
         } else {
             $returnUrl = $this->getRedirectUrl();
@@ -464,7 +464,7 @@ class Index extends Action
         $query = "SELECT timestamp FROM $tableName where id='$this->quoteId'";
         $resultsSelect = $dbConnection->fetchRow($query);
         if (isset($resultsSelect['timestamp'])) {
-            if ($this->getOrigin() == 'Notification') {
+            if ($this->isNotification()) {
                 throw new ConcurrencyException();
             } else {
                 $query = sprintf(
@@ -536,7 +536,12 @@ class Index extends Action
             }
             $pagantisOrderId   = $this->pagantisOrderId;
 
-            $query = "select mg_order_id from $tableName where id='$this->quoteId' and order_id='$pagantisOrderId'";
+            $query        = sprintf(
+                "select mg_order_id from %s where id='%s' and order_id='%s'",
+                $tableName,
+                $this->quoteId,
+                $pagantisOrderId
+            );
             $queryResult  = $dbConnection->fetchRow($query);
             $this->magentoOrderId = $queryResult['mg_order_id'];
         } catch (\Exception $e) {
@@ -716,5 +721,21 @@ class Index extends Action
         } catch (\Exception $e) {
             throw new UnknownException($e->getMessage());
         }
+    }
+
+    /**
+     * @return bool
+     */
+    private function isNotification()
+    {
+        return ($this->getOrigin() == 'Notification');
+    }
+
+    /**
+     * @return bool
+     */
+    private function isRedirect()
+    {
+        return ($this->getOrigin() == 'Order');
     }
 }

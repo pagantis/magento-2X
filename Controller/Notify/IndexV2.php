@@ -170,12 +170,12 @@ class IndexV2 extends Action
     {
         $thrownException = false;
         try {
-            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->getOrigin() == 'Notification') {
+            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->isNotification()) {
                 echo 'OK';
                 die;
             }
 
-            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->getOrigin() == 'Order') {
+            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->isRedirect()) {
                 $redirectMessage = sprintf(
                     "[origin=%s][quoteId=%s]",
                     $this->getOrigin(),
@@ -220,7 +220,7 @@ class IndexV2 extends Action
 
         $this->unblockConcurrency(true);
 
-        if ($this->getOrigin()=='Notification') {
+        if ($this->isNotification()) {
             $jsonResponse->printResponse();
         } else {
             $returnUrl = $this->getRedirectUrl();
@@ -478,7 +478,7 @@ class IndexV2 extends Action
         $query = "SELECT timestamp FROM $tableName where id='$this->quoteId'";
         $resultsSelect = $dbConnection->fetchRow($query);
         if (isset($resultsSelect['timestamp'])) {
-            if ($this->getOrigin() == 'Notification') {
+            if ($this->isNotification()) {
                 throw new ConcurrencyException();
             } else {
                 $query = sprintf(
@@ -734,6 +734,22 @@ class IndexV2 extends Action
         } catch (\Exception $e) {
             throw new UnknownException($e->getMessage());
         }
+    }
+
+    /**
+     * @return bool
+     */
+    private function isNotification()
+    {
+        return ($this->getOrigin() == 'Notification');
+    }
+
+    /**
+     * @return bool
+     */
+    private function isRedirect()
+    {
+        return ($this->getOrigin() == 'Order');
     }
 
     /**
