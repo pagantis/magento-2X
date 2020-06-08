@@ -676,6 +676,14 @@ class IndexV2 extends Action
             /** @var Order $this->magentoOrder */
             $this->magentoOrder = $this->orderRepositoryInterface->get($this->magentoOrderId);
             if (!$this->_objectManager->get(\Magento\Checkout\Model\Session\SuccessValidator::class)->isValid()) {
+                $checkoutMessage = sprintf(
+                    "[origin=%s][quoteId=%s][magentoOrderId=%s][pagantisOrderId=%s]Setting checkout session",
+                    $this->getOrigin(),
+                    $this->quoteId,
+                    $this->magentoOrderId,
+                    $this->pagantisOrderId
+                );
+                $this->insertLog(null, $checkoutMessage);
                 $this->checkoutSession
                     ->setLastOrderId($this->magentoOrderId)
                     ->setLastRealOrderId($this->magentoOrder->getIncrementId())
