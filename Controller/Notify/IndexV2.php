@@ -221,6 +221,15 @@ class IndexV2 extends Action
         $this->unblockConcurrency(true);
 
         if ($this->isNotification()) {
+            $returnMessage = sprintf(
+                "[origin=%s][quoteId=%s][magentoOrderId=%s][pagantisOrderId=%s][message=%s]",
+                $this->getOrigin(),
+                $this->quoteId,
+                $this->magentoOrderId,
+                $this->pagantisOrderId,
+                $jsonResponse->getResult()
+            );
+            $this->insertLog(null, $returnMessage);
             $jsonResponse->printResponse();
         } else {
             $returnUrl = $this->getRedirectUrl();
