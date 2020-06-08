@@ -109,6 +109,9 @@ class IndexV2 extends Action
     /** @var mixed $origin */
     protected $origin;
 
+    /** @var RequestInterface $_request*/
+    protected $_request;
+
     /**
      * IndexV2 constructor.
      *
@@ -148,8 +151,9 @@ class IndexV2 extends Action
         $this->orderRepositoryInterface = $orderRepositoryInterface;
         $this->dbObject = $dbObject;
         $this->checkoutSession = $checkoutSession;
+        $this->_request = $request;
         $this->origin = (
-            $_SERVER['REQUEST_METHOD']=='POST' || $this->getRequest()->getParam('origin')=='notification'
+            $this->_request->isPost() || $this->_request->getParam('origin')=='notification'
                         ) ? 'Notification' : 'Order';
 
         // CsrfAwareAction Magento2.3 compatibility
@@ -168,14 +172,15 @@ class IndexV2 extends Action
      */
     public function execute()
     {
+
         $thrownException = false;
         try {
-            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->isNotification()) {
+            if ($this->_request->isGet() && $this->isNotification()) {
                 echo 'OK';
                 die;
             }
 
-            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->isRedirect()) {
+            if ($this->_request->isGet() && $this->isRedirect()) {
                 $redirectMessage = sprintf(
                     "[origin=%s][quoteId=%s]",
                     $this->getOrigin(),

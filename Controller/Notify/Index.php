@@ -28,6 +28,7 @@ use Pagantis\ModuleUtils\Model\Response\JsonSuccessResponse;
 use Pagantis\ModuleUtils\Model\Response\JsonExceptionResponse;
 use Pagantis\ModuleUtils\Exception\AlreadyProcessedException;
 use Pagantis\ModuleUtils\Model\Log\LogEntry;
+use Magento\Framework\App\RequestInterface;
 
 /**
  * Class Index
@@ -107,6 +108,9 @@ class Index extends Action
     /** @var mixed $origin */
     protected $origin;
 
+    /** @var RequestInterface $_request*/
+    protected $_request;
+
     /**
      * Index constructor.
      *
@@ -120,6 +124,7 @@ class Index extends Action
      * @param ResourceConnection       $dbObject
      * @param Session                  $checkoutSession
      * @param ExtraConfig              $extraConfig
+     * @param RequestInterface         $request
      */
     public function __construct(
         Context $context,
@@ -131,7 +136,8 @@ class Index extends Action
         OrderRepositoryInterface $orderRepositoryInterface,
         ResourceConnection $dbObject,
         Session $checkoutSession,
-        ExtraConfig $extraConfig
+        ExtraConfig $extraConfig,
+        RequestInterface $request
     ) {
         parent::__construct($context);
         $this->quote = $quote;
@@ -143,9 +149,10 @@ class Index extends Action
         $this->orderRepositoryInterface = $orderRepositoryInterface;
         $this->dbObject = $dbObject;
         $this->checkoutSession = $checkoutSession;
+        $this->_request = $request;
         $this->origin = (
-            $_SERVER['REQUEST_METHOD']=='POST' || $this->getRequest()->getParam('origin')=='notification'
-                        ) ? 'Notification' : 'Order';
+            $this->_request->isPost() || $this->_request->getParam('origin')=='notification'
+        ) ? 'Notification' : 'Order';
     }
 
     /**
@@ -156,12 +163,12 @@ class Index extends Action
     {
         $thrownException = false;
         try {
-            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->isNotification()) {
+            if ($this->_request->isGet() && $this->isNotification()) {
                 echo 'OK';
                 die;
             }
 
-            if ($_SERVER['REQUEST_METHOD'] == 'GET' && $this->isRedirect()) {
+            if ($this->_request->isGet() && $this->isRedirect()) {
                 $redirectMessage = sprintf(
                     "[origin=%s][quoteId=%s]",
                     $this->getOrigin(),
