@@ -139,7 +139,7 @@ class LogV2 extends Action
      *
      * @return InvalidRequestException|null
      */
-    public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
+    public function createCsrfValidationException(RequestInterface $request)
     {
         return null;
     }
@@ -149,7 +149,7 @@ class LogV2 extends Action
      *
      * @return bool|null
      */
-    public function validateForCsrf(RequestInterface $request): ?bool
+    public function validateForCsrf(RequestInterface $request)
     {
         return true;
     }
