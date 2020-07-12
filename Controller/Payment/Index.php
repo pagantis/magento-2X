@@ -246,7 +246,7 @@ class Index extends Action
                 ->setDetails($details)
                 ->setOrderReference($quote->getId())
                 ->setPromotedAmount(0)
-                ->setTotalAmount(intval(strval(100 * $quote->getGrandTotal())))
+                ->setTotalAmount(intval(100 * $quote->getGrandTotal()))
             ;
 
             $orderConfigurationUrls = new Urls();
