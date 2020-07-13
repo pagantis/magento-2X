@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f13fc54ff3c513460328c448268ba638",
+    "content-hash": "8880883bb838787c32217723d6a308d0",
     "packages": [
         {
             "name": "nategood/httpful",
@@ -141,16 +141,16 @@
         },
         {
             "name": "pagantis/orders-api-client",
-            "version": "v2.1.4",
+            "version": "v2.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pagantis/orders-api-client.git",
-                "reference": "378d8f62da9051d16a5f10b8e3569469ca9006b3"
+                "reference": "6a5388f78565451603802915c6ba424e4831af2e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pagantis/orders-api-client/zipball/378d8f62da9051d16a5f10b8e3569469ca9006b3",
-                "reference": "378d8f62da9051d16a5f10b8e3569469ca9006b3",
+                "url": "https://api.github.com/repos/pagantis/orders-api-client/zipball/6a5388f78565451603802915c6ba424e4831af2e",
+                "reference": "6a5388f78565451603802915c6ba424e4831af2e",
                 "shasum": ""
             },
             "require": {
@@ -180,7 +180,7 @@
                 }
             ],
             "description": "Pagantis Orders Api Client in PHP. Use the api with simple methods and using OOP.",
-            "time": "2020-02-27T16:03:56+00:00"
+            "time": "2020-03-31T06:05:21+00:00"
         }
     ],
     "packages-dev": [
