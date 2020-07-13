@@ -340,7 +340,7 @@ class Index extends Action
     private function validateAmount()
     {
         $pagantisAmount = $this->pagantisOrder->getShoppingCart()->getTotalAmount();
-        $merchantAmount = intval(strval(100 * $this->quote->getGrandTotal()));
+        $merchantAmount = intval(100 * $this->quote->getGrandTotal());
         if ($pagantisAmount != $merchantAmount) {
             throw new AmountMismatchException($pagantisAmount, $merchantAmount);
         }
