@@ -33,9 +33,9 @@ class ExtraConfig
     {
         $data = array();
         $dbConnection = $this->dbObject->getConnection();
-        $tableName = self::CONFIG_TABLE;
-        if ($dbConnection->isTableExists($tableName)) {
-            $result = $dbConnection->fetchAll("select * from $tableName");
+        $prefixedTableName = $dbConnection->getTableName(self::CONFIG_TABLE);
+        if ($dbConnection->isTableExists($prefixedTableName)) {
+            $result = $dbConnection->fetchAll("select * from $prefixedTableName");
             if (count($result)) {
                 foreach ($result as $value) {
                     $data[$value['config']] = $value['value'];

@@ -52,33 +52,33 @@ class UpgradeData implements UpgradeDataInterface
     public function upgrade(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
         $setup->startSetup();
+        $prefixedTableName = $setup->getConnection()->getTableName(self::CONFIG_TABLE);
+        if ($setup->tableExists($prefixedTableName)) {
+            if (version_compare($context->getVersion(), '8.3.1') < 0) {
+                $newConfigs = array(
+                    /* INSERT NEW CONFIGS PARAMS HERE:'config'=>'<value>'*/
+                    'PAGANTIS_DISPLAY_MAX_AMOUNT' => 0
+                );
+                foreach ($newConfigs as $config => $value) {
+                    $setup->getConnection()
+                          ->insert($prefixedTableName, array('config' => $config, 'value' => $value));
+                }
+            }
+            if (version_compare($context->getVersion(), '8.3.2') < 0) {
+                $newConfigs = array(
+                    /* INSERT NEW CONFIGS PARAMS HERE:'config'=>'<value>'*/
+                    'PAGANTIS_SIMULATOR_DISPLAY_TYPE_CHECKOUT' => 'sdk.simulator.types.CHECKOUT_PAGE'
+                );
+                foreach ($newConfigs as $config => $value) {
+                    $setup->getConnection()
+                          ->insert($prefixedTableName, array('config' => $config, 'value' => $value));
+                }
+                $setup->getConnection()
+                      ->update($prefixedTableName, array('value' => 'sdk.simulator.types.PRODUCT_PAGE'),
+                          "config='PAGANTIS_SIMULATOR_DISPLAY_TYPE'");
 
-        if (version_compare($context->getVersion(), '8.3.1') < 0) {
-            $newConfigs = array(
-                /* INSERT NEW CONFIGS PARAMS HERE:'config'=>'<value>'*/
-            'PAGANTIS_DISPLAY_MAX_AMOUNT' => 0
-            );
-            foreach ($newConfigs as $config => $value) {
-                $setup->getConnection()->insert(self::CONFIG_TABLE, array('config'=>$config, 'value'=>$value));
             }
         }
-
-        if (version_compare($context->getVersion(), '8.3.2') < 0) {
-            $newConfigs = array(
-                /* INSERT NEW CONFIGS PARAMS HERE:'config'=>'<value>'*/
-                'PAGANTIS_SIMULATOR_DISPLAY_TYPE_CHECKOUT' => 'sdk.simulator.types.CHECKOUT_PAGE'
-            );
-            foreach ($newConfigs as $config => $value) {
-                $setup->getConnection()->insert(self::CONFIG_TABLE, array('config'=>$config, 'value'=>$value));
-            }
-            $setup->getConnection()->update(
-                self::CONFIG_TABLE,
-                array('value' => 'sdk.simulator.types.PRODUCT_PAGE'),
-                "config='PAGANTIS_SIMULATOR_DISPLAY_TYPE'"
-            );
-
-        }
-
         $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
         $eavSetup->addAttribute(
             \Magento\Catalog\Model\Product::ENTITY,
