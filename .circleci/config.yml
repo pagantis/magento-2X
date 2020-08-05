@@ -50,7 +50,7 @@ commands:
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento setup:upgrade
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento setup:di:compile
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cache:flush
-  sample_data:
+  sample_data_magento23:
     description: "Sample Data + DI + SetupUpgrade + Clear Cache"
     steps:
       - run:
@@ -66,6 +66,26 @@ commands:
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento setup:upgrade
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cron:run
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento deploy:mode:set default
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento deploy:mode:show
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cache:flush
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cache:clean
+            containerPort=$(docker container port magento${VERSION}-test)
+  sample_data_magento22:
+    description: "Sample Data + DI + SetupUpgrade + Clear Cache"
+    steps:
+      - run:
+          name: Sample Data + DI + SetupUpgrade + Clear Cache
+          command: |
+            export DOCKERHOST=$(ifconfig | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1)
+            docker-compose exec -u www-data magento${VERSION}-test composer config http-basic.repo.magento.com \
+                5310458a34d580de1700dfe826ff19a1 \
+                255059b03eb9d30604d5ef52fca7465d
+            docker-compose exec -u www-data magento${VERSION}-test rm -rf /var/www/html/generated/code/* /var/www/html/generated/metadata/*
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento deploy:mode:set developer
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento sampledata:deploy
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento setup:upgrade
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cron:run
+            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento deploy:mode:set production
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento deploy:mode:show
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cache:flush
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cache:clean
@@ -117,7 +137,7 @@ jobs:
       - host_and_docker_compose
       - install_dependencies
       - docker_up
-      - sample_data
+      - sample_data_magento22
       - install_module
       - unzip_file
       - basic_test
@@ -135,7 +155,7 @@ jobs:
       - host_and_docker_compose
       - install_dependencies
       - docker_up
-      - sample_data
+      - sample_data_magento23
       - install_module
       - unzip_file
       - basic_test
