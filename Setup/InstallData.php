@@ -45,8 +45,12 @@ class InstallData implements InstallDataInterface
      */
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
-        foreach ($this->defaultConfigs as $config => $value) {
-            $setup->getConnection()->insert(self::CONFIG_TABLE, array('config'=>$config, 'value'=>$value));
+        $prefixedTableName = $setup->getConnection()->getTableName(self::CONFIG_TABLE);
+        if ($setup->tableExists($prefixedTableName)) {
+            foreach ($this->defaultConfigs as $config => $value) {
+                $setup->getConnection()
+                      ->insert(self::CONFIG_TABLE, array('config' => $config, 'value' => $value));
+            }
         }
     }
 }
