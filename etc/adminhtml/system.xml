@@ -5,7 +5,7 @@
             <group id="pagantis" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Pagantis</label>
                 <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Enabled</label>
+                    <label>Enabled module</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="backoffice_button" type="button" translate="button_label" sortOrder="2" showInDefault="1" showInWebsite="1">
@@ -19,16 +19,32 @@
                     </attribute>
                     <frontend_model>Pagantis\Pagantis\Model\Adminhtml\Source\ConfigButtonLinkType</frontend_model>
                 </field>
+                <field id="enabled_4x" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Enabled 12x</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="pagantis_public_key_4x" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Public Key 12x</label>
+                    <comment>MANDATORY. You can get this credential from your Pagantis profile.</comment>
+                </field>
+                <field id="pagantis_private_key_4x" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Private Key 12x</label>
+                    <comment>MANDATORY. You can get this credential from your Pagantis profile.</comment>
+                </field>
+                <field id="enabled_12x" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Enabled 12x</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
                 <field id="pagantis_public_key" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Public API Key(*)</label>
+                    <label>Public Key 12x</label>
                     <comment>MANDATORY. You can get this credential from your Pagantis profile.</comment>
                 </field>
                 <field id="pagantis_private_key" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Private API Key(*)</label>
+                    <label>Private Key 12x</label>
                     <comment>MANDATORY. You can get this credential from your Pagantis profile.</comment>
                 </field>
                 <field id="product_simulator" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Product Simulator</label>
+                    <label>Product Simulator 12x</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
