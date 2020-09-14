@@ -595,10 +595,14 @@ class Index extends Action
                                ->setPayment($this->getProduct())
                                ->save();
 
-            $comment = 'pagantisOrderId: '.$this->pagantisOrder->getId(). ' ' .
-                       'pagantisOrderStatus: '.$this->pagantisOrder->getStatus(). ' ' .
-                       'via: '.$this->origin. ' ' .
-                       'product: '.$this->getProduct();
+            $comment = sprintf(
+                'pagantisOrderId: %s || pagantisOrderStatus: %s  || via: %s  || product: %s',
+                $this->pagantisOrder->getId(),
+                $this->pagantisOrder->getStatus(),
+                $this->getOrigin(),
+                $this->getProduct()
+            );
+
             $this->magentoOrder->addStatusHistoryComment($comment)
                                ->setIsCustomerNotified(false)
                                ->setEntityName('order')
