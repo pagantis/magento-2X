@@ -25,9 +25,24 @@ class Simulator extends Template
     protected $enabled;
 
     /**
+     * @var bool
+     */
+    protected $enabled_4x;
+
+    /**
+     * @var bool
+     */
+    protected $enabled_12x;
+
+    /**
      * @var string
      */
     protected $publicKey;
+
+    /**
+     * @var string
+     */
+    protected $publicKey_4x;
 
     /**
      * @var string
@@ -48,6 +63,16 @@ class Simulator extends Template
      * @var float
      */
     protected $maxAmount;
+
+    /**
+     * @var float
+     */
+    protected $minAmount4x;
+
+    /**
+     * @var float
+     */
+    protected $maxAmount4x;
 
     /**
      * @var Product
@@ -115,6 +140,11 @@ class Simulator extends Template
     protected $decimalSeparator;
 
     /**
+     * @var String
+     */
+    protected $destinationSim;
+
+    /**
      * Simulator constructor.
      *
      * @param Context        $context
@@ -138,12 +168,17 @@ class Simulator extends Template
         $config = $scopeConfig->getValue('payment/pagantis');
 
         $this->enabled = $config['active'];
+        $this->enabled_12x = $config['active_12x'];
+        $this->enabled_4x = $config['active_4x'];
         $this->publicKey = isset($config['pagantis_public_key']) ? $config['pagantis_public_key'] : '';
+        $this->publicKey_4x = isset($config['pagantis_public_key_4x']) ? $config['pagantis_public_key_4x'] : '';
         $this->productSimulator = $config['product_simulator'];
-        $this->extraConfig = $extraConfig->getExtraConfig();
 
+        $this->extraConfig = $extraConfig->getExtraConfig();
         $this->minAmount = $this->extraConfig['PAGANTIS_DISPLAY_MIN_AMOUNT'];
         $this->maxAmount = $this->extraConfig['PAGANTIS_DISPLAY_MAX_AMOUNT'];
+        $this->minAmount4x = $this->extraConfig['PAGANTIS_DISPLAY_MIN_AMOUNT_4x'];
+        $this->maxAmount4x = $this->extraConfig['PAGANTIS_DISPLAY_MAX_AMOUNT_4x'];
         $this->minInstallments = $this->extraConfig['PAGANTIS_SIMULATOR_START_INSTALLMENTS'];
         $this->priceSelector = $this->extraConfig['PAGANTIS_SIMULATOR_CSS_PRICE_SELECTOR'];
         $this->quantitySelector = $this->extraConfig['PAGANTIS_SIMULATOR_CSS_QUANTITY_SELECTOR'];
@@ -152,8 +187,17 @@ class Simulator extends Template
         $this->promotedMessage = $this->extraConfig['PAGANTIS_PROMOTION_EXTRA'];
         $this->thousandSeparator = $this->extraConfig['PAGANTIS_SIMULATOR_THOUSANDS_SEPARATOR'];
         $this->decimalSeparator = $this->extraConfig['PAGANTIS_SIMULATOR_DECIMAL_SEPARATOR'];
+        $this->destinationSim = $this->extraConfig['PAGANTIS_SIMULATOR_DISPLAY_SITUATION'];
 
         $this->promoted = $this->isProductInPromotion();
+    }
+
+    /**
+     * @return string
+     */
+    public function getSimulatorMessage()
+    {
+        return sprintf("Hasta 4 pagos de %s€, sin coste con ", $this->getFinalPrice4x());
     }
 
     /**
@@ -199,9 +243,17 @@ class Simulator extends Template
     /**
      * @return bool
      */
-    public function isEnabled()
+    public function isEnabled12x()
     {
-        return $this->enabled;
+        return ($this->enabled && $this->enabled_12x);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnabled4x()
+    {
+        return ($this->enabled && $this->enabled_4x);
     }
 
     /**
@@ -210,6 +262,14 @@ class Simulator extends Template
     public function getPublicKey()
     {
         return $this->publicKey;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPublicKey4x()
+    {
+        return $this->publicKey_4x;
     }
 
     /**
@@ -238,6 +298,14 @@ class Simulator extends Template
     public function getFinalPrice()
     {
         return $this->getProduct()->getFinalPrice();
+    }
+
+    /**
+     * @return float
+     */
+    public function getFinalPrice4x()
+    {
+        return number_format($this->getProduct()->getFinalPrice()/4, 2);
     }
 
     /**
@@ -434,6 +502,38 @@ class Simulator extends Template
     }
 
     /**
+     * @return float
+     */
+    public function getMinAmount4x()
+    {
+        return $this->minAmount4x;
+    }
+
+    /**
+     * @param float $minAmount4x
+     */
+    public function setMinAmount4x($minAmount4x)
+    {
+        $this->minAmount4x = $minAmount4x;
+    }
+
+    /**
+     * @return float
+     */
+    public function getMaxAmount4x()
+    {
+        return $this->maxAmount4x;
+    }
+
+    /**
+     * @param float $maxAmount4x
+     */
+    public function setMaxAmount4x($maxAmount4x)
+    {
+        $this->maxAmount4x = $maxAmount4x;
+    }
+
+    /**
      * @return bool
      */
     public function checkValidAmount()
@@ -443,5 +543,33 @@ class Simulator extends Template
         $totalPrice = (string) floor($this->getFinalPrice());
 
         return ($totalPrice>=$minAmount && ($totalPrice<=$maxAmount||$maxAmount=='0'));
+    }
+
+    /**
+     * @return bool
+     */
+    public function checkValidAmount4x()
+    {
+        $maxAmount = $this->getMaxAmount4x();
+        $minAmount = $this->getMinAmount4x();
+        $totalPrice = (string) floor($this->getFinalPrice());
+
+        return ($totalPrice>=$minAmount && ($totalPrice<=$maxAmount||$maxAmount=='0'));
+    }
+
+    /**
+     * @return String
+     */
+    public function getDestinationSim()
+    {
+        return $this->destinationSim;
+    }
+
+    /**
+     * @param String $destinationSim
+     */
+    public function setDestinationSim($destinationSim)
+    {
+        $this->destinationSim = $destinationSim;
     }
 }

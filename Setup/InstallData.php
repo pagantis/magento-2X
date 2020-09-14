@@ -16,7 +16,7 @@ class InstallData implements InstallDataInterface
      * @var array $defaultConfigs
      */
     public $defaultConfigs = array(
-       'PAGANTIS_TITLE'=>'Pago en cuotas',
+       'PAGANTIS_TITLE'=>'Instant financing',
        'PAGANTIS_SIMULATOR_DISPLAY_TYPE'=>'sdk.simulator.types.PRODUCT_PAGE',
        'PAGANTIS_SIMULATOR_DISPLAY_TYPE_CHECKOUT'=>'sdk.simulator.types.CHECKOUT_PAGE',
        'PAGANTIS_SIMULATOR_DISPLAY_SKIN'=>'sdk.simulator.skins.BLUE',
@@ -36,7 +36,12 @@ class InstallData implements InstallDataInterface
        'PAGANTIS_ALLOWED_COUNTRIES' => 'a:3:{i:0;s:2:"es";i:1;s:2:"it";i:2;s:2:"fr";}',
        'PAGANTIS_PROMOTION_EXTRA' => '<p class="promoted">Finance this product <span class="pg-no-interest">without interest!</span></p>',
        'PAGANTIS_SIMULATOR_THOUSANDS_SEPARATOR' => '.',
-       'PAGANTIS_SIMULATOR_DECIMAL_SEPARATOR' => ','
+       'PAGANTIS_SIMULATOR_DECIMAL_SEPARATOR' => ',',
+       'PAGANTIS_SIMULATOR_DISPLAY_SITUATION' => '',
+        //4x
+        'PAGANTIS_DISPLAY_MIN_AMOUNT_4x'=>0,
+        'PAGANTIS_DISPLAY_MAX_AMOUNT_4x'=>800,
+        'PAGANTIS_TITLE_4x'=>'Until 4 installments, without fees',
     );
 
     /**

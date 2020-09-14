@@ -64,6 +64,7 @@ class UpgradeData implements UpgradeDataInterface
                           ->insert($prefixedTableName, array('config' => $config, 'value' => $value));
                 }
             }
+
             if (version_compare($context->getVersion(), '8.3.2') < 0) {
                 $newConfigs = array(
                     /* INSERT NEW CONFIGS PARAMS HERE:'config'=>'<value>'*/
@@ -74,9 +75,32 @@ class UpgradeData implements UpgradeDataInterface
                           ->insert($prefixedTableName, array('config' => $config, 'value' => $value));
                 }
                 $setup->getConnection()
-                      ->update($prefixedTableName, array('value' => 'sdk.simulator.types.PRODUCT_PAGE'),
-                          "config='PAGANTIS_SIMULATOR_DISPLAY_TYPE'");
+                      ->update(
+                          $prefixedTableName,
+                          array('value' => 'sdk.simulator.types.PRODUCT_PAGE'),
+                          "config='PAGANTIS_SIMULATOR_DISPLAY_TYPE'"
+                      );
 
+            }
+
+            if (version_compare($context->getVersion(), '8.6.0') < 0) {
+                $newConfigs = array(
+                    /* INSERT NEW CONFIGS PARAMS HERE:'config'=>'<value>'*/
+                    'PAGANTIS_DISPLAY_MIN_AMOUNT_4x'=>0,
+                    'PAGANTIS_DISPLAY_MAX_AMOUNT_4x'=>800,
+                    'PAGANTIS_TITLE_4x'=>'Until 4 installments, without fees',
+                    'PAGANTIS_SIMULATOR_DISPLAY_SITUATION' => ''
+                );
+                foreach ($newConfigs as $config => $value) {
+                    $setup->getConnection()
+                          ->insert($prefixedTableName, array('config' => $config, 'value' => $value));
+                }
+                $setup->getConnection()
+                      ->update(
+                          $prefixedTableName,
+                          array('value' => 'Instant financing'),
+                          "config='PAGANTIS_TITLE'"
+                      );
             }
         }
         $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
