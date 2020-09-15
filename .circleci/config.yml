@@ -61,9 +61,9 @@ commands:
                 5310458a34d580de1700dfe826ff19a1 \
                 255059b03eb9d30604d5ef52fca7465d
             docker-compose exec -u www-data magento${VERSION}-test rm -rf /var/www/html/generated/code/* /var/www/html/generated/metadata/*
-            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento deploy:mode:set developer
-            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento sampledata:deploy
-            docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento setup:upgrade
+            docker-compose exec -u www-data magento${VERSION}-test php -d memory_limit=-1 /var/www/html/bin/magento deploy:mode:set developer
+            docker-compose exec -u www-data magento${VERSION}-test php -d memory_limit=-1 /var/www/html/bin/magento sampledata:deploy
+            docker-compose exec -u www-data magento${VERSION}-test php -d memory_limit=-1 /var/www/html/bin/magento setup:upgrade
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento cron:run
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento deploy:mode:set default
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento deploy:mode:show

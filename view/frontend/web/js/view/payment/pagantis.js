@@ -8,10 +8,15 @@ define(
         rendererList
     ) {
         'use strict';
+
         rendererList.push(
             {
                 type: 'pagantis',
                 component: 'Pagantis_Pagantis/js/view/payment/method-renderer/pagantis'
+            },
+            {
+                type: 'pagantis4x',
+                component: 'Pagantis_Pagantis/js/view/payment/method-renderer/pagantis4x'
             }
         );
         return Component.extend({});

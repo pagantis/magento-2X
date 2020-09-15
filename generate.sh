@@ -61,7 +61,7 @@ docker-compose exec -u www-data ${container} composer config http-basic.repo.mag
 docker-compose exec -u www-data ${container} php /var/www/html/bin/magento sampledata:deploy
 docker-compose exec -u www-data ${container} php /var/www/html/bin/magento setup:upgrade
 docker-compose exec -u www-data ${container} php /var/www/html/bin/magento cron:run
-docker-compose exec -u www-data ${container} php /var/www/html/bin/magento deploy:mode:set production
+docker-compose exec -u www-data ${container} php /var/www/html/bin/magento deploy:mode:set developer
 docker-compose exec -u www-data ${container} php /var/www/html/bin/magento cache:flush
 
 if [ $environment = "dev" ]

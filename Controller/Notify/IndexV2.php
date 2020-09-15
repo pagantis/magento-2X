@@ -30,6 +30,7 @@ use Pagantis\ModuleUtils\Exception\AlreadyProcessedException;
 use Pagantis\ModuleUtils\Model\Log\LogEntry;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
+use Pagantis\Pagantis\Model\Ui\ConfigProvider;
 
 /**
  * Class Index
@@ -45,9 +46,6 @@ class IndexV2 extends Action
 
     /** Concurrency tablename */
     const LOGS_TABLE = 'Pagantis_logs';
-
-    /** Payment code */
-    const PAYMENT_METHOD = 'pagantis';
 
     /** Seconds to expire a locked request */
     const CONCURRENCY_TIMEOUT = 10;
@@ -109,6 +107,9 @@ class IndexV2 extends Action
     /** @var mixed $origin */
     protected $origin;
 
+    /** @var mixed $product */
+    protected $product;
+
     /** @var RequestInterface $_request*/
     protected $_request;
 
@@ -155,6 +156,7 @@ class IndexV2 extends Action
         $this->origin = (
             $this->_request->isPost() || $this->_request->getParam('origin')=='notification'
                         ) ? 'Notification' : 'Order';
+        $this->product = $this->_request->getParam('product');
 
         // CsrfAwareAction Magento2.3 compatibility
         if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
@@ -307,10 +309,17 @@ class IndexV2 extends Action
     private function getPagantisOrder()
     {
         try {
-            $this->orderClient = new Client(
-                $this->config['pagantis_public_key'],
-                $this->config['pagantis_private_key']
-            );
+            if ($this->getProduct()===ConfigProvider::CODE4X) {
+                $this->orderClient = new Client(
+                    $this->config['pagantis_public_key_4x'],
+                    $this->config['pagantis_private_key_4x']
+                );
+            } else {
+                $this->orderClient = new Client(
+                    $this->config['pagantis_public_key'],
+                    $this->config['pagantis_private_key']
+                );
+            }
             $this->pagantisOrder = $this->orderClient->getOrder($this->pagantisOrderId);
         } catch (\Exception $e) {
             throw new OrderNotFoundException();
@@ -585,7 +594,7 @@ class IndexV2 extends Action
     private function saveOrder()
     {
         try {
-            $this->paymentInterface->setMethod(self::PAYMENT_METHOD);
+            $this->paymentInterface->setMethod($this->getProduct());
             $this->magentoOrderId = $this->quoteManagement->placeOrder($this->quoteId, $this->paymentInterface);
             /** @var OrderRepositoryInterface magentoOrder */
             $this->magentoOrder = $this->orderRepositoryInterface->get($this->magentoOrderId);
@@ -602,9 +611,14 @@ class IndexV2 extends Action
                                ->setEntityName('order')
                                ->save();
 
-            $comment = 'pagantisOrderId: ' . $this->pagantisOrder->getId(). ' ' .
-                       'pagantisOrderStatus: '. $this->pagantisOrder->getStatus(). ' ' .
-                       'via: '. $this->origin;
+            $comment = sprintf(
+                'pagantisOrderId: %s || pagantisOrderStatus: %s  || via: %s  || product: %s',
+                $this->pagantisOrder->getId(),
+                $this->pagantisOrder->getStatus(),
+                $this->getOrigin(),
+                $this->getProduct()
+            );
+
             $this->magentoOrder->addStatusHistoryComment($comment)
                                ->setIsCustomerNotified(false)
                                ->setEntityName('order')
@@ -667,6 +681,22 @@ class IndexV2 extends Action
     public function setOrigin($origin)
     {
         $this->origin = $origin;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getProduct()
+    {
+        return $this->product;
+    }
+
+    /**
+     * @param mixed $product
+     */
+    public function setProduct($product)
+    {
+        $this->product = $product;
     }
 
     /**

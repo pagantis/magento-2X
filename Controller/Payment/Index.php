@@ -26,6 +26,7 @@ use Pagantis\OrdersApiClient\Model\Order\Configuration\Urls;
 use Pagantis\OrdersApiClient\Model\Order\Configuration\Channel;
 use Pagantis\OrdersApiClient\Model\Order\Configuration;
 use Pagantis\OrdersApiClient\Client;
+use Pagantis\Pagantis\Model\Ui\ConfigProvider;
 
 /**
  * Class Index
@@ -122,6 +123,8 @@ class Index extends Action
             /** @var Order $order */
             $lastOrder = $this->session->getLastRealOrder();
             $params = $this->getRequest()->getParams();
+            $pgProduct = (isset($params['product']) && $params['product']===ConfigProvider::CODE4X) ? ConfigProvider::CODE4X : ConfigProvider::CODE;
+
             $customer = $quote->getCustomer();
             $shippingAddress = $quote->getShippingAddress();
 
@@ -257,9 +260,9 @@ class Index extends Action
                 $uriRoute = 'pagantis/notify/indexV2';
             }
 
-            $okUrlUser = $this->_url->getUrl($uriRoute, ['_query' => ['quoteId'=>$quoteId,'origin'=>'redirect']]);
-            $okUrlNot  = $this->_url->getUrl($uriRoute, ['_query' => ['quoteId'=>$quoteId,'origin'=>'notification']]);
-            $okUrl     = $this->_url->getUrl($uriRoute, ['_query' => ['quoteId'=>$quoteId,'origin'=>'redirect']]);
+            $okUrlUser = $this->_url->getUrl($uriRoute, ['_query' => ['quoteId'=>$quoteId,'origin'=>'redirect','product'=>$pgProduct]]);
+            $okUrlNot  = $this->_url->getUrl($uriRoute, ['_query' => ['quoteId'=>$quoteId,'origin'=>'notification','product'=>$pgProduct]]);
+            $okUrl     = $this->_url->getUrl($uriRoute, ['_query' => ['quoteId'=>$quoteId,'origin'=>'redirect','product'=>$pgProduct]]);
 
             $orderConfigurationUrls
                 ->setCancel($cancelUrl)
@@ -300,14 +303,25 @@ class Index extends Action
                 ->setUser($orderUser)
             ;
 
-            if ($this->config['pagantis_public_key']=='' || $this->config['pagantis_private_key']=='') {
-                throw new \Exception('Public and Secret Key not found');
+            if ($pgProduct === ConfigProvider::CODE4X) {
+                if ($this->config['pagantis_public_key_4x']=='' || $this->config['pagantis_private_key_4x']=='') {
+                    throw new \Exception('Public and Secret Key not found');
+                } else {
+                    $orderClient = new Client(
+                        $this->config['pagantis_public_key_4x'],
+                        $this->config['pagantis_private_key_4x']
+                    );
+                }
+            } else {
+                if ($this->config['pagantis_public_key']=='' || $this->config['pagantis_private_key']=='') {
+                    throw new \Exception('Public and Secret Key not found');
+                } else {
+                    $orderClient = new Client(
+                        $this->config['pagantis_public_key'],
+                        $this->config['pagantis_private_key']
+                    );
+                }
             }
-
-            $orderClient = new Client(
-                $this->config['pagantis_public_key'],
-                $this->config['pagantis_private_key']
-            );
 
             $order = $orderClient->createOrder($order);
             if ($order instanceof Order) {

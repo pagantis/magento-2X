@@ -29,6 +29,7 @@ use Pagantis\ModuleUtils\Model\Response\JsonExceptionResponse;
 use Pagantis\ModuleUtils\Exception\AlreadyProcessedException;
 use Pagantis\ModuleUtils\Model\Log\LogEntry;
 use Magento\Framework\App\RequestInterface;
+use Pagantis\Pagantis\Model\Ui\ConfigProvider;
 
 /**
  * Class Index
@@ -44,9 +45,6 @@ class Index extends Action
 
     /** Concurrency tablename */
     const LOGS_TABLE = 'Pagantis_logs';
-
-    /** Payment code */
-    const PAYMENT_METHOD = 'pagantis';
 
     /** Seconds to expire a locked request */
     const CONCURRENCY_TIMEOUT = 10;
@@ -108,6 +106,9 @@ class Index extends Action
     /** @var mixed $origin */
     protected $origin;
 
+    /** @var mixed $product */
+    protected $product;
+
     /** @var RequestInterface $_request*/
     protected $_request;
 
@@ -153,6 +154,7 @@ class Index extends Action
         $this->origin = (
             $this->_request->isPost() || $this->_request->getParam('origin')=='notification'
         ) ? 'Notification' : 'Order';
+        $this->product = $this->_request->getParam('product');
     }
 
     /**
@@ -573,7 +575,7 @@ class Index extends Action
     private function saveOrder()
     {
         try {
-            $this->paymentInterface->setMethod(self::PAYMENT_METHOD);
+            $this->paymentInterface->setMethod($this->getProduct());
             $this->magentoOrderId = $this->quoteManagement->placeOrder($this->quoteId, $this->paymentInterface);
 
             /** @var OrderRepositoryInterface magentoOrder */
@@ -589,11 +591,18 @@ class Index extends Action
             $this->magentoOrder->addStatusHistoryComment($metadataInfo)
                                ->setIsCustomerNotified(false)
                                ->setEntityName('order')
+                               ->setTitle($this->getProduct())
+                               ->setPayment($this->getProduct())
                                ->save();
 
-            $comment = 'pagantisOrderId: '.$this->pagantisOrder->getId(). ' ' .
-                       'pagantisOrderStatus: '.$this->pagantisOrder->getStatus(). ' ' .
-                       'via: '.$this->origin;
+            $comment = sprintf(
+                'pagantisOrderId: %s || pagantisOrderStatus: %s  || via: %s  || product: %s',
+                $this->pagantisOrder->getId(),
+                $this->pagantisOrder->getStatus(),
+                $this->getOrigin(),
+                $this->getProduct()
+            );
+
             $this->magentoOrder->addStatusHistoryComment($comment)
                                ->setIsCustomerNotified(false)
                                ->setEntityName('order')
@@ -656,6 +665,23 @@ class Index extends Action
     public function setOrigin($origin)
     {
         $this->origin = $origin;
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getProduct()
+    {
+        return $this->product;
+    }
+
+    /**
+     * @param mixed $product
+     */
+    public function setProduct($product)
+    {
+        $this->product = $product;
     }
 
     /**

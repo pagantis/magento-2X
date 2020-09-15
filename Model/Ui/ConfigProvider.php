@@ -15,6 +15,8 @@ final class ConfigProvider implements ConfigProviderInterface
 {
     const CODE = 'pagantis';
 
+    const CODE4X = 'pagantis4x';
+
     /**
      * @var \Magento\Payment\Model\MethodInterface
      */
@@ -84,13 +86,14 @@ final class ConfigProvider implements ConfigProviderInterface
         $positionSelector = $this->extraConfig['PAGANTIS_SIMULATOR_CSS_POSITION_SELECTOR'];
         if ($positionSelector == 'default') {
             $positionSelector = '.pagantisSimulator';
+            $positionSelector4x = '.pagantisSimulator4x';
         }
 
         return [
             'payment' => [
                 self::CODE => [
                     'total' => $quote->getGrandTotal(),
-                    'enabled' => $this->method->getConfigData('active'),
+                    'enabled' => $this->method->getConfigData('active_12x'),
                     'product_simulator' => $this->method->getConfigData('product_simulator'),
                     'title' => __($this->extraConfig['PAGANTIS_TITLE']),
                     'subtitle' => __($this->extraConfig['PAGANTIS_TITLE_EXTRA']),
@@ -105,6 +108,24 @@ final class ConfigProvider implements ConfigProviderInterface
                     'type'      => $this->extraConfig['PAGANTIS_SIMULATOR_DISPLAY_TYPE_CHECKOUT'],
                     'skin'      => $this->extraConfig['PAGANTIS_SIMULATOR_DISPLAY_SKIN'],
                     'position'  => $positionSelector
+                ],
+                self::CODE4X => [
+                    'total' => $quote->getGrandTotal(),
+                    'enabled' => $this->method->getConfigData('active_4x'),
+                    'product_simulator' => "1",
+                    'title' => __($this->extraConfig['PAGANTIS_TITLE_4x']),
+                    'subtitle' => __($this->extraConfig['PAGANTIS_TITLE_EXTRA']),
+                    'image' => 'https://cdn.digitalorigin.com/assets/master/logos/pg-130x30.svg',
+                    'publicKey' => $this->method->getConfigData('pagantis_public_key_4x'),
+                    'locale' => strstr($this->resolver->getLocale(), '_', true),
+                    'country' => strstr($this->resolver->getLocale(), '_', true),
+                    'promotedAmount' => $this->getPromotedAmount($quote),
+                    'thousandSeparator' => $this->extraConfig['PAGANTIS_SIMULATOR_THOUSANDS_SEPARATOR'],
+                    'decimalSeparator' => $this->extraConfig['PAGANTIS_SIMULATOR_DECIMAL_SEPARATOR'],
+                    'quotesStart' => $this->extraConfig['PAGANTIS_SIMULATOR_START_INSTALLMENTS'],
+                    'type'      => $this->extraConfig['PAGANTIS_SIMULATOR_DISPLAY_TYPE_CHECKOUT'],
+                    'skin'      => $this->extraConfig['PAGANTIS_SIMULATOR_DISPLAY_SKIN'],
+                    'position'  => $positionSelector4x
                 ],
             ],
         ];
