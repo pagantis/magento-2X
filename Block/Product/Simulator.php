@@ -197,7 +197,7 @@ class Simulator extends Template
      */
     public function getSimulatorMessage()
     {
-        return sprintf("Hasta 4 pagos de %s€, sin coste con ", $this->getFinalPrice4x());
+        return sprintf(__("or 4 installments of %s€, without fees, with "), $this->getFinalPrice4x());
     }
 
     /**

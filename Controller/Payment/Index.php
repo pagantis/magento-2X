@@ -307,13 +307,19 @@ class Index extends Action
                 if ($this->config['pagantis_public_key_4x']=='' || $this->config['pagantis_private_key_4x']=='') {
                     throw new \Exception('Public and Secret Key not found');
                 } else {
-                    $orderClient = new Client($this->config['pagantis_public_key_4x'], $this->config['pagantis_private_key_4x']);
+                    $orderClient = new Client(
+                        $this->config['pagantis_public_key_4x'],
+                        $this->config['pagantis_private_key_4x']
+                    );
                 }
             } else {
                 if ($this->config['pagantis_public_key']=='' || $this->config['pagantis_private_key']=='') {
                     throw new \Exception('Public and Secret Key not found');
                 } else {
-                    $orderClient = new Client($this->config['pagantis_public_key'], $this->config['pagantis_private_key']);
+                    $orderClient = new Client(
+                        $this->config['pagantis_public_key'],
+                        $this->config['pagantis_private_key']
+                    );
                 }
             }
 
