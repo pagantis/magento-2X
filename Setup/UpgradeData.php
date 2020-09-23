@@ -108,11 +108,13 @@ class UpgradeData implements UpgradeDataInterface
             }
 
             if (version_compare($context->getVersion(), '8.6.1') < 0) {
-                $query = "ALTER TABLE $prefixedOrdersTableName ADD COLUMN token VARCHAR(32) NOT NULL AFTER order_id";
-                $setup->getConnection()->query($query);
+                if ($setup->tableExists($prefixedOrdersTableName)) {
+                    $query = "ALTER TABLE $prefixedOrdersTableName ADD COLUMN token VARCHAR(32) NOT NULL AFTER order_id";
+                    $setup->getConnection()->query($query);
 
-                $query = "ALTER TABLE $prefixedOrdersTableName DROP PRIMARY KEY, ADD PRIMARY KEY(id, order_id)";
-                $setup->getConnection()->query($query);
+                    $query = "ALTER TABLE $prefixedOrdersTableName DROP PRIMARY KEY, ADD PRIMARY KEY(id, order_id)";
+                    $setup->getConnection()->query($query);
+                }
             }
         }
         $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
