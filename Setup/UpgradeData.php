@@ -13,6 +13,9 @@ class UpgradeData implements UpgradeDataInterface
     /** Config tablename */
     const CONFIG_TABLE = 'Pagantis_config';
 
+    /** Orders tablename */
+    const ORDERS_TABLE = 'cart_process';
+
     /** @var Config */
     public $config;
 
@@ -53,6 +56,7 @@ class UpgradeData implements UpgradeDataInterface
     {
         $setup->startSetup();
         $prefixedTableName = $setup->getConnection()->getTableName(self::CONFIG_TABLE);
+        $prefixedOrdersTableName = $setup->getConnection()->getTableName(self::ORDERS_TABLE);
         if ($setup->tableExists($prefixedTableName)) {
             if (version_compare($context->getVersion(), '8.3.1') < 0) {
                 $newConfigs = array(
@@ -101,6 +105,14 @@ class UpgradeData implements UpgradeDataInterface
                           array('value' => 'Instant financing'),
                           "config='PAGANTIS_TITLE'"
                       );
+            }
+
+            if (version_compare($context->getVersion(), '8.6.1') < 0) {
+                $query = "ALTER TABLE $prefixedOrdersTableName ADD COLUMN token VARCHAR(32) NOT NULL AFTER order_id";
+                $setup->getConnection()->query($query);
+
+                $query = "ALTER TABLE $prefixedOrdersTableName DROP PRIMARY KEY, ADD PRIMARY KEY(id, order_id)";
+                $setup->getConnection()->query($query);
             }
         }
         $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);

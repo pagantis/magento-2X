@@ -125,6 +125,9 @@ class Index extends Action
             $params = $this->getRequest()->getParams();
             $pgProduct = (isset($params['product']) && $params['product']===ConfigProvider::CODE4X) ? ConfigProvider::CODE4X : ConfigProvider::CODE;
 
+            $urlToken = strtoupper(md5(uniqid(rand(), true)));
+            $token = md5($urlToken);
+
             $customer = $quote->getCustomer();
             $shippingAddress = $quote->getShippingAddress();
 
@@ -260,9 +263,9 @@ class Index extends Action
                 $uriRoute = 'pagantis/notify/indexV2';
             }
 
-            $okUrlUser = $this->_url->getUrl($uriRoute, ['_query' => ['quoteId'=>$quoteId,'origin'=>'redirect','product'=>$pgProduct]]);
-            $okUrlNot  = $this->_url->getUrl($uriRoute, ['_query' => ['quoteId'=>$quoteId,'origin'=>'notification','product'=>$pgProduct]]);
-            $okUrl     = $this->_url->getUrl($uriRoute, ['_query' => ['quoteId'=>$quoteId,'origin'=>'redirect','product'=>$pgProduct]]);
+            $okUrlUser = $this->_url->getUrl($uriRoute, ['_query' => ['quoteId'=>$quoteId,'origin'=>'redirect','product'=>$pgProduct, 'token'=>$token]]);
+            $okUrl     = $this->_url->getUrl($uriRoute, ['_query' => ['quoteId'=>$quoteId,'origin'=>'redirect','product'=>$pgProduct, 'token'=>$token]]);
+            $okUrlNot  = $this->_url->getUrl($uriRoute, ['_query' => ['quoteId'=>$quoteId,'origin'=>'notification','product'=>$pgProduct, 'token'=>$token]]);
 
             $orderConfigurationUrls
                 ->setCancel($cancelUrl)
@@ -326,7 +329,7 @@ class Index extends Action
             $order = $orderClient->createOrder($order);
             if ($order instanceof Order) {
                 $url = $order->getActionUrls()->getForm();
-                $result = $this->insertRow($quote->getId(), $order->getId());
+                $result = $this->insertRow($quote->getId(), $order->getId(), $token);
                 if (!$result) {
                     throw new \Exception('Unable to save pagantis-order-id');
                 }
@@ -386,8 +389,9 @@ class Index extends Action
             $table = $dbConnection
                 ->newTable($tableName)
                 ->addColumn('id', Table::TYPE_INTEGER, 10, array('primary'=>true, 'nullable' => false))
-                ->addColumn('order_id', Table::TYPE_TEXT, 50)
-                ->addColumn('mg_order_id', Table::TYPE_TEXT, 50);
+                ->addColumn('order_id', Table::TYPE_TEXT, 50, array('primary'=>true, 'nullable' => true))
+                ->addColumn('mg_order_id', Table::TYPE_TEXT, 50)
+                ->addColumn('token', Table::TYPE_TEXT, 32);
             return $dbConnection->createTable($table);
         }
 
@@ -395,21 +399,22 @@ class Index extends Action
     }
 
     /**
-     * Create relationship between quote_id & Pagantis_order_id
+     * Create relationship between quote_id & Pagantis_order_id & token
      * @param $quoteId
      * @param $pagantisOrderId
+     * @param $token
      *
      * @return int
      * @throws \Zend_Db_Exception
      */
-    private function insertRow($quoteId, $pagantisOrderId)
+    private function insertRow($quoteId, $pagantisOrderId, $token)
     {
         $this->checkDbTable();
         $dbConnection = $this->dbObject->getConnection();
         $tableName = $this->dbObject->getTableName(self::ORDERS_TABLE);
-        return $dbConnection->insertOnDuplicate(
+        return $dbConnection->insert(
             $tableName,
-            array('id'=>$quoteId,'order_id'=>$pagantisOrderId),
+            array('id'=>$quoteId,'order_id'=>$pagantisOrderId,'token'=>$token),
             array('order_id')
         );
     }

@@ -113,6 +113,9 @@ class IndexV2 extends Action
     /** @var RequestInterface $_request*/
     protected $_request;
 
+    /** @var mixed $origin */
+    protected $token;
+
     /**
      * IndexV2 constructor.
      *
@@ -157,6 +160,7 @@ class IndexV2 extends Action
             $this->_request->isPost() || $this->_request->getParam('origin')=='notification'
                         ) ? 'Notification' : 'Order';
         $this->product = $this->_request->getParam('product');
+        $this->token = $this->_request->getParam('token');
 
         // CsrfAwareAction Magento2.3 compatibility
         if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
@@ -292,7 +296,7 @@ class IndexV2 extends Action
             /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
             $dbConnection     = $this->dbObject->getConnection();
             $tableName        = $this->dbObject->getTableName(self::ORDERS_TABLE);
-            $query            = "select order_id from $tableName where id='$this->quoteId'";
+            $query            = "select order_id from $tableName where id='".$this->quoteId."' and token='".$this->token."'";
             $queryResult      = $dbConnection->fetchRow($query);
             $this->pagantisOrderId = $queryResult['order_id'];
             if ($this->pagantisOrderId == '') {
@@ -573,11 +577,12 @@ class IndexV2 extends Action
             }
 
             $pagantisOrderId   = $this->pagantisOrderId;
-            $query        = sprintf(
-                "select mg_order_id from %s where id='%s' and order_id='%s'",
+            $query = sprintf(
+                "select mg_order_id from %s where id='%s' and order_id='%s' and token='%s'",
                 $tableName,
                 $this->quoteId,
-                $pagantisOrderId
+                $pagantisOrderId,
+                $this->token
             );
             $queryResult  = $dbConnection->fetchRow($query);
             $this->magentoOrderId = $queryResult['mg_order_id'];

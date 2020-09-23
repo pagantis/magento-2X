@@ -68,6 +68,42 @@ services:
       - ./:/var/www/html/app/code/Pagantis/Pagantis
     working_dir: /var/www/html/
 
+  magento24-dev:
+    container_name: magento24-dev
+    image: bitnami/magento:2.4.0
+    environment:
+      - MYSQL_HOST=db24-dev
+      - MYSQL_ROOT_PASSWORD=password123
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password123
+      - MYSQL_DATABASE=db24-dev
+      - MAGENTO_LANGUAGE=es_ES
+      - MAGENTO_TIMEZONE=Europe/Madrid
+      - MAGENTO_DEFAULT_CURRENCY=EUR
+      - MAGENTO_URL=http://magento24-dev.docker:8088
+      - MAGENTO_BACKEND_FRONTNAME=admin
+      - MAGENTO_USE_SECURE=0
+      - MAGENTO_BASE_URL_SECURE=0
+      - MAGENTO_USE_SECURE_ADMIN=0
+      - MAGENTO_ADMIN_FIRSTNAME=Admin
+      - MAGENTO_ADMIN_LASTNAME=MyStore
+      - MAGENTO_ADMIN_EMAIL=amdin@example.com
+      - MAGENTO_ADMIN_USERNAME=admin
+      - MAGENTO_ADMIN_PASSWORD=password123
+      - MAGENTO_DATABASE_PASSWORD=password123
+      - MAGENTO_USE_SECURE_ADMIN=no
+    ports:
+      - "8088:80"
+    extra_hosts:
+      - "magento24-dev.docker:127.0.0.1"
+    links:
+      - db24-dev
+    env_file:
+      - .env
+    volumes:
+      - ./:/var/www/html/app/code/Pagantis/Pagantis
+    working_dir: /var/www/html/
+
   db22-dev:
     container_name: db22-dev
     image: mysql:5.6.23
@@ -85,6 +121,15 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=password123
       - MYSQL_DATABASE=db23-dev
+
+  db24-dev:
+    container_name: db24-dev
+    image: mysql:5.6.23
+    volumes:
+      - db-data:/var/lib/mysql/data
+    environment:
+      - MYSQL_ROOT_PASSWORD=password123
+      - MYSQL_DATABASE=db24-dev
 
   magento22-test:
     container_name: magento22-test
@@ -150,6 +195,38 @@ services:
       - .env
     working_dir: /var/www/html/
 
+  magento24-test:
+    container_name: magento24-test
+    image: bitnami/magento:2.4.0
+    environment:
+      - MYSQL_HOST=db24-test
+      - MYSQL_ROOT_PASSWORD=password123
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password123
+      - MYSQL_DATABASE=db24-test
+      - MAGENTO_LANGUAGE=es_ES
+      - MAGENTO_TIMEZONE=Europe/Madrid
+      - MAGENTO_DEFAULT_CURRENCY=EUR
+      - MAGENTO_URL=http://magento24-test.docker:8083
+      - MAGENTO_BACKEND_FRONTNAME=admin
+      - MAGENTO_USE_SECURE=0
+      - MAGENTO_BASE_URL_SECURE=0
+      - MAGENTO_USE_SECURE_ADMIN=0
+      - MAGENTO_ADMIN_FIRSTNAME=Admin
+      - MAGENTO_ADMIN_LASTNAME=MyStore
+      - MAGENTO_ADMIN_EMAIL=amdin@example.com
+      - MAGENTO_ADMIN_USERNAME=admin
+      - MAGENTO_ADMIN_PASSWORD=password123
+    ports:
+      - "8083:80"
+    extra_hosts:
+      - "magento24-test.docker:127.0.0.1"
+    links:
+      - db24-test
+    env_file:
+      - .env
+    working_dir: /var/www/html/
+
   db22-test:
     container_name: db22-test
     image: mysql:5.6.23
@@ -168,6 +245,15 @@ services:
       - MYSQL_ROOT_PASSWORD=password123
       - MYSQL_DATABASE=db23-test
 
+  db24-test:
+    container_name: db24-test
+    image: mysql:5.6.23
+    volumes:
+      - db-data:/var/lib/mysql/data
+    environment:
+      - MYSQL_ROOT_PASSWORD=password123
+      - MYSQL_DATABASE=db24-test
+
   selenium:
     container_name: selenium
     image: selenium/standalone-chrome:3.7.1
@@ -178,6 +264,8 @@ services:
       - "magento23-test.docker:${DOCKERHOST}"
       - "magento22-dev.docker:${DOCKERHOST}"
       - "magento23-dev.docker:${DOCKERHOST}"
+      - "magento24-dev.docker:${DOCKERHOST}"
+      - "magento24-test.docker:${DOCKERHOST}"
 
 volumes:
   db-data:
