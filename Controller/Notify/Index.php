@@ -284,7 +284,7 @@ class Index extends Action
             /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
             $dbConnection     = $this->dbObject->getConnection();
             $tableName        = $this->dbObject->getTableName(self::ORDERS_TABLE);
-            $query            = "select top 1 order_id from $tableName where id='.$this->quoteId.' and token='.$this->token.'";
+            $query            = "select order_id from $tableName where id='.$this->quoteId.' and token='.$this->token.'";
             $queryResult      = $dbConnection->fetchRow($query);
             $this->pagantisOrderId = $queryResult['order_id'];
             if ($this->pagantisOrderId == '') {
