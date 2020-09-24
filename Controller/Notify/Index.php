@@ -112,6 +112,9 @@ class Index extends Action
     /** @var RequestInterface $_request*/
     protected $_request;
 
+    /** @var mixed $origin */
+    protected $token;
+
     /**
      * Index constructor.
      *
@@ -155,6 +158,7 @@ class Index extends Action
             $this->_request->isPost() || $this->_request->getParam('origin')=='notification'
         ) ? 'Notification' : 'Order';
         $this->product = $this->_request->getParam('product');
+        $this->token = $this->_request->getParam('token');
     }
 
     /**
@@ -280,7 +284,7 @@ class Index extends Action
             /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
             $dbConnection     = $this->dbObject->getConnection();
             $tableName        = $this->dbObject->getTableName(self::ORDERS_TABLE);
-            $query            = "select order_id from $tableName where id='$this->quoteId'";
+            $query            = "select order_id from $tableName where id='.$this->quoteId.' and token='.$this->token.'";
             $queryResult      = $dbConnection->fetchRow($query);
             $this->pagantisOrderId = $queryResult['order_id'];
             if ($this->pagantisOrderId == '') {
@@ -554,11 +558,12 @@ class Index extends Action
             }
             $pagantisOrderId   = $this->pagantisOrderId;
 
-            $query        = sprintf(
-                "select mg_order_id from %s where id='%s' and order_id='%s'",
+            $query = sprintf(
+                "select mg_order_id from %s where id='%s' and order_id='%s' and token='%s'",
                 $tableName,
                 $this->quoteId,
-                $pagantisOrderId
+                $pagantisOrderId,
+                $this->token
             );
             $queryResult  = $dbConnection->fetchRow($query);
             $this->magentoOrderId = $queryResult['mg_order_id'];

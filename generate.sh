@@ -9,11 +9,12 @@ while true; do
     esac
 done
 while true; do
-    read -p "Do you wish to run version 2.2 or 2.3 [22|23]? " version
+    read -p "Do you wish to run version 2.2, 2.3 or 2.4 [22|23|24]? " version
     case $version in
         [22]* ) break;;
         [23]* ) break;;
-        * ) echo "Please answer 22 or 23.";;
+        [24]* ) break;;
+        * ) echo "Please answer 22, 23 or 24.";;
     esac
 done
 
@@ -27,7 +28,10 @@ while true; do
     esac
 done
 
+
+
 docker-compose down
+docker ps -aq --no-trunc -f status=exited | xargs docker rm
 docker-compose up -d selenium
 docker-compose up -d --build ${container}
 docker-compose exec ${container} docker-php-ext-install bcmath
@@ -41,7 +45,6 @@ then
     docker-compose exec -u www-data ${container} composer require "pagantis/orders-api-client"
     docker-compose exec -u www-data ${container} composer require "pagantis/module-utils"
 else
-
     package='dev-xxx'
     echo 'Package: '$package
     docker-compose exec -u www-data ${container} composer require pagantis/magento-2x:$package -d /var/www/html
@@ -101,4 +104,4 @@ fi
 
 containerPort=$(docker container port ${container})
 PORT=$(sed  -e 's/.*://' <<< $containerPort)
-echo 'Build of Woocommerce complete: http://'${container}'.docker:'${PORT}
+echo 'Build of Magento 2 complete: http://'${container}'.docker:'${PORT}
