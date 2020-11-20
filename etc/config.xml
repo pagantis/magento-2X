@@ -4,10 +4,8 @@
         <payment>
             <pagantis>
                 <active>1</active>
-                <active_12x>1</active_12x>
-                <active_4x>0</active_4x>
                 <title>Pagantis</title>
-                <currency>EUR</currency>
+                <clearpay_api_region>ES</clearpay_api_region>
                 <is_gateway>1</is_gateway>
                 <model>pagantisFacade</model>
                 <payment_action>sale</payment_action>
@@ -20,17 +18,7 @@
                 <can_void>0</can_void>
                 <can_cancel>0</can_cancel>
                 <allowspecific>0</allowspecific>
-                <product_simulator>1</product_simulator>
             </pagantis>
-            <pagantis4x>
-                <title>Pagantis4x</title>
-                <currency>EUR</currency>
-                <model>pagantis4xFacade</model>
-                <can_use_checkout>1</can_use_checkout>
-                <is_gateway>1</is_gateway>
-                <payment_action>sale</payment_action>
-                <order_status>pending_payment</order_status>
-            </pagantis4x>
         </payment>
     </default>
 </config>

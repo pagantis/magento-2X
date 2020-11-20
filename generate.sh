@@ -28,8 +28,6 @@ while true; do
     esac
 done
 
-
-
 docker-compose down
 docker ps -aq --no-trunc -f status=exited | xargs docker rm
 docker-compose up -d selenium
@@ -42,8 +40,7 @@ then
     docker-compose exec -u www-data ${container} php /var/www/html/bin/magento \
         module:enable Pagantis_Pagantis --clear-static-content
     docker-compose exec -u www-data ${container} composer install -d /var/www/html/app/code/Pagantis/Pagantis
-    docker-compose exec -u www-data ${container} composer require "pagantis/orders-api-client"
-    docker-compose exec -u www-data ${container} composer require "pagantis/module-utils"
+    docker-compose exec -u www-data ${container} composer require "afterpay-global/afterpay-sdk-php": "dev-downgrade-to-api-v1"
 else
     package='dev-xxx'
     echo 'Package: '$package

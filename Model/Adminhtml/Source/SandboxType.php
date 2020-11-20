@@ -13,11 +13,11 @@ class SandboxType implements ArrayInterface
     /**
      * PRODUCTION
      */
-    const PRODUCTION = 1;
+    const PRODUCTION = 'production';
     /**
      * TESTING
      */
-    const TESTING = 0;
+    const TESTING = 'sandbox';
     /**
      * @return array
      */
@@ -25,12 +25,12 @@ class SandboxType implements ArrayInterface
     {
         return array(
             array(
-                'label' => __(' Production'),
-                'value' => self::PRODUCTION,
+                'label' => __('Sandbox'),
+                'value' => self::TESTING,
             ),
             array(
-                'label' => __(' Testing'),
-                'value' => self::TESTING,
+                'label' => __('Production'),
+                'value' => self::PRODUCTION,
             )
         );
     }

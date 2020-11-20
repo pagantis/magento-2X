@@ -30,6 +30,9 @@ use Pagantis\ModuleUtils\Exception\AlreadyProcessedException;
 use Pagantis\ModuleUtils\Model\Log\LogEntry;
 use Magento\Framework\App\RequestInterface;
 use Pagantis\Pagantis\Model\Ui\ConfigProvider;
+use Afterpay\SDK\HTTP\Request as ClearpayRequest;
+use Afterpay\SDK\HTTP\Request\ImmediatePaymentCapture as ClearpayImmediatePaymentCaptureRequest;
+use Afterpay\SDK\MerchantAccount as ClearpayMerchant;
 
 /**
  * Class Index
@@ -48,6 +51,9 @@ class Index extends Action
 
     /** Seconds to expire a locked request */
     const CONCURRENCY_TIMEOUT = 10;
+
+    /** Payment method */
+    const PAYMENT_METHOD = 'pagantis';
 
     /**
      * EXCEPTION RESPONSES
@@ -103,17 +109,23 @@ class Index extends Action
     /** @var ExtraConfig $extraConfig */
     protected $extraConfig;
 
-    /** @var mixed $origin */
-    protected $origin;
-
-    /** @var mixed $product */
-    protected $product;
-
     /** @var RequestInterface $_request*/
     protected $_request;
 
     /** @var mixed $origin */
     protected $token;
+
+    /** @var mixed $countryCode */
+    protected $countryCode;
+
+    /** @var ClearpayMerchant $clearpayMerchantAccount */
+    protected $clearpayMerchantAccount;
+
+    /** @var Object $clearpayOrder */
+    protected $clearpayOrder;
+
+    /** @var string $clearpayCapturedPaymentId */
+    protected $clearpayCapturedPaymentId;
 
     /**
      * Index constructor.
@@ -129,6 +141,9 @@ class Index extends Action
      * @param Session                  $checkoutSession
      * @param ExtraConfig              $extraConfig
      * @param RequestInterface         $request
+     *
+     * @throws QuoteNotFoundException
+     * @throws \Afterpay\SDK\Exception\InvalidArgumentException
      */
     public function __construct(
         Context $context,
@@ -154,11 +169,18 @@ class Index extends Action
         $this->dbObject = $dbObject;
         $this->checkoutSession = $checkoutSession;
         $this->_request = $request;
-        $this->origin = (
-            $this->_request->isPost() || $this->_request->getParam('origin')=='notification'
-        ) ? 'Notification' : 'Order';
-        $this->product = $this->_request->getParam('product');
         $this->token = $this->_request->getParam('token');
+        $this->clearpayMerchantAccount = new ClearpayMerchant();
+        $this->clearpayMerchantAccount
+            ->setMerchantId($this->config['clearpay_merchant_id'])
+            ->setSecretKey($this->config['clearpay_merchant_key'])
+            ->setApiEnvironment($this->config['clearpay_api_environment'])
+        ;
+        $this->getQuoteId();
+        $this->countryCode = $this->getClearpayOrderCountryCode();
+        if (!is_null($this->countryCode)) {
+            $this->clearpayMerchantAccount->setCountryCode($this->countryCode);
+        }
     }
 
     /**
@@ -169,25 +191,10 @@ class Index extends Action
     {
         $thrownException = false;
         try {
-            if ($this->_request->isGet() && $this->isNotification()) {
-                echo 'OK';
-                die;
-            }
-
-            if ($this->_request->isGet() && $this->isRedirect()) {
-                $redirectMessage = sprintf(
-                    "[origin=%s][quoteId=%s]",
-                    $this->getOrigin(),
-                    $this->getRequest()->getParam('quoteId')
-                );
-                $this->insertLog(null, $redirectMessage);
-            }
-
             $this->checkConcurrency();
             $this->getMerchantOrder();
             $this->getPagantisOrderId();
             $this->getPagantisOrder();
-            $this->checkOrderStatus();
             $this->checkMerchantOrderStatus();
             $this->validateAmount();
             $this->processMerchantOrder();
@@ -219,10 +226,9 @@ class Index extends Action
 
         $this->unblockConcurrency(true);
 
-        if ($this->isNotification()) {
+        if (true) {
             $returnMessage = sprintf(
-                "[origin=%s][quoteId=%s][magentoOrderId=%s][pagantisOrderId=%s][message=%s]",
-                $this->getOrigin(),
+                "[quoteId=%s][magentoOrderId=%s][pagantisOrderId=%s][message=%s]",
                 $this->quoteId,
                 $this->magentoOrderId,
                 $this->pagantisOrderId,
@@ -233,8 +239,7 @@ class Index extends Action
         } else {
             $returnUrl = $this->getRedirectUrl();
             $returnMessage = sprintf(
-                "[origin=%s][quoteId=%s][magentoOrderId=%s][pagantisOrderId=%s][returnUrl=%s]",
-                $this->getOrigin(),
+                "[quoteId=%s][magentoOrderId=%s][pagantisOrderId=%s][returnUrl=%s]",
                 $this->quoteId,
                 $this->magentoOrderId,
                 $this->pagantisOrderId,
@@ -256,8 +261,6 @@ class Index extends Action
      */
     private function checkConcurrency()
     {
-        $this->getQuoteId();
-        $this->checkDbTable();
         $this->unblockConcurrency();
         $this->blockConcurrency();
     }
@@ -284,7 +287,7 @@ class Index extends Action
             /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
             $dbConnection     = $this->dbObject->getConnection();
             $tableName        = $this->dbObject->getTableName(self::ORDERS_TABLE);
-            $query            = "select order_id from $tableName where id='.$this->quoteId.' and token='.$this->token.'";
+            $query            = "select order_id from $tableName where id='$this->quoteId' and token='$this->token'";
             $queryResult      = $dbConnection->fetchRow($query);
             $this->pagantisOrderId = $queryResult['order_id'];
             if ($this->pagantisOrderId == '') {
@@ -301,31 +304,20 @@ class Index extends Action
     private function getPagantisOrder()
     {
         try {
-            $this->orderClient = new Client(
-                $this->config['pagantis_public_key'],
-                $this->config['pagantis_private_key']
-            );
-            $this->pagantisOrder = $this->orderClient->getOrder($this->pagantisOrderId);
+            $getOrderRequest = new ClearpayRequest();
+            $getOrderRequest
+                ->setMerchantAccount($this->clearpayMerchantAccount)
+                ->setUri("/v1/orders/" . $this->pagantisOrderId)
+            ;
+            $getOrderRequest->send();
+
+            if ($getOrderRequest->getResponse()->getHttpStatusCode() >= 400) {
+                throw new UnknownException("Unable to retrieve order from Clearpay=$this->clearpayOrderId");
+            }
+
+            $this->clearpayOrder = $getOrderRequest->getResponse()->getParsedBody();
         } catch (\Exception $e) {
             throw new OrderNotFoundException();
-        }
-    }
-
-    /**
-     * @throws AlreadyProcessedException
-     * @throws WrongStatusException
-     */
-    private function checkOrderStatus()
-    {
-        try {
-            $this->checkPagantisStatus(array('AUTHORIZED'));
-        } catch (\Exception $e) {
-            $this->getMagentoOrderId();
-            if ($this->magentoOrderId!='') {
-                throw new AlreadyProcessedException();
-            } else {
-                throw new WrongStatusException($this->pagantisOrder->getStatus());
-            }
         }
     }
 
@@ -345,8 +337,8 @@ class Index extends Action
      */
     private function validateAmount()
     {
-        $pagantisAmount = $this->pagantisOrder->getShoppingCart()->getTotalAmount();
-        $merchantAmount = intval(100 * $this->quote->getGrandTotal());
+        $pagantisAmount = $this->clearpayOrder->totalAmount->amount;
+        $merchantAmount = $this->quote->getGrandTotal();
         if ($pagantisAmount != $merchantAmount) {
             throw new AmountMismatchException($pagantisAmount, $merchantAmount);
         }
@@ -372,17 +364,41 @@ class Index extends Action
     private function confirmpagantisOrder()
     {
         try {
-            $this->pagantisOrder = $this->orderClient->confirmOrder($this->pagantisOrderId);
-        } catch (\Exception $e) {
-            throw new UnknownException(sprintf("[%s]%s", $this->getOrigin(), $e->getMessage()));
-        }
+            $immediatePaymentCaptureRequest = new ClearpayImmediatePaymentCaptureRequest(array(
+                'token' => $this->pagantisOrderId
+            ));
+            $immediatePaymentCaptureRequest->setMerchantAccount($this->clearpayMerchantAccount);
+            $immediatePaymentCaptureRequest->send();
+            if ($immediatePaymentCaptureRequest->getResponse()->getHttpStatusCode() >= 400) {
+                $exception = sprintf(
+                    "CleClearpay capture payment error, order token:%s ||Error code:%s",
+                    $this->pagantisOrderId,
+                    $immediatePaymentCaptureRequest->getResponse()->getParsedBody()->errorCode
+                );
+                throw new UnknownException($exception);
+            }
+            if (!$immediatePaymentCaptureRequest->getResponse()->isApproved()) {
+                $exception = sprintf(
+                    "Clearpay capture payment error, payment was not proccesed token:%s ||Error code:%s",
+                    $this->pagantisOrderId,
+                    $immediatePaymentCaptureRequest->getResponse()->getParsedBody()->errorCode
+                );
+                throw new UnknownException($exception);
+            }
+            $this->clearpayCapturedPaymentId = $immediatePaymentCaptureRequest->getResponse()->getParsedBody()->id;
 
-        $jsonResponse = new JsonSuccessResponse();
-        $jsonResponse->setStatusCode(200);
-        $jsonResponse->setMerchantOrderId($this->magentoOrderId);
-        $jsonResponse->setpagantisOrderId($this->pagantisOrderId);
-        $jsonResponse->setResult(self::CPO_OK_MSG);
-        return $jsonResponse->toJson();
+            $comment = sprintf(
+                "Token = %s || Capture Payment Id=%s",
+                $this->clearpayOrder->token,
+                $this->clearpayCapturedPaymentId
+            );
+            $this->magentoOrder->addStatusHistoryComment($comment)
+                               ->setIsCustomerNotified(false)
+                               ->setEntityName('order')
+                               ->save();
+        } catch (\Exception $e) {
+            throw new UnknownException(sprintf("%s", $e->getMessage()));
+        }
     }
 
     /**
@@ -397,59 +413,6 @@ class Index extends Action
         $this->quoteId = $this->getRequest()->getParam('quoteId');
         if ($this->quoteId == '') {
             throw new QuoteNotFoundException();
-        }
-    }
-
-    /**
-     * @return \Zend_Db_Statement_Interface
-     * @throws UnknownException
-     */
-    private function checkDbTable()
-    {
-        try {
-            /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
-            $dbConnection = $this->dbObject->getConnection();
-            $tableName    = $this->dbObject->getTableName(self::CONCURRENCY_TABLE);
-            $query        = "CREATE TABLE IF NOT EXISTS $tableName(`id` int not null,`timestamp` int not null,PRIMARY KEY (`id`))";
-
-            return $dbConnection->query($query);
-        } catch (\Exception $e) {
-            throw new UnknownException($e->getMessage());
-        }
-    }
-
-    /**
-     * @return void|\Zend_Db_Statement_Interface
-     * @throws UnknownException
-     */
-    private function checkDbLogTable()
-    {
-        try {
-            /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
-            $dbConnection = $this->dbObject->getConnection();
-            $tableName = $this->dbObject->getTableName(self::LOGS_TABLE);
-            if (!$dbConnection->isTableExists($tableName)) {
-                $table = $dbConnection
-                    ->newTable($tableName)
-                    ->addColumn(
-                        'id',
-                        Table::TYPE_SMALLINT,
-                        null,
-                        array('nullable'=>false, 'auto_increment'=>true, 'primary'=>true)
-                    )
-                    ->addColumn('log', Table::TYPE_TEXT, null, array('nullable'=>false))
-                    ->addColumn(
-                        'createdAt',
-                        Table::TYPE_TIMESTAMP,
-                        null,
-                        array('nullable'=>false, 'default'=>Table::TIMESTAMP_INIT)
-                    );
-                return $dbConnection->createTable($table);
-            }
-
-            return;
-        } catch (\Exception $e) {
-            throw new UnknownException($e->getMessage());
         }
     }
 
@@ -506,12 +469,11 @@ class Index extends Action
                 $this->getMagentoOrderId();
 
                 $logMessage  = sprintf(
-                    "User waiting %s seconds, default seconds %s, bd time to expire %s seconds[quoteId=%s][origin=%s]",
+                    "User waiting %s seconds, default seconds %s, bd time to expire %s seconds[quoteId=%s]",
                     $expirationSec,
                     self::CONCURRENCY_TIMEOUT,
                     $restSeconds,
-                    $this->quoteId,
-                    $this->getOrigin()
+                    $this->quoteId
                 );
                 throw new UnknownException($logMessage);
             }
@@ -580,44 +542,23 @@ class Index extends Action
     private function saveOrder()
     {
         try {
-            $this->paymentInterface->setMethod($this->getProduct());
+            $this->paymentInterface->setMethod(self::PAYMENT_METHOD);
             $this->magentoOrderId = $this->quoteManagement->placeOrder($this->quoteId, $this->paymentInterface);
 
             /** @var OrderRepositoryInterface magentoOrder */
             $this->magentoOrder = $this->orderRepositoryInterface->get($this->magentoOrderId);
-            $metadataOrder = $this->pagantisOrder->getMetadata();
-            $metadataInfo = null;
-            foreach ($metadataOrder as $metadataKey => $metadataValue) {
-                if ($metadataKey == 'promotedProduct') {
-                    $metadataInfo.= " Producto promocionado = $metadataValue //";
-                }
-            }
 
-            $this->magentoOrder->addStatusHistoryComment($metadataInfo)
-                               ->setIsCustomerNotified(false)
+            /*$this->magentoOrder->setIsCustomerNotified(false)
                                ->setEntityName('order')
-                               ->setTitle($this->getProduct())
-                               ->setPayment($this->getProduct())
-                               ->save();
-
-            $comment = sprintf(
-                'pagantisOrderId: %s || pagantisOrderStatus: %s  || via: %s  || product: %s',
-                $this->pagantisOrder->getId(),
-                $this->pagantisOrder->getStatus(),
-                $this->getOrigin(),
-                $this->getProduct()
-            );
-
-            $this->magentoOrder->addStatusHistoryComment($comment)
-                               ->setIsCustomerNotified(false)
-                               ->setEntityName('order')
-                               ->save();
+                               ->setTitle(self::PAYMENT_METHOD)
+                               ->setPayment(self::PAYMENT_METHOD)
+                               ->save();*/
 
             if ($this->magentoOrderId == '') {
                 throw new UnknownException('Order can not be saved');
             }
         } catch (\Exception $e) {
-            throw new UnknownException($e->getMessage());
+            throw new UnknownException('saveOrder'.$e->getMessage());
         }
     }
 
@@ -630,11 +571,11 @@ class Index extends Action
             /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
             $dbConnection = $this->dbObject->getConnection();
             $tableName    = $this->dbObject->getTableName(self::ORDERS_TABLE);
-            $pagantisOrderId   = $this->pagantisOrder->getId();
+            $pagantisOrderId   = $this->clearpayOrder->token;
             $dbConnection->update(
                 $tableName,
                 array('mg_order_id' => $this->magentoOrderId),
-                "order_id='$pagantisOrderId' and id='$this->quoteId'"
+                "order_id='".$this->clearpayOrder->token."' and id='$this->quoteId'"
             );
         } catch (\Exception $e) {
             throw new UnknownException($e->getMessage());
@@ -654,39 +595,6 @@ class Index extends Action
         } catch (\Exception $e) {
             throw new UnknownException($e->getMessage());
         }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getOrigin()
-    {
-        return $this->origin;
-    }
-
-    /**
-     * @param mixed $origin
-     */
-    public function setOrigin($origin)
-    {
-        $this->origin = $origin;
-    }
-
-
-    /**
-     * @return mixed
-     */
-    public function getProduct()
-    {
-        return $this->product;
-    }
-
-    /**
-     * @param mixed $product
-     */
-    public function setProduct($product)
-    {
-        $this->product = $product;
     }
 
     /**
@@ -711,8 +619,7 @@ class Index extends Action
             $this->magentoOrder = $this->orderRepositoryInterface->get($this->magentoOrderId);
             if (!$this->_objectManager->get(\Magento\Checkout\Model\Session\SuccessValidator::class)->isValid()) {
                 $checkoutMessage = sprintf(
-                    "[origin=%s][quoteId=%s][magentoOrderId=%s][pagantisOrderId=%s]Setting checkout session",
-                    $this->getOrigin(),
+                    "[quoteId=%s][magentoOrderId=%s][pagantisOrderId=%s]Setting checkout session",
                     $this->quoteId,
                     $this->magentoOrderId,
                     $this->pagantisOrderId
@@ -756,9 +663,8 @@ class Index extends Action
      * @throws UnknownException
      */
     private function insertLog($exceptionMessage = null, $logMessage = null)
-    {
+    { return true;
         try {
-            $this->checkDbLogTable();
             $logEntryJson = '';
             if ($exceptionMessage instanceof \Exception) {
                 $logEntry     = new LogEntry();
@@ -784,7 +690,7 @@ class Index extends Action
      */
     private function isNotification()
     {
-        return ($this->getOrigin() == 'Notification');
+        return true;
     }
 
     /**
@@ -792,6 +698,22 @@ class Index extends Action
      */
     private function isRedirect()
     {
-        return ($this->getOrigin() == 'Order');
+        return false;
+    }
+
+    /**
+     * Find Clearpay country code
+     *
+     * @throws Exception
+     */
+    private function getClearpayOrderCountryCode()
+    {
+        /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
+        $dbConnection     = $this->dbObject->getConnection();
+        $tableName        = $this->dbObject->getTableName(self::ORDERS_TABLE);
+        $query            = "select country_code from $tableName where id='$this->quoteId' and token='$this->token'";
+        $queryResult      = $dbConnection->fetchRow($query);
+
+        return $queryResult['country_code'];
     }
 }

@@ -5,6 +5,7 @@ namespace Pagantis\Pagantis\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Pagantis\Pagantis\Model\Ui\ConfigProvider;
 
+
 /**
  * Class PaymentMethodAvailable
  * @package Pagantis\Pagantis\Observer
@@ -20,6 +21,7 @@ class PaymentMethodAvailable implements ObserverInterface
             if ($observer->getEvent()->getMethodInstance()->getCode()==ConfigProvider::CODE) {
                 $checkResult = $observer->getEvent()->getResult();
                 $totalPrice  = (string) floor($observer->getEvent()->getQuote()->getGrandTotal());
+                $totalPrice  = (float)$observer->getEvent()->getQuote()->getGrandTotal();
                 $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
                 $config        = $objectManager->create('Pagantis\Pagantis\Helper\Config')->getConfig();
                 $extraConfig   = $objectManager->create('Pagantis\Pagantis\Helper\ExtraConfig')->getExtraConfig();
@@ -27,38 +29,14 @@ class PaymentMethodAvailable implements ObserverInterface
                 $locale = strstr($resolver->getLocale(), '_', true);
                 $allowedCountries = unserialize($extraConfig['PAGANTIS_ALLOWED_COUNTRIES']);
                 $availableCountry = (in_array(strtolower($locale), $allowedCountries));
-                $maxAmount = $extraConfig['PAGANTIS_DISPLAY_MAX_AMOUNT'];
-                $minAmount = $extraConfig['PAGANTIS_DISPLAY_MIN_AMOUNT'];
-                $validAmount = ($totalPrice>=$minAmount && ($totalPrice<=$maxAmount||$maxAmount=='0'));
-                $disabledPg = (!isset($config['pagantis_public_key']) || $config['pagantis_public_key'] == '' ||
-                               !isset($config['pagantis_private_key']) || $config['pagantis_private_key'] == '' ||
-                               !$availableCountry || !$validAmount || $config['active_12x']!=='1'
-                               || $config['active']!=='1' );
-                if ($disabledPg) {
-                    $checkResult->setData('is_available', false);
-                } else {
-                    $checkResult->setData('is_available', true);
-                }
-            }
+                $maxAmount = $config['clearpay_max_amount'];
+                $minAmount = $config['clearpay_min_amount'];
+                $validAmount = ($totalPrice>=$minAmount && $totalPrice<=$maxAmount);
+                $disabledPg = (!isset($config['clearpay_merchant_id']) || $config['clearpay_merchant_id'] == '' ||
+                               !isset($config['clearpay_merchant_key']) || $config['clearpay_merchant_key'] == ''
+                               || !$availableCountry || $config['active']!=='1' || !$validAmount);
 
-            if ($observer->getEvent()->getMethodInstance()->getCode()==ConfigProvider::CODE4X) {
-                $checkResult = $observer->getEvent()->getResult();
-                $totalPrice  = (string) floor($observer->getEvent()->getQuote()->getGrandTotal());
-                $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-                $config        = $objectManager->create('Pagantis\Pagantis\Helper\Config')->getConfig();
-                $extraConfig   = $objectManager->create('Pagantis\Pagantis\Helper\ExtraConfig')->getExtraConfig();
-                $resolver      = $objectManager->create('Magento\Framework\Locale\Resolver');
-                $locale = strstr($resolver->getLocale(), '_', true);
-                $allowedCountries = unserialize($extraConfig['PAGANTIS_ALLOWED_COUNTRIES']);
-                $availableCountry = (in_array(strtolower($locale), $allowedCountries));
-                $maxAmount = $extraConfig['PAGANTIS_DISPLAY_MAX_AMOUNT_4x'];
-                $minAmount = $extraConfig['PAGANTIS_DISPLAY_MIN_AMOUNT_4x'];
-                $validAmount = ($totalPrice>=$minAmount && ($totalPrice<=$maxAmount||$maxAmount=='0'));
-                $disabledPg4x = (!isset($config['pagantis_public_key_4x']) || $config['pagantis_public_key_4x']=='' ||
-                                 !isset($config['pagantis_private_key_4x']) || $config['pagantis_private_key_4x']=='' ||
-                                 !$availableCountry || !$validAmount || $config['active_4x']!=='1'
-                                 || $config['active']!=='1' );
-                if ($disabledPg4x) {
+                if ($disabledPg) {
                     $checkResult->setData('is_available', false);
                 } else {
                     $checkResult->setData('is_available', true);

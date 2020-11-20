@@ -2,31 +2,20 @@
 
 namespace Pagantis\Pagantis\Controller\Payment;
 
+use Afterpay\SDK\Model;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Quote\Model\QuoteRepository;
 use Magento\Sales\Model\ResourceModel\Order\Collection as OrderCollection;
 use Magento\Checkout\Model\Session;
-use Pagantis\OrdersApiClient\Model\Order;
 use Pagantis\Pagantis\Helper\Config;
 use Pagantis\Pagantis\Helper\ExtraConfig;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Module\ModuleList;
 use Magento\Store\Api\Data\StoreInterface;
-use Pagantis\OrdersApiClient\Model\Order\User\Address;
-use Magento\Framework\DB\Ddl\Table;
-use Pagantis\OrdersApiClient\Model\Order\User;
-use Pagantis\OrdersApiClient\Model\Order\User\OrderHistory;
-use Pagantis\OrdersApiClient\Model\Order\ShoppingCart\Details;
-use Pagantis\OrdersApiClient\Model\Order\ShoppingCart;
-use Pagantis\OrdersApiClient\Model\Order\ShoppingCart\Details\Product;
-use Pagantis\OrdersApiClient\Model\Order\Metadata;
-use Pagantis\OrdersApiClient\Model\Order\Configuration\Urls;
-use Pagantis\OrdersApiClient\Model\Order\Configuration\Channel;
-use Pagantis\OrdersApiClient\Model\Order\Configuration;
-use Pagantis\OrdersApiClient\Client;
-use Pagantis\Pagantis\Model\Ui\ConfigProvider;
+use Afterpay\SDK\HTTP\Request\CreateCheckout;
+use Afterpay\SDK\MerchantAccount;
 
 /**
  * Class Index
@@ -70,6 +59,9 @@ class Index extends Action
     /** @var StoreInterface $store */
     protected $store;
 
+    /** @var QuoteRepository $quote */
+    protected $quote;
+
     /**
      * Index constructor.
      *
@@ -83,6 +75,9 @@ class Index extends Action
      * @param ModuleList               $moduleList
      * @param ExtraConfig              $extraConfig
      * @param StoreInterface           $storeInterface
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function __construct(
         Context $context,
@@ -99,7 +94,7 @@ class Index extends Action
         parent::__construct($context);
         $this->session = $session;
         $this->context = $context;
-        $this->config = $config->getConfig();
+        $this->config = $config;
         $this->quoteRepository = $quoteRepository;
         $this->orderCollection = $orderCollection;
         $this->dbObject = $dbObject;
@@ -107,253 +102,191 @@ class Index extends Action
         $this->productMetadataInterface = $productMetadataInterface;
         $this->extraConfig = $extraConfig->getExtraConfig();
         $this->store = $storeInterface;
+        $this->quote = $this->session->getQuote();
+    }
+
+    public function execute()
+    {
+        Model::setAutomaticValidationEnabled(true);
+        $createCheckoutRequest = new CreateCheckout();
+        $clearpayMerchantAccount = new MerchantAccount();
+        $countryCode = $this->getCountryCode();
+        $clearpayMerchantAccount
+            ->setMerchantId($this->config->getMerchantId())
+            ->setSecretKey($this->config->getSecretKey())
+            ->setApiEnvironment($this->config->getApiEnvironment())
+        ;
+
+        if (!is_null($countryCode)) {
+            $clearpayMerchantAccount->setCountryCode($countryCode);
+        }
+
+        $metadata = $this->getMetadata();
+        $uriRoute = 'pagantis/notify/index';
+        $urlToken = strtoupper(md5(uniqid(rand(), true)));
+        $token = md5($urlToken);
+        $cancelUrl = $this->_url->getUrl('checkout', ['_fragment' => 'payment']);
+
+        $quoteId = $this->quote->getId();
+        if (version_compare($metadata['pg_version'], '2.3.0') >= 0) {
+            $uriRoute = 'pagantis/notify/indexV2';
+        }
+        $okUrl     = $this->_url->getUrl($uriRoute, ['_query' => ['quoteId'=>$quoteId, 'token'=>$token]]);
+        $currency = $this->quote->getCurrency()->getBaseCurrencyCode();
+        $shippingAddress = $this->quote->getShippingAddress();
+        $billingAddress = $this->quote->getBillingAddress();
+
+        $customer = $this->quote->getCustomer();
+        $params = $this->getRequest()->getParams();
+        $email = '';
+        if (isset($params['email']) && $params['email']!='') {
+            $this->session->setEmail($params['email']); //Get guest email after refresh page
+            $customer->setEmail($params['email']);
+            $this->quote->setCheckoutMethod('guest');
+            $this->quote->getBillingAddress()->setEmail($params['email']);
+            $email = $params['email'];
+        } elseif ($customer->getEmail()=='') {
+            $customer->setEmail($this->session->getEmail());
+            $this->quote->setCheckoutMethod('guest');
+            $this->quote->getBillingAddress()->setEmail($this->session->getEmail());
+            $email = $this->session->getEmail();
+        }
+
+        /** @var Quote $currentQuote */
+        $currentQuote = $this->quoteRepository->get($this->quote->getId());
+        $currentQuote->setCustomerEmail($email);
+        $this->quoteRepository->save($currentQuote);
+
+        $createCheckoutRequest
+            ->setMerchant(array(
+                'redirectConfirmUrl' => $okUrl,
+                'redirectCancelUrl' => $cancelUrl
+            ))
+            ->setMerchantAccount($clearpayMerchantAccount)
+            ->setTotalAmount(
+                $this->parseAmount($this->quote->getGrandTotal()),
+                $currency
+            )
+            ->setTaxAmount(
+                $this->parseAmount($this->quote->getTaxAmount()),
+                $currency
+            )
+            ->setConsumer(array(
+                'phoneNumber' => $billingAddress->getTelephone(),
+                'givenNames' => $shippingAddress->getFirstname(),
+                'surname' => $shippingAddress->getLastname(),
+                'email' => $email
+            ))
+            ->setBilling(array(
+                'name' => $billingAddress->getFirstname() . " " . $billingAddress->getLastname(),
+                'line1' => $billingAddress->getStreetFull(),
+                'line2' => $billingAddress->getStreetLine(2),
+                'suburb' => $billingAddress->getCity(),
+                'state' => $billingAddress->getCountry(),
+                'postcode' => $billingAddress->getPostcode(),
+                'countryCode' => $billingAddress->getCountryId(),
+                'phoneNumber' => $billingAddress->getTelephone()
+            ))
+            ->setShipping(array(
+                'name' => $shippingAddress->getFirstname() . " " . $shippingAddress->getLastname(),
+                'line1' => $shippingAddress->getStreetFull(),
+                'line2' => $shippingAddress->getStreetLine(2),
+                'suburb' => $shippingAddress->getCity(),
+                'state' => $shippingAddress->getCountry(),
+                'postcode' => $shippingAddress->getPostcode(),
+                'countryCode' => $shippingAddress->getCountryId(),
+                'phoneNumber' => $shippingAddress->getTelephone()
+            ))
+            ->setShippingAmount(
+                $this->parseAmount($this->quote->collectTotals()->getTotals()['shipping']->getData('value')), //TODO
+                $currency
+            );
+
+        if (!empty($discountAmount)) {
+            $createCheckoutRequest->setDiscounts(array(
+                array(
+                    'displayName' => 'Clearpay Discount coupon',
+                    'amount' => array($this->parseAmount($discountAmount), $currency)
+                )
+            ));
+        }
+
+        $items = $this->quote->getAllVisibleItems();
+        $products = array();
+        foreach ($items as $key => $item) {
+            $products[] = array(
+                'name' => $item->getName(),
+                'sku' => $item->getSku(),
+                'quantity' => $item->getQty(),
+                'price' => array(
+                    $this->parseAmount($item->getPrice()),
+                    $currency
+                )
+            );
+        }
+        $createCheckoutRequest->setItems($products);
+
+        $moduleInfo = $this->moduleList->getOne('Pagantis_Pagantis');
+        //EX:MyClearpayModule/1.0.0 (E-Commerce Platform Name/1.0.0; PHP/7.0.0; Merchant/60032000) https://merchant.com
+        $header = sprintf(
+            'Magento2/%s (Magento/%s; PHP/%s; Merchant/%s %s',
+            $moduleInfo['setup_version'],
+            $this->productMetadataInterface->getVersion(),
+            phpversion(),
+            $this->config->getMerchantId(),
+            $this->_url->getUrl()
+        );
+        $createCheckoutRequest->addHeader('User-Agent', $header);
+        $createCheckoutRequest->addHeader('Country', $countryCode);
+
+
+        $url = $cancelUrl;
+        if ($createCheckoutRequest->isValid()) {
+            $createCheckoutRequest->send();
+            if (isset($createCheckoutRequest->getResponse()->getParsedBody()->errorCode)) {
+                throw new \Exception($createCheckoutRequest->getResponse()->getParsedBody()->message);
+            } else {
+                $orderId = $createCheckoutRequest->getResponse()->getParsedBody()->token;
+                $url = $createCheckoutRequest->getResponse()->getParsedBody()->redirectCheckoutUrl;
+
+                $this->insertRow($this->quote->getId(), $orderId, $token, $countryCode);
+            }
+        } else {
+            throw new \Exception($createCheckoutRequest->getValidationErrors());
+        }
+
+        echo $url;
+        exit;
     }
 
     /**
-     * Main function
-     *
-     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
-     * @throws \Zend_Db_Exception
+     * @return string|null
      */
-    public function execute()
+    private function getCountryCode()
     {
-        try {
-            $cancelUrl = $this->_url->getUrl('checkout', ['_fragment' => 'payment']);
-            $quote = $this->session->getQuote();
-            /** @var Order $order */
-            $lastOrder = $this->session->getLastRealOrder();
-            $params = $this->getRequest()->getParams();
-            $pgProduct = (isset($params['product']) && $params['product']===ConfigProvider::CODE4X) ? ConfigProvider::CODE4X : ConfigProvider::CODE;
-
-            $urlToken = strtoupper(md5(uniqid(rand(), true)));
-            $token = md5($urlToken);
-
-            $customer = $quote->getCustomer();
-            $shippingAddress = $quote->getShippingAddress();
-
-            if (isset($params['email']) && $params['email']!='') {
-                $this->session->setEmail($params['email']); //Get guest email after refresh page
-                $customer->setEmail($params['email']);
-                $quote->setCheckoutMethod('guest');
-                $quote->getBillingAddress()->setEmail($params['email']);
-            } elseif ($customer->getEmail()=='') {
-                $customer->setEmail($this->session->getEmail());
-                $quote->setCheckoutMethod('guest');
-                $quote->getBillingAddress()->setEmail($this->session->getEmail());
-            }
-
-            /** @var Quote $currentQuote */
-            $currentQuote = $this->quoteRepository->get($quote->getId());
-            $currentQuote->setCustomerEmail($customer->getEmail());
-            $this->quoteRepository->save($currentQuote);
-
-            $userAddress =  new Address();
-            $userAddress
-                ->setZipCode($shippingAddress->getPostcode())
-                ->setFullName($shippingAddress->getFirstname()." ".$shippingAddress->getLastname())
-                ->setCountryCode($shippingAddress->getCountry())
-                ->setCity($shippingAddress->getCity())
-                ->setAddress($shippingAddress->getStreetFull())
-            ;
-
-            $tax_id = $this->getTaxId($quote->getBillingAddress());
-            $orderShippingAddress = new Address();
-            $orderShippingAddress
-                ->setZipCode($shippingAddress->getPostcode())
-                ->setFullName($shippingAddress->getFirstname()." ".$shippingAddress->getLastname())
-                ->setCountryCode($shippingAddress->getCountry())
-                ->setCity($shippingAddress->getCity())
-                ->setAddress($shippingAddress->getStreetFull())
-                ->setFixPhone($shippingAddress->getTelephone())
-                ->setMobilePhone($shippingAddress->getTelephone())
-                ->setTaxId($tax_id)
-            ;
-
-            $orderBillingAddress =  new Address();
-            $billingAddress = $quote->getBillingAddress();
-            $orderBillingAddress
-                ->setZipCode($billingAddress->getPostcode())
-                ->setFullName($billingAddress->getFirstname()." ".$shippingAddress->getLastname())
-                ->setCountryCode($billingAddress->getCountry())
-                ->setCity($billingAddress->getCity())
-                ->setAddress($billingAddress->getStreetFull())
-                ->setFixPhone($billingAddress->getTelephone())
-                ->setMobilePhone($billingAddress->getTelephone())
-                ->setTaxId($tax_id)
-            ;
-
-            $orderUser = new User();
-            $billingAddress->setEmail($customer->getEmail());
-            $orderUser
-                ->setAddress($userAddress)
-                ->setFullName($shippingAddress->getFirstname()." ".$shippingAddress->getLastname())
-                ->setBillingAddress($orderBillingAddress)
-                ->setEmail($customer->getEmail())
-                ->setFixPhone($shippingAddress->getTelephone())
-                ->setMobilePhone($shippingAddress->getTelephone())
-                ->setShippingAddress($orderShippingAddress)
-                ->setTaxId($tax_id)
-            ;
-
-            if ($customer->getDob()) {
-                $orderUser->setDateOfBirth($customer->getDob());
-            }
-            if ($customer->getTaxvat()!='') {
-                $orderUser->setDni($customer->getTaxvat());
-                $orderBillingAddress->setDni($customer->getTaxvat());
-                $orderShippingAddress->setDni($customer->getTaxvat());
-                $orderUser->setNationalId($customer->getTaxvat());
-                $orderBillingAddress->setNationalId($customer->getTaxvat());
-                $orderShippingAddress->setNationalId($customer->getTaxvat());
-            }
-
-            $previousOrders = $this->getOrders($customer->getId());
-            foreach ($previousOrders as $orderElement) {
-                $orderHistory = new OrderHistory();
-                $orderHistory
-                    ->setAmount(intval(100 * $orderElement['grand_total']))
-                    ->setDate(new \DateTime($orderElement['created_at']))
-                ;
-                $orderUser->addOrderHistory($orderHistory);
-            }
-
-            $metadataOrder = new Metadata();
-            $metadata = $this->getMetadata();
-            foreach ($metadata as $key => $metadatum) {
-                $metadataOrder->addMetadata($key, $metadatum);
-            }
-
-            $details = new Details();
-            $shippingCost = $quote->collectTotals()->getTotals()['shipping']->getData('value');
-            $details->setShippingCost(intval(strval(100 * $shippingCost)));
-            $items = $quote->getAllVisibleItems();
-            $promotedAmount = 0;
-            foreach ($items as $key => $item) {
-                $product = new Product();
-                $product
-                    ->setAmount(intval(100 * $item->getPrice()))
-                    ->setQuantity($item->getQty())
-                    ->setDescription($item->getName());
-                $details->addProduct($product);
-
-                $promotedProduct = $this->isPromoted($item);
-                if ($promotedProduct == 'true') {
-                    $promotedAmount+=$product->getAmount()*$item->getQty();
-                    $promotedMessage = 'Promoted Item: ' . $item->getName() .
-                                       ' Price: ' . $item->getPrice() .
-                                       ' Qty: ' . $item->getQty() .
-                                       ' Item ID: ' . $item->getItemId();
-                    $metadataOrder->addMetadata('promotedProduct', $promotedMessage);
-                }
-            }
-
-            $orderShoppingCart = new ShoppingCart();
-            $orderShoppingCart
-                ->setDetails($details)
-                ->setOrderReference($quote->getId())
-                ->setPromotedAmount(0)
-                ->setTotalAmount(intval(100 * $quote->getGrandTotal()))
-            ;
-
-            $orderConfigurationUrls = new Urls();
-            $quoteId = $quote->getId();
-
-            $uriRoute = 'pagantis/notify/index';
-            if (version_compare($metadata['pg_version'], '2.3.0') >= 0) {
-                $uriRoute = 'pagantis/notify/indexV2';
-            }
-
-            $okUrlUser = $this->_url->getUrl($uriRoute, ['_query' => ['quoteId'=>$quoteId,'origin'=>'redirect','product'=>$pgProduct, 'token'=>$token]]);
-            $okUrl     = $this->_url->getUrl($uriRoute, ['_query' => ['quoteId'=>$quoteId,'origin'=>'redirect','product'=>$pgProduct, 'token'=>$token]]);
-            $okUrlNot  = $this->_url->getUrl($uriRoute, ['_query' => ['quoteId'=>$quoteId,'origin'=>'notification','product'=>$pgProduct, 'token'=>$token]]);
-
-            $orderConfigurationUrls
-                ->setCancel($cancelUrl)
-                ->setKo($okUrl)
-                ->setAuthorizedNotificationCallback($okUrlNot)
-                ->setOk($okUrlUser)
-            ;
-
-            $orderChannel = new Channel();
-            $orderChannel
-                ->setAssistedSale(false)
-                ->setType(Channel::ONLINE)
-            ;
-
-            $haystack  = ($this->store->getLocale()!=null) ? $this->store->getLocale() : $this->getResolverCountry();
-            $langCountry = strtolower(strstr($haystack, '_', true));
-            $allowedCountries = unserialize($this->extraConfig['PAGANTIS_ALLOWED_COUNTRIES']);
-
-            $purchaseCountry =
-                in_array($langCountry, $allowedCountries) ? $langCountry :
-                in_array(strtolower($shippingAddress->getCountry()), $allowedCountries)? $shippingAddress->getCountry():
-                in_array(strtolower($billingAddress->getCountry()), $allowedCountries)? $billingAddress->getCountry() :
-                null;
-
-            $orderConfiguration = new Configuration();
-            $orderConfiguration
-                ->setChannel($orderChannel)
-                ->setUrls($orderConfigurationUrls)
-                ->setPurchaseCountry($purchaseCountry)
-            ;
-
-
-            $order = new Order();
-            $order
-                ->setConfiguration($orderConfiguration)
-                ->setMetadata($metadataOrder)
-                ->setShoppingCart($orderShoppingCart)
-                ->setUser($orderUser)
-            ;
-
-            if ($pgProduct === ConfigProvider::CODE4X) {
-                if ($this->config['pagantis_public_key_4x']=='' || $this->config['pagantis_private_key_4x']=='') {
-                    throw new \Exception('Public and Secret Key not found');
-                } else {
-                    $orderClient = new Client(
-                        $this->config['pagantis_public_key_4x'],
-                        $this->config['pagantis_private_key_4x']
-                    );
-                }
-            } else {
-                if ($this->config['pagantis_public_key']=='' || $this->config['pagantis_private_key']=='') {
-                    throw new \Exception('Public and Secret Key not found');
-                } else {
-                    $orderClient = new Client(
-                        $this->config['pagantis_public_key'],
-                        $this->config['pagantis_private_key']
-                    );
-                }
-            }
-
-            $order = $orderClient->createOrder($order);
-            if ($order instanceof Order) {
-                $url = $order->getActionUrls()->getForm();
-                $result = $this->insertRow($quote->getId(), $order->getId(), $token);
-                if (!$result) {
-                    throw new \Exception('Unable to save pagantis-order-id');
-                }
-            } else {
-                throw new \Exception('Order not created');
-            }
-        } catch (\Exception $exception) {
-            $this->insertLog($exception);
-            echo $cancelUrl;
-            exit;
-        }
-
-        $displayMode = $this->extraConfig['PAGANTIS_FORM_DISPLAY_TYPE'];
-        if ($displayMode==='0') {
-            echo $url;
-            exit;
-        } else {
-            $iframeUrl = $this->_url->getUrl(
-                "pagantis/Payment/iframe",
-                ['_query' => ["orderId"=>$order->getId()]]
+        $countryCode = null;
+        $allowedCountries = unserialize($this->extraConfig['PAGANTIS_ALLOWED_COUNTRIES']);
+        $shippingCountry = $this->quote->getShippingAddress()->getCountry();
+        $billingCountry  = $this->quote->getBillingAddress()->getCountry();
+        $haystack  = ($this->store->getLocale()!=null) ? $this->store->getLocale() : $this->getResolverCountry();
+        $langCountry = strtolower(strstr($haystack, '_', true));
+        $countryCode = (in_array($langCountry, $allowedCountries)) ? ($langCountry) :
+            ((in_array(strtolower($shippingCountry), $allowedCountries)) ? ($shippingCountry) :
+                ((in_array(strtolower($billingCountry), $allowedCountries))? ($billingCountry) :
+                    (null))
             );
-            echo $iframeUrl;
-            exit;
-        }
+
+        return strtoupper($countryCode);
+    }
+
+    /**
+     * @param $string
+     *
+     * @return mixed
+     */
+    private function parseAmount($string)
+    {
+        return $string;
     }
 
     /**
@@ -378,43 +311,20 @@ class Index extends Action
     }
 
     /**
-     * @return void|\Zend_Db_Statement_Interface
-     * @throws \Zend_Db_Exception
-     */
-    private function checkDbTable()
-    {
-        $dbConnection = $this->dbObject->getConnection();
-        $tableName = $this->dbObject->getTableName(self::ORDERS_TABLE);
-        if (!$dbConnection->isTableExists($tableName)) {
-            $table = $dbConnection
-                ->newTable($tableName)
-                ->addColumn('id', Table::TYPE_INTEGER, 10, array('primary'=>true, 'nullable' => false))
-                ->addColumn('order_id', Table::TYPE_TEXT, 50, array('primary'=>true, 'nullable' => true))
-                ->addColumn('mg_order_id', Table::TYPE_TEXT, 50)
-                ->addColumn('token', Table::TYPE_TEXT, 32);
-            return $dbConnection->createTable($table);
-        }
-
-        return;
-    }
-
-    /**
-     * Create relationship between quote_id & Pagantis_order_id & token
      * @param $quoteId
      * @param $pagantisOrderId
      * @param $token
+     * @param $countryCode
      *
      * @return int
-     * @throws \Zend_Db_Exception
      */
-    private function insertRow($quoteId, $pagantisOrderId, $token)
+    private function insertRow($quoteId, $pagantisOrderId, $token, $countryCode)
     {
-        $this->checkDbTable();
         $dbConnection = $this->dbObject->getConnection();
         $tableName = $this->dbObject->getTableName(self::ORDERS_TABLE);
         return $dbConnection->insert(
             $tableName,
-            array('id'=>$quoteId,'order_id'=>$pagantisOrderId,'token'=>$token),
+            array('id'=>$quoteId,'order_id'=>$pagantisOrderId,'token'=>$token,'country_code'=>$countryCode),
             array('order_id')
         );
     }
@@ -435,37 +345,11 @@ class Index extends Action
     }
 
     /**
-     * Check if log table exists, otherwise create it
-     *
-     * @return void|\Zend_Db_Statement_Interface
-     * @throws \Zend_Db_Exception
-     */
-    private function checkDbLogTable()
-    {
-        /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
-        $dbConnection = $this->dbObject->getConnection();
-        $tableName = $this->dbObject->getTableName(self::LOGS_TABLE);
-        if (!$dbConnection->isTableExists($tableName)) {
-            $table = $dbConnection
-                ->newTable($tableName)
-                ->addColumn('id', Table::TYPE_SMALLINT, null, array('nullable'=>false, 'auto_increment'=>true, 'primary'=>true))
-                ->addColumn('log', Table::TYPE_TEXT, null, array('nullable'=>false))
-                ->addColumn('createdAt', Table::TYPE_TIMESTAMP, null, array('nullable'=>false, 'default'=>Table::TIMESTAMP_INIT));
-            return $dbConnection->createTable($table);
-        }
-
-        return;
-    }
-
-    /**
      * @param $exceptionMessage
-     *
-     * @throws \Zend_Db_Exception
      */
     private function insertLog($exceptionMessage)
     {
         if ($exceptionMessage instanceof \Exception) {
-            $this->checkDbLogTable();
             $logObject          = new \stdClass();
             $logObject->message = $exceptionMessage->getMessage();
             $logObject->code    = $exceptionMessage->getCode();
@@ -494,19 +378,6 @@ class Index extends Action
         } else {
             return null;
         }
-    }
-
-    /**
-     * @param $item
-     *
-     * @return string
-     */
-    private function isPromoted($item)
-    {
-        $magentoProductId = $item->getProductId();
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $product = $objectManager->create('Magento\Catalog\Model\Product')->load($magentoProductId);
-        return ($product->getData('pagantis_promoted') === '1') ? 'true' : 'false';
     }
 
     /**

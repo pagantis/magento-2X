@@ -15,8 +15,6 @@ final class ConfigProvider implements ConfigProviderInterface
 {
     const CODE = 'pagantis';
 
-    const CODE4X = 'pagantis4x';
-
     /**
      * @var \Magento\Payment\Model\MethodInterface
      */
@@ -101,65 +99,15 @@ final class ConfigProvider implements ConfigProviderInterface
                     'publicKey' => $this->method->getConfigData('pagantis_public_key'),
                     'locale' => strstr($this->resolver->getLocale(), '_', true),
                     'country' => strstr($this->resolver->getLocale(), '_', true),
-                    'promotedAmount' => $this->getPromotedAmount($quote),
                     'thousandSeparator' => $this->extraConfig['PAGANTIS_SIMULATOR_THOUSANDS_SEPARATOR'],
                     'decimalSeparator' => $this->extraConfig['PAGANTIS_SIMULATOR_DECIMAL_SEPARATOR'],
                     'quotesStart' => $this->extraConfig['PAGANTIS_SIMULATOR_START_INSTALLMENTS'],
                     'type'      => $this->extraConfig['PAGANTIS_SIMULATOR_DISPLAY_TYPE_CHECKOUT'],
                     'skin'      => $this->extraConfig['PAGANTIS_SIMULATOR_DISPLAY_SKIN'],
                     'position'  => $positionSelector
-                ],
-                self::CODE4X => [
-                    'total' => $quote->getGrandTotal(),
-                    'enabled' => $this->method->getConfigData('active_4x'),
-                    'product_simulator' => "1",
-                    'title' => __($this->extraConfig['PAGANTIS_TITLE_4x']),
-                    'subtitle' => __($this->extraConfig['PAGANTIS_TITLE_EXTRA']),
-                    'image' => 'https://cdn.digitalorigin.com/assets/master/logos/pg-130x30.svg',
-                    'publicKey' => $this->method->getConfigData('pagantis_public_key_4x'),
-                    'locale' => strstr($this->resolver->getLocale(), '_', true),
-                    'country' => strstr($this->resolver->getLocale(), '_', true),
-                    'promotedAmount' => $this->getPromotedAmount($quote),
-                    'thousandSeparator' => $this->extraConfig['PAGANTIS_SIMULATOR_THOUSANDS_SEPARATOR'],
-                    'decimalSeparator' => $this->extraConfig['PAGANTIS_SIMULATOR_DECIMAL_SEPARATOR'],
-                    'quotesStart' => $this->extraConfig['PAGANTIS_SIMULATOR_START_INSTALLMENTS'],
-                    'type'      => $this->extraConfig['PAGANTIS_SIMULATOR_DISPLAY_TYPE_CHECKOUT'],
-                    'skin'      => $this->extraConfig['PAGANTIS_SIMULATOR_DISPLAY_SKIN'],
-                    'position'  => $positionSelector4x
-                ],
+                ]
             ],
         ];
     }
 
-    /**
-     * @param $quote
-     *
-     * @return int
-     */
-    private function getPromotedAmount($quote)
-    {
-        $promotedAmount = 0;
-        $items = $quote->getAllVisibleItems();
-        foreach ($items as $key => $item) {
-            $promotedProduct = $this->isPromoted($item);
-            if ($promotedProduct == 'true') {
-                $promotedAmount+=$item->getPrice()*$item->getQty();
-            }
-        }
-
-        return $promotedAmount;
-    }
-
-    /**
-     * @param $item
-     *
-     * @return string
-     */
-    private function isPromoted($item)
-    {
-        $magentoProductId = $item->getProductId();
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $product = $objectManager->create('Magento\Catalog\Model\Product')->load($magentoProductId);
-        return ($product->getData('pagantis_promoted') === '1') ? 'true' : 'false';
-    }
 }

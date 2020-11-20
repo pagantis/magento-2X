@@ -5,19 +5,20 @@ namespace Pagantis\Pagantis\Model\Adminhtml\Source;
 use Magento\Framework\Option\ArrayInterface;
 
 /**
- * Class DisplayType
+ * Class ApiRegion
  * @package Pagantis\Pagantis\Model\Adminhtml\Source
  */
-class DisplayType implements ArrayInterface
+class ApiRegion implements ArrayInterface
 {
     /**
-     * IFRAME
+     * EUROPE
      */
-    const IFRAME = 1;
+    const EUROPE = 'ES';
     /**
-     * REDIRECT
+     * UNITEDKINGDOM
      */
-    const REDIRECT = 0;
+    const UNITEDKINGDOM = 'GB';
+
     /**
      * @return array
      */
@@ -25,12 +26,12 @@ class DisplayType implements ArrayInterface
     {
         return array(
             array(
-                'label' => __(' Iframe'),
-                'value' => self::IFRAME,
+                'label' => __('Europe'),
+                'value' => self::EUROPE
             ),
             array(
-                'label' => __(' Redirect'),
-                'value' => self::REDIRECT,
+                'label' => __('United Kingdom'),
+                'value' => self::UNITEDKINGDOM
             )
         );
     }

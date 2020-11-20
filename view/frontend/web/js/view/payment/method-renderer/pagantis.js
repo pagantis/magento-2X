@@ -41,8 +41,7 @@ define(
                             selector: window.checkoutConfig.payment.pagantis.position,
                             totalAmount: window.checkoutConfig.payment.pagantis.total,
                             locale: window.checkoutConfig.payment.pagantis.locale,
-                            country: window.checkoutConfig.payment.pagantis.country,
-                            totalPromotedAmount : window.checkoutConfig.payment.pagantis.promotedAmount
+                            country: window.checkoutConfig.payment.pagantis.country
                         };
 
                         if (typeof sdk !== 'undefined') {
@@ -76,9 +75,11 @@ define(
 
                 $.post(paymentUrl, { email: guestEmail }, 'json')
                     .done(function (response) {
+                        console.log(response);
                         window.location.replace(response);
                     })
                     .fail(function (response) {
+                        console.log(response);
                         window.location.replace(response);
                     })
             },
