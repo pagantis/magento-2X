@@ -49,5 +49,7 @@
   },
   "archive": {
     "exclude": ["Test", "/Test"]
-  }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }
