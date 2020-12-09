@@ -3,11 +3,11 @@
  * Copyright © 2016 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Pagantis\Pagantis\Gateway\Request;
+namespace Clearpay\Clearpay\Gateway\Request;
 
 use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
 use Magento\Payment\Gateway\Request\BuilderInterface;
-use Pagantis\Pagantis\Gateway\Http\Client\ClientMock;
+use Clearpay\Clearpay\Gateway\Http\Client\ClientMock;
 
 class MockDataRequest implements BuilderInterface
 {

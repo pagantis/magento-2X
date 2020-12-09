@@ -1,6 +1,6 @@
 <?php
 
-namespace Pagantis\Pagantis\Logger;
+namespace Clearpay\Clearpay\Logger;
 
 class Logger extends \Monolog\Logger
 {

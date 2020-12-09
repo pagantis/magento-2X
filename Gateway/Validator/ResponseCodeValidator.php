@@ -3,11 +3,11 @@
  * Copyright © 2016 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Pagantis\Pagantis\Gateway\Validator;
+namespace Clearpay\Clearpay\Gateway\Validator;
 
 use Magento\Payment\Gateway\Validator\AbstractValidator;
 use Magento\Payment\Gateway\Validator\ResultInterface;
-use Pagantis\Pagantis\Gateway\Http\Client\ClientMock;
+use Clearpay\Clearpay\Gateway\Http\Client\ClientMock;
 
 class ResponseCodeValidator extends AbstractValidator
 {

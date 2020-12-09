@@ -1,10 +1,10 @@
 <?php
 
-namespace Pagantis\Pagantis\Model\Adminhtml\Source;
+namespace Clearpay\Clearpay\Model\Adminhtml\Source;
 
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Config\Block\System\Config\Form\Field;
-use Pagantis\Pagantis\Helper\MerchantProperties;
+use Clearpay\Clearpay\Helper\MerchantProperties;
 
 class Disable extends Field
 {
@@ -19,9 +19,9 @@ class Disable extends Field
     protected function _getElementHtml(AbstractElement $element)
     {
         $element->setReadonly(true);
-        if ($element->getId() === 'payment_us_pagantis_clearpay_min_amount') {
+        if ($element->getId() === 'payment_us_clearpay_clearpay_min_amount') {
             $element->setValue($this->getMinAmount());
-        } elseif ($element->getId() === 'payment_us_pagantis_clearpay_max_amount') {
+        } elseif ($element->getId() === 'payment_us_clearpay_clearpay_max_amount') {
             $element->setValue($this->getMaxAmount());
         }
 

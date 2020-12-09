@@ -1,10 +1,10 @@
 <?php
 
-namespace Pagantis\Pagantis\Helper;
+namespace Clearpay\Clearpay\Helper;
 
 /**
  * Class Config
- * @package Pagantis\Pagantis\Helper
+ * @package Clearpay\Clearpay\Helper
  */
 class Config
 {
@@ -26,7 +26,7 @@ class Config
      */
     public function __construct(\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig)
     {
-        $this->config = $scopeConfig->getValue('payment/pagantis');
+        $this->config = $scopeConfig->getValue('payment/clearpay');
     }
 
     /**
@@ -34,7 +34,7 @@ class Config
      */
     public function getMerchantId()
     {
-        $isDefined = isset($this->config) && is_array($this->config);
+        $isDefined = isset($this->config, $this->config['clearpay_merchant_id']) && is_array($this->config);
 
         return ($isDefined) ? $this->config['clearpay_merchant_id'] : '';
     }
@@ -44,7 +44,7 @@ class Config
      */
     public function getSecretKey()
     {
-        $isDefined = isset($this->config) && is_array($this->config);
+        $isDefined = isset($this->config, $this->config['clearpay_merchant_key']) && is_array($this->config);
 
         return ($isDefined) ? $this->config['clearpay_merchant_key'] : '';
     }
@@ -69,6 +69,19 @@ class Config
         return ($isDefined) ? $this->config['clearpay_api_environment'] : self::DEFAULT_API_ENVIRONMENT;
     }
 
+    /**
+     * @return array
+     */
+    public function getExcludedCategories()
+    {
+        $isDefined = isset($this->config, $this->config['clearpay_exclude_category']) && is_array($this->config);
+
+        return ($isDefined) ? $this->config['clearpay_exclude_category'] : null;
+    }
+
+    /**
+     * @return mixed|Config
+     */
     public function getConfig()
     {
         return $this->config;

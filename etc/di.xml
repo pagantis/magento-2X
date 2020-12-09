@@ -1,122 +1,122 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <virtualType name="pagantisFacade" type="Magento\Payment\Model\Method\Adapter">
+    <virtualType name="clearpayFacade" type="Magento\Payment\Model\Method\Adapter">
         <arguments>
-            <argument name="code" xsi:type="const">Pagantis\Pagantis\Model\Ui\ConfigProvider::CODE</argument>
+            <argument name="code" xsi:type="const">Clearpay\Clearpay\Model\Ui\ConfigProvider::CODE</argument>
             <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
-            <argument name="infoBlockType" xsi:type="string">Pagantis\Pagantis\Block\Info</argument>
-            <argument name="valueHandlerPool" xsi:type="object">pagantisValueHandlerPool</argument>
-            <argument name="commandPool" xsi:type="object">pagantisCommandPool</argument>
+            <argument name="infoBlockType" xsi:type="string">Clearpay\Clearpay\Block\Info</argument>
+            <argument name="valueHandlerPool" xsi:type="object">clearpayValueHandlerPool</argument>
+            <argument name="commandPool" xsi:type="object">clearpayCommandPool</argument>
         </arguments>
     </virtualType>
-    <virtualType name="pagantisConfig" type="Magento\Payment\Gateway\Config\Config">
+    <virtualType name="clearpayConfig" type="Magento\Payment\Gateway\Config\Config">
         <arguments>
-            <argument name="methodCode" xsi:type="const">Pagantis\Pagantis\Model\Ui\ConfigProvider::CODE</argument>
+            <argument name="methodCode" xsi:type="const">Clearpay\Clearpay\Model\Ui\ConfigProvider::CODE</argument>
         </arguments>
     </virtualType>
-    <!--virtualType name="pagantisLogger" type="Magento\Payment\Model\Method\Logger">
+    <!--virtualType name="clearpayLogger" type="Magento\Payment\Model\Method\Logger">
         <arguments>
-            <argument name="config" xsi:type="object">pagantisConfig</argument>
+            <argument name="config" xsi:type="object">clearpayConfig</argument>
         </arguments>
     </virtualType>
-    <type name="Pagantis\Pagantis\Gateway\Http\Client\ClientMock">
+    <type name="Clearpay\Clearpay\Gateway\Http\Client\ClientMock">
         <arguments>
-            <argument name="logger" xsi:type="object">pagantisLogger</argument>
+            <argument name="logger" xsi:type="object">clearpayLogger</argument>
         </arguments>
     </type-->
-    <virtualType name="pagantisCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+    <virtualType name="clearpayCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="authorize" xsi:type="string">pagantisAuthorizeCommand</item>
-                <item name="capture" xsi:type="string">pagantisCaptureCommand</item>
-                <item name="void" xsi:type="string">pagantisVoidCommand</item>
+                <item name="authorize" xsi:type="string">clearpayAuthorizeCommand</item>
+                <item name="capture" xsi:type="string">clearpayCaptureCommand</item>
+                <item name="void" xsi:type="string">clearpayVoidCommand</item>
             </argument>
         </arguments>
     </virtualType>
-    <virtualType name="pagantisAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+    <virtualType name="clearpayAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
         <arguments>
-            <argument name="requestBuilder" xsi:type="object">pagantisAuthorizationRequest</argument>
-            <argument name="handler" xsi:type="object">pagantisResponseHandlerComposite</argument>
-            <argument name="transferFactory" xsi:type="object">Pagantis\Pagantis\Gateway\Http\TransferFactory</argument>
-            <argument name="client" xsi:type="object">Pagantis\Pagantis\Gateway\Http\Client\ClientMock</argument>
+            <argument name="requestBuilder" xsi:type="object">clearpayAuthorizationRequest</argument>
+            <argument name="handler" xsi:type="object">clearpayResponseHandlerComposite</argument>
+            <argument name="transferFactory" xsi:type="object">Clearpay\Clearpay\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">Clearpay\Clearpay\Gateway\Http\Client\ClientMock</argument>
         </arguments>
     </virtualType>
-    <virtualType name="pagantisAuthorizationRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+    <virtualType name="clearpayAuthorizationRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
         <arguments>
             <argument name="builders" xsi:type="array">
-                <item name="transaction" xsi:type="string">Pagantis\Pagantis\Gateway\Request\AuthorizationRequest</item>
-                <item name="mockData" xsi:type="string">Pagantis\Pagantis\Gateway\Request\MockDataRequest</item>
+                <item name="transaction" xsi:type="string">Clearpay\Clearpay\Gateway\Request\AuthorizationRequest</item>
+                <item name="mockData" xsi:type="string">Clearpay\Clearpay\Gateway\Request\MockDataRequest</item>
             </argument>
         </arguments>
     </virtualType>
-    <type name="Pagantis\Pagantis\Gateway\Request\AuthorizationRequest">
+    <type name="Clearpay\Clearpay\Gateway\Request\AuthorizationRequest">
         <arguments>
-            <argument name="config" xsi:type="object">pagantisConfig</argument>
+            <argument name="config" xsi:type="object">clearpayConfig</argument>
         </arguments>
     </type>
-    <virtualType name="pagantisCaptureCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+    <virtualType name="clearpayCaptureCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
         <arguments>
-            <argument name="requestBuilder" xsi:type="object">Pagantis\Pagantis\Gateway\Request\CaptureRequest</argument>
-            <argument name="handler" xsi:type="object">Pagantis\Pagantis\Gateway\Response\TxnIdHandler</argument>
-            <argument name="transferFactory" xsi:type="object">Pagantis\Pagantis\Gateway\Http\TransferFactory</argument>
-            <argument name="validator" xsi:type="object">Pagantis\Pagantis\Gateway\Validator\ResponseCodeValidator</argument>
-            <argument name="client" xsi:type="object">Pagantis\Pagantis\Gateway\Http\Client\ClientMock</argument>
+            <argument name="requestBuilder" xsi:type="object">Clearpay\Clearpay\Gateway\Request\CaptureRequest</argument>
+            <argument name="handler" xsi:type="object">Clearpay\Clearpay\Gateway\Response\TxnIdHandler</argument>
+            <argument name="transferFactory" xsi:type="object">Clearpay\Clearpay\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">Clearpay\Clearpay\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">Clearpay\Clearpay\Gateway\Http\Client\ClientMock</argument>
         </arguments>
     </virtualType>
-    <type name="Pagantis\Pagantis\Gateway\Request\CaptureRequest">
+    <type name="Clearpay\Clearpay\Gateway\Request\CaptureRequest">
         <arguments>
-            <argument name="config" xsi:type="object">pagantisConfig</argument>
+            <argument name="config" xsi:type="object">clearpayConfig</argument>
         </arguments>
     </type>
-    <virtualType name="pagantisVoidCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+    <virtualType name="clearpayVoidCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
         <arguments>
-            <argument name="requestBuilder" xsi:type="object">Pagantis\Pagantis\Gateway\Request\VoidRequest</argument>
-            <argument name="handler" xsi:type="object">Pagantis\Pagantis\Gateway\Response\TxnIdHandler</argument>
-            <argument name="transferFactory" xsi:type="object">Pagantis\Pagantis\Gateway\Http\TransferFactory</argument>
-            <argument name="validator" xsi:type="object">Pagantis\Pagantis\Gateway\Validator\ResponseCodeValidator</argument>
-            <argument name="client" xsi:type="object">Pagantis\Pagantis\Gateway\Http\Client\ClientMock</argument>
+            <argument name="requestBuilder" xsi:type="object">Clearpay\Clearpay\Gateway\Request\VoidRequest</argument>
+            <argument name="handler" xsi:type="object">Clearpay\Clearpay\Gateway\Response\TxnIdHandler</argument>
+            <argument name="transferFactory" xsi:type="object">Clearpay\Clearpay\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">Clearpay\Clearpay\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">Clearpay\Clearpay\Gateway\Http\Client\ClientMock</argument>
         </arguments>
     </virtualType>
-    <type name="Pagantis\Pagantis\Gateway\Request\VoidRequest">
+    <type name="Clearpay\Clearpay\Gateway\Request\VoidRequest">
         <arguments>
-            <argument name="config" xsi:type="object">pagantisConfig</argument>
+            <argument name="config" xsi:type="object">clearpayConfig</argument>
         </arguments>
     </type>
-    <virtualType name="pagantisResponseHandlerComposite" type="Magento\Payment\Gateway\Response\HandlerChain">
+    <virtualType name="clearpayResponseHandlerComposite" type="Magento\Payment\Gateway\Response\HandlerChain">
         <arguments>
             <argument name="handlers" xsi:type="array">
-                <item name="txnid" xsi:type="string">Pagantis\Pagantis\Gateway\Response\TxnIdHandler</item>
-                <item name="fraud" xsi:type="string">Pagantis\Pagantis\Gateway\Response\FraudHandler</item>
+                <item name="txnid" xsi:type="string">Clearpay\Clearpay\Gateway\Response\TxnIdHandler</item>
+                <item name="fraud" xsi:type="string">Clearpay\Clearpay\Gateway\Response\FraudHandler</item>
             </argument>
         </arguments>
     </virtualType>
-    <virtualType name="pagantisValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+    <virtualType name="clearpayValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
         <arguments>
             <argument name="handlers" xsi:type="array">
-                <item name="default" xsi:type="string">pagantisConfigValueHandler</item>
+                <item name="default" xsi:type="string">clearpayConfigValueHandler</item>
             </argument>
         </arguments>
     </virtualType>
-    <virtualType name="pagantisConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+    <virtualType name="clearpayConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
         <arguments>
-            <argument name="configInterface" xsi:type="object">pagantisConfig</argument>
+            <argument name="configInterface" xsi:type="object">clearpayConfig</argument>
         </arguments>
     </virtualType>
-    <type name="Pagantis\Pagantis\Block\Info">
+    <type name="Clearpay\Clearpay\Block\Info">
         <arguments>
-            <argument name="config" xsi:type="object">pagantisConfig</argument>
+            <argument name="config" xsi:type="object">clearpayConfig</argument>
         </arguments>
     </type>
-    <type name="Pagantis\Pagantis\Logger\Handler">
+    <type name="Clearpay\Clearpay\Logger\Handler">
         <arguments>
             <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
         </arguments>
     </type>
-    <type name="Pagantis\Pagantis\Logger\Logger">
+    <type name="Clearpay\Clearpay\Logger\Logger">
         <arguments>
-            <argument name="name" xsi:type="string">pagantisLog</argument>
+            <argument name="name" xsi:type="string">clearpayLog</argument>
             <argument name="handlers"  xsi:type="array">
-                <item name="system" xsi:type="object">Pagantis\Pagantis\Logger\Handler</item>
+                <item name="system" xsi:type="object">Clearpay\Clearpay\Logger\Handler</item>
             </argument>
         </arguments>
     </type>

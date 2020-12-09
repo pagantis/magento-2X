@@ -2,15 +2,15 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <section id="payment">
-            <group id="pagantis" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Pagantis</label>
+            <group id="clearpay" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Clearpay</label>
                 <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Enabled </label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="clearpay_api_region" translate="label" type="radios" sortOrder="2" showInDefault="2" showInWebsite="2" showInStore="0">
                     <label>API Region</label>
-                    <source_model>Pagantis\Pagantis\Model\Adminhtml\Source\ApiRegion</source_model>
+                    <source_model>Clearpay\Clearpay\Model\Adminhtml\Source\ApiRegion</source_model>
                 </field>
                 <field id="clearpay_merchant_id" translate="label" type="text" sortOrder="3" showInDefault="3" showInWebsite="3" showInStore="0">
                     <label>Merchant ID</label>
@@ -22,15 +22,19 @@
                 </field>
                 <field id="clearpay_api_environment" translate="label" type="select" sortOrder="5" showInDefault="5" showInWebsite="5" showInStore="0">
                     <label>API Environment</label>
-                    <source_model>Pagantis\Pagantis\Model\Adminhtml\Source\SandboxType</source_model>
+                    <source_model>Clearpay\Clearpay\Model\Adminhtml\Source\SandboxType</source_model>
                 </field>
                 <field id="clearpay_min_amount" translate="label" type="text" sortOrder="6" showInDefault="6" showInWebsite="6" showInStore="0">
                     <label>Min Payment Limit</label>
-                    <frontend_model>Pagantis\Pagantis\Model\Adminhtml\Source\Disable</frontend_model>
+                    <frontend_model>Clearpay\Clearpay\Model\Adminhtml\Source\Disable</frontend_model>
                 </field>
                 <field id="clearpay_max_amount" translate="label" type="text" sortOrder="7" showInDefault="7" showInWebsite="7" showInStore="0">
                     <label>Max Payment Limit</label>
-                    <frontend_model>Pagantis\Pagantis\Model\Adminhtml\Source\Disable</frontend_model>
+                    <frontend_model>Clearpay\Clearpay\Model\Adminhtml\Source\Disable</frontend_model>
+                </field>
+                <field id="clearpay_exclude_category" translate="label" type="multiselect" sortOrder="8" showInDefault="8" showInWebsite="8" showInStore="8">
+                    <label>Exclude Category</label>
+                    <source_model>Clearpay\Clearpay\Model\Adminhtml\Source\Categorylist</source_model>
                 </field>
             </group>
         </section>

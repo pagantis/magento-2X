@@ -1,6 +1,6 @@
 {
-  "name": "pagantis/magento-2x",
-  "description": "Pagantis Magento 2 module",
+  "name": "clearpay/magento-2x",
+  "description": "Clearpay Magento 2 module",
   "type": "magento2-module",
   "version": "1.0.0",
   "keywords": [
@@ -12,7 +12,7 @@
     "payment",
     "checkout",
     "credit",
-    "pagantis",
+    "clearpay",
     "financiar",
     "financiera",
     "financiación"
@@ -21,7 +21,7 @@
   "license": "proprietary",
   "authors": [
     {
-      "name": "Pagantis",
+      "name": "Clearpay",
       "email": "integrations@clearpay.com"
     }
   ],
@@ -30,14 +30,12 @@
       "type": "composer",
       "url": "https://repo.magento.com/"
     }
-      ],
+  ],
   "require": {
-      "pagantis/orders-api-client": "^2.0",
-      "pagantis/module-utils": "^2.0",
       "afterpay-global/afterpay-sdk-php": "dev-downgrade-to-api-v1"
   },
   "require-dev": {
-      "pagantis/selenium-form-utils": "^3.0",
+      "pagantis/selenium-form-utils":"dev-clearpay",
       "magento/module-sales": "102.0.*",
       "magento/module-checkout": "100.3.*",
       "magento/module-payment": "100.3.*",
@@ -46,11 +44,11 @@
   "autoload": {
     "files": [ "registration.php" ],
     "psr-4": {
-      "Pagantis\\Pagantis\\": ""
+      "Clearpay\\Clearpay\\": ""
     }
   },
   "archive": {
     "exclude": ["Test", "/Test"]
   },
-  "minimum-stability": "alpha"
+  "minimum-stability": "dev"
 }

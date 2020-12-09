@@ -1,13 +1,13 @@
 <?php
 
-namespace Pagantis\Pagantis\Observer;
+namespace Clearpay\Clearpay\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Payment\Observer\AbstractDataAssignObserver;
 
 /**
  * Class DataAssignObserver
- * @package Pagantis\Pagantis\Observer
+ * @package Clearpay\Clearpay\Observer
  */
 class DataAssignObserver extends AbstractDataAssignObserver
 {

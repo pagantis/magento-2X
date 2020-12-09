@@ -4,6 +4,6 @@ use \Magento\Framework\Component\ComponentRegistrar;
 
 ComponentRegistrar::register(
     ComponentRegistrar::MODULE,
-    'Pagantis_Pagantis',
+    'Clearpay_Clearpay',
     __DIR__
 );

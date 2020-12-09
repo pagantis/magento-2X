@@ -1,27 +1,53 @@
 <?php
 /**
- * @var \Pagantis\Pagantis\Block\Product\Simulator $block
+ * @var \Clearpay\Clearpay\Block\Product\Simulator $block
  */
-if($block->isEnabled()==='1') {
-?>
-    <script
-            src="https://js.afterpay.com/afterpay-1.x.js"
-            data-min="<?php echo $block->getMinAmount();?>"
-            data-max="<?php echo $block->getMaxAmount();?>"
-            async
-            defer
-    ></script>
-    <div class="mainSimulator">
-        <!-- Begin Afterpay Placement -->
-        <!--
-                data-locale="<?php echo $block->getLocale();?>"
-                data-currency="<?php echo $block->getCurrency();?>"
-        -->
-        <afterpay-placement
-                data-amount="<?php echo $block->getAmount();?>"
-        ></afterpay-placement>
-        <!-- End Afterpay Placement -->
-    </div>
-<?php
+if ($block->isEnabled()==1) {
+    if ($block->checkCategory()!==true) {
+        ?>
+        <script>console.log("<?php echo $block->checkCategory();?>");</script>
+        <?
+    } else {
+        ?>
+        <script
+                src="https://js.sandbox.afterpay.com/afterpay-1.x.js"
+                data-min="<?php echo $block->getMinAmount(); ?>"
+                data-max="<?php echo $block->getMaxAmount(); ?>"
+                async
+                defer
+        ></script>
+        <div class="mainSimulator">
+            <afterpay-placement
+                    id="cp_placement"
+                    data-locale="<?php echo $block->getLocale(); ?>"
+                    data-currency="<?php echo $block->getCurrency(); ?>"
+                    data-amount="<?php echo $block->getAmount(); ?>"
+                <?php if($block->isVariablePrice() === true) { ?>
+                    data-amount="<?php echo $block->getAmount(); ?>"
+                <?php } elseif($block->isRangePrice() === true) { ?>
+                    data-amount="<?php echo $block->getMinimalPrice(); ?>"
+                <?php } else { ?>
+                    data-amount="<?php echo $block->getAmount(); ?>"
+                <?php } ?>
+            ></afterpay-placement>
+
+            <?php if($block->isVariablePrice() === true) { ?>
+                <script type="text/javascript">
+                require(['jquery'], function ($)
+                {
+                    $(document).ready(function(){
+                        $("<?php echo $block->getOnclickSelector(); ?>").on('change', function(){
+                            var currentPrice = document.querySelector("<?php echo $block->getAmountSelector(); ?>").innerText;
+                            currentPrice = currentPrice.replace('€', '').replace(',','.');
+                            document.getElementById('cp_placement').setAttribute('data-amount', currentPrice);
+                        });
+                    });
+
+                });
+                </script>
+            <?php }  ?>
+        </div>
+        <?php
+        }
 }
-?>
+

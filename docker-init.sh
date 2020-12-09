@@ -16,12 +16,12 @@ docker-compose exec magento${VERSION}-${ENVIROMENT} docker-php-ext-install bcmat
 echo 'Install Magento'
 docker-compose exec magento${VERSION}-${ENVIROMENT} install-magento
 
-echo "Install Pagantis_Pagantis"
+echo "Install Clearpay_Clearpay"
 if [ $1 != 'test' ]
 then
     docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} php /var/www/html/bin/magento \
-        module:enable Pagantis_Pagantis --clear-static-content
-    docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} composer install -d /var/www/html/app/code/Pagantis/Pagantis
+        module:enable Clearpay_Clearpay --clear-static-content
+    docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} composer install -d /var/www/html/app/code/Clearpay/Clearpay
 else
     package="dev-master"
     if [ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]
@@ -43,11 +43,11 @@ else
 
     echo 'Package: '$package
 
-    echo 'Running: composer require pagantis/magento-2x:'$package' -d /var/www/html'
-    docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} composer require pagantis/magento-2x:$package -d /var/www/html
-    echo 'Running: module:enable Pagantis_Pagantis'
+    echo 'Running: composer require clearpay/magento-2x:'$package' -d /var/www/html'
+    docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} composer require clearpay/magento-2x:$package -d /var/www/html
+    echo 'Running: module:enable Clearpay_Clearpay'
     docker-compose exec -u www-data magento${VERSION}-${ENVIROMENT} \
-        php /var/www/html/bin/magento module:enable Pagantis_Pagantis \
+        php /var/www/html/bin/magento module:enable Clearpay_Clearpay \
         --clear-static-content
 fi
 

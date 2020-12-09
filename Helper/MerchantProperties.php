@@ -1,13 +1,13 @@
 <?php
 
-namespace Pagantis\Pagantis\Helper;
+namespace Clearpay\Clearpay\Helper;
 
 use Afterpay\SDK\HTTP\Request\GetConfiguration;
 use Afterpay\SDK\MerchantAccount;
 
 /**
  * Class MerchantProperties
- * @package Pagantis\Pagantis\Helper
+ * @package Clearpay\Clearpay\Helper
  */
 class MerchantProperties
 {

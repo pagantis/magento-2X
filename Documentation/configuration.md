@@ -2,7 +2,7 @@
 
 ## :house: Access
 
-To access to Pagantis admin panel, we need to open the Magento admin panel and follow the next steps:
+To access to Clearpay admin panel, we need to open the Magento admin panel and follow the next steps:
 
 1. System => Configuration
 ![Step 1](./magento21_step1.png?raw=true "Step 1")
@@ -10,11 +10,11 @@ To access to Pagantis admin panel, we need to open the Magento admin panel and f
 2. Scroll down and search the section SALES => Payment Methods
 ![Step 2](./magento21_step2.png?raw=true "Step 2")
 
-3. Scroll down to find the Pagantis Payment Method and fill the fields with the keys from your [Pagantis profile](https://bo.pagantis.com/shop).
+3. Scroll down to find the Clearpay Payment Method and fill the fields with the keys from your [Clearpay profile](https://bo.clearpay.com/shop).
 ![Step 3](./magento21_step3.png?raw=true "Step 3")
 
 ## :clipboard: Options
-In the Pagantis admin panel, we can set the following options:
+In the Clearpay admin panel, we can set the following options:
 
 | Field &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Description<br/><br/>
 | :------------- |:-------------| 
@@ -23,10 +23,10 @@ In the Pagantis admin panel, we can set the following options:
 | Secret Key(*) |  String. 
 | Product Simulator  |  * Yes => Display the installments simulator <br/> * No => Do not display the simulator (Default)
 
-:information_source: - Your keys are located on your [Pagantis profile](https://bo.pagantis.com/shop)
+:information_source: - Your keys are located on your [Clearpay profile](https://bo.clearpay.com/shop)
 
 ## :clipboard: Advanced configuration:
-While we recommend using the Pagantis module as is , you can customize some settings as shown below.
+While we recommend using the Clearpay module as is , you can customize some settings as shown below.
 
 You have to ways to edit your settings:
 * [Database queries](./configuration.md#edit-your-settings-using-database-queries)
@@ -40,21 +40,16 @@ You have to ways to edit your settings:
  
  | Field | Description<br/><br/>
  | :------------- |:-------------| 
- | PAGANTIS_TITLE                           | Payment title to show in checkout page. By default:"Instant financing".
- | PAGANTIS_TITLE_EXTRA                     | Subtitle to show in checkout page. Default: 'Pay up to 12 comfortable installments with Pagantis. Completely online and sympathetic request, and the answer is immediate!'.
- | PAGANTIS_SIMULATOR_DISPLAY_TYPE          | Installments simulator on the product page. **Static value**: 'pgSDK.simulator.types.PRODUCT_PAGE'.
- | PAGANTIS_SIMULATOR_DISPLAY_SKIN          | Skin of the product page simulator. Recommended value: 'pgSDK.simulator.skins.BLUE'.
- | PAGANTIS_SIMULATOR_START_INSTALLMENTS    | Default number of installments to use in the simulator. Default: 3.
- | PAGANTIS_SIMULATOR_DISPLAY_CSS_POSITION  | The position where the simulator widget will be placed. Recommended value: 'pgSDK.simulator.positions.INNER'.
- | PAGANTIS_SIMULATOR_CSS_PRICE_SELECTOR    | CSS selector of the DOM element containing the total amount value.
- | PAGANTIS_SIMULATOR_CSS_POSITION_SELECTOR | CSS selector to place the widget. (Example: '#simulator', '.PgSimulator')
- | PAGANTIS_SIMULATOR_CSS_QUANTITY_SELECTOR | CSS selector of the DOM element containing the quantity selector value.
- | PAGANTIS_FORM_DISPLAY_TYPE               | Allows you to select the way the Pagantis payment form is displayed.
- | PAGANTIS_DISPLAY_MIN_AMOUNT              | Minimum amount to use the module and show the payment method in the checkout page and in product page.
- | PAGANTIS_DISPLAY_MAX_AMOUNT              | Maximum amount to use the module and show the payment method in the checkout page and in product page.
- | PAGANTIS_URL_OK                          | Location where user will be redirected after a successful payment. This string will be concatenated to the base store url to build the full url
- | PAGANTIS_URL_KO                          | Location where user will be redirected after an invalid payment. This string will be concatenated to the base store url to build the full url  
- | PAGANTIS_ALLOWED_COUNTRIES               | Array of country codes where Pagantis will be used as a payment method. 
+ | CLEARPAY_TITLE                           | Payment title to show in checkout page. By default:"Instant financing".
+ | CLEARPAY_TITLE_EXTRA                     | Subtitle to show in checkout page. Default: 'Pay up to 12 comfortable installments with Clearpay. Completely online and sympathetic request, and the answer is immediate!'.
+ | CLEARPAY_SIMULATOR_DISPLAY_TYPE          | Installments simulator on the product page. **Static value**: 'cpSDK.simulator.types.PRODUCT_PAGE'.
+ | CLEARPAY_SIMULATOR_DISPLAY_SKIN          | Skin of the product page simulator. Recommended value: 'cpSDK.simulator.skins.BLUE'.
+ | CLEARPAY_SIMULATOR_START_INSTALLMENTS    | Default number of installments to use in the simulator. Default: 3.
+ | CLEARPAY_SIMULATOR_DISPLAY_CSS_POSITION  | The position where the simulator widget will be placed. Recommended value: 'cpSDK.simulator.positions.INNER'.
+ | CLEARPAY_FORM_DISPLAY_TYPE               | Allows you to select the way the Clearpay payment form is displayed.
+ | CLEARPAY_URL_OK                          | Location where user will be redirected after a successful payment. This string will be concatenated to the base store url to build the full url
+ | CLEARPAY_URL_KO                          | Location where user will be redirected after an invalid payment. This string will be concatenated to the base store url to build the full url  
+ | CLEARPAY_ALLOWED_COUNTRIES               | Array of country codes where Clearpay will be used as a payment method. 
 
  
 ##### Edit your settings using database queries
@@ -65,17 +60,17 @@ You have to ways to edit your settings:
 3. Launch a query to check if the table exists:
   * Query: 
         ```
-        SELECT * FROM pagantis_config;
+        SELECT * FROM clearpay_config;
         ```
         
     ![Step 3](./sql_step3.png?raw=true "Step 1")
 
-4. Find the setting PAGANTIS_TITLE, in this example we are going to change 'Instant Financing' to 'New Title'  
+4. Find the setting CLEARPAY_TITLE, in this example we are going to change 'Instant Financing' to 'New Title'  
 
 5. Launch the following query to edit the value:
   * Query: 
         ```
-        UPDATE pagantis_config SET value='New title' WHERE config='PAGANTIS_TITLE';
+        UPDATE clearpay_config SET value='New title' WHERE config='CLEARPAY_TITLE';
         ```  
         
     ![Step 5](./sql_step5.png?raw=true "Step 5")
@@ -84,7 +79,7 @@ You have to ways to edit your settings:
 6. After the modification, you can verify it with the following query :
   * Query:
         ```
-        SELECT * FROM pagantis_config;
+        SELECT * FROM clearpay_config;
         ```
 
     ![Step 6](./sql_step6.png?raw=true "Step 6")
@@ -96,7 +91,7 @@ You have to ways to edit your settings:
 ##### Edit your settings using Postman
 To modify the configuration you only need to make a POST request to the url below after replacing the values accordingly:
 
-> <strong>{your-domain-url}/pagantis/Payment/Config?secret={your-secret-key}</strong>
+> <strong>{your-domain-url}/clearpay/Payment/Config?secret={your-secret-key}</strong>
 
 ##### Sending in the form data the key of the config you want to change and the new value.
 
@@ -110,7 +105,7 @@ To modify the configuration you only need to make a POST request to the url belo
 
 3. Set your request  
 3.1 On the upper-left side, you need to set a POST request  
-3.2 Fill the url field with your domain, and your secret key which is located on your [Pagantis profile](https://bo.pagantis.com/shop).     
+3.2 Fill the url field with your domain, and your secret key which is located on your [Clearpay profile](https://bo.clearpay.com/shop).     
 3.3 Set the config key to modify.[List of config keys](./configuration.md#list-of-settings-and-their-description).  
 3.4 Set the value for the selected key  
 ![Step 3](./postman_step3.png?raw=true "Step 3")

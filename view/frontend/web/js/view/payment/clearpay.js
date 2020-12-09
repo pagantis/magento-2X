@@ -11,8 +11,8 @@ define(
 
         rendererList.push(
             {
-                type: 'pagantis',
-                component: 'Pagantis_Pagantis/js/view/payment/method-renderer/pagantis'
+                type: 'clearpay',
+                component: 'Clearpay_Clearpay/js/view/payment/method-renderer/clearpay'
             }
         );
         return Component.extend({});

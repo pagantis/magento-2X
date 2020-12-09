@@ -31,7 +31,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./:/var/www/html/app/code/Pagantis/Pagantis
+      - ./:/var/www/html/app/code/Clearpay/Clearpay
     working_dir: /var/www/html/
 
   magento23-dev:
@@ -65,7 +65,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./:/var/www/html/app/code/Pagantis/Pagantis
+      - ./:/var/www/html/app/code/Clearpay/Clearpay
     working_dir: /var/www/html/
 
   magento24-dev:
@@ -101,7 +101,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./:/var/www/html/app/code/Pagantis/Pagantis
+      - ./:/var/www/html/app/code/Clearpay/Clearpay
     working_dir: /var/www/html/
 
   db22-dev:

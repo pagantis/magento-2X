@@ -1,5 +1,5 @@
 <page layout="1column" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <referenceContainer name="product.info.main">
-        <block after="product.info.price" class="Pagantis\Pagantis\Block\Product\Simulator" name="product.view.simulator" template="Pagantis_Pagantis::product/simulator.phtml" />
+        <block after="product.info.price" class="Clearpay\Clearpay\Block\Product\Simulator" name="product.view.simulator" template="Clearpay_Clearpay::product/simulator.phtml" />
     </referenceContainer>
 </page>

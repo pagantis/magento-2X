@@ -1,19 +1,20 @@
 <?php
 
-namespace Pagantis\Pagantis\Model\Ui;
+namespace Clearpay\Clearpay\Model\Ui;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Checkout\Model\Session;
-use Pagantis\Pagantis\Helper\ExtraConfig;
+use Magento\Framework\App\RequestInterface;
+use Clearpay\Clearpay\Helper\ExtraConfig;
 use Magento\Framework\Locale\Resolver;
 
 /**
  * Class ConfigProvider
- * @package Pagantis\Pagantis\Model\Ui
+ * @package Clearpay\Clearpay\Model\Ui
  */
 final class ConfigProvider implements ConfigProviderInterface
 {
-    const CODE = 'pagantis';
+    const CODE = 'clearpay';
 
     /**
      * @var \Magento\Payment\Model\MethodInterface
@@ -80,31 +81,38 @@ final class ConfigProvider implements ConfigProviderInterface
     public function getConfig()
     {
         $quote = $this->checkoutSession->getQuote();
-
-        $positionSelector = $this->extraConfig['PAGANTIS_SIMULATOR_CSS_POSITION_SELECTOR'];
-        if ($positionSelector == 'default') {
-            $positionSelector = '.pagantisSimulator';
-            $positionSelector4x = '.pagantisSimulator4x';
+        $dividedTotal = number_format($quote->getGrandTotal()/4, 2);
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $currencySymbol = $objectManager
+            ->create('Magento\Directory\Model\CurrencyFactory')
+            ->create()
+            ->load($quote->getCurrency()->getBaseCurrencyCode())
+            ->getCurrencySymbol();
+        $dividedFullPrice = $dividedTotal.$currencySymbol;
+        if ($currencySymbol==='GBP') {
+            $dividedFullPrice = $currencySymbol.$dividedTotal;
         }
+
+        /** @var RequestInterface $request */
+        $request = $objectManager->get('Magento\Framework\App\RequestInterface');
 
         return [
             'payment' => [
                 self::CODE => [
                     'total' => $quote->getGrandTotal(),
-                    'enabled' => $this->method->getConfigData('active_12x'),
-                    'product_simulator' => $this->method->getConfigData('product_simulator'),
-                    'title' => __($this->extraConfig['PAGANTIS_TITLE']),
-                    'subtitle' => __($this->extraConfig['PAGANTIS_TITLE_EXTRA']),
-                    'image' => 'https://cdn.digitalorigin.com/assets/master/logos/pg-130x30.svg',
-                    'publicKey' => $this->method->getConfigData('pagantis_public_key'),
-                    'locale' => strstr($this->resolver->getLocale(), '_', true),
-                    'country' => strstr($this->resolver->getLocale(), '_', true),
-                    'thousandSeparator' => $this->extraConfig['PAGANTIS_SIMULATOR_THOUSANDS_SEPARATOR'],
-                    'decimalSeparator' => $this->extraConfig['PAGANTIS_SIMULATOR_DECIMAL_SEPARATOR'],
-                    'quotesStart' => $this->extraConfig['PAGANTIS_SIMULATOR_START_INSTALLMENTS'],
-                    'type'      => $this->extraConfig['PAGANTIS_SIMULATOR_DISPLAY_TYPE_CHECKOUT'],
-                    'skin'      => $this->extraConfig['PAGANTIS_SIMULATOR_DISPLAY_SKIN'],
-                    'position'  => $positionSelector
+                    'divided_total' => $dividedTotal,
+                    'enabled' => $this->method->getConfigData('active'),
+                    'title' => sprintf(__($this->extraConfig['CLEARPAY_TITLE']), ' '.$dividedFullPrice),
+                    'extraConfig' => serialize($this->extraConfig),
+                    'title_extra' => sprintf(__($this->extraConfig['CLEARPAY_TITLE_EXTRA']), $dividedFullPrice),
+                    'more_info1' => __($this->extraConfig['CLEARPAY_TITLE_MOREINFO_1']),
+                    'more_info2' => __($this->extraConfig['CLEARPAY_TITLE_MOREINFO_2']),
+                    'more_info3' => __($this->extraConfig['CLEARPAY_TITLE_MOREINFO_3']),
+                    'image'=>'https://static.afterpay.com/integration/product-page/badge-clearpay-black-on-mint-14.png',
+                    'header_image' => 'https://static-us.afterpay.com/docs/clearpay/assets/clearpay-logo-black.svg',
+                    'locale' => $this->resolver->getLocale(),
+                    'TCLink' => __('https://www.clearpay.co.uk/en-GB/terms-of-service'),
+                    'TCText' => __('Terms and conditions')
                 ]
             ],
         ];

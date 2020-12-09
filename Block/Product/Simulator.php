@@ -1,6 +1,6 @@
 <?php
 
-namespace Pagantis\Pagantis\Block\Product;
+namespace Clearpay\Clearpay\Block\Product;
 
 use Magento\Backend\Block\Template\Context;
 use Magento\Catalog\Model\Product;
@@ -8,11 +8,13 @@ use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\Locale\Resolver;
 use Magento\Store\Model\StoreManager;
-use Pagantis\Pagantis\Helper\MerchantProperties;
+use Clearpay\Clearpay\Helper\Category;
+use Clearpay\Clearpay\Helper\MerchantProperties;
+use Clearpay\Clearpay\Helper\ExtraConfig;
 
 /**
  * Class Simulator
- * @package Pagantis\Pagantis\Block\Product
+ * @package Clearpay\Clearpay\Block\Product
  */
 class Simulator extends Template
 {
@@ -62,10 +64,26 @@ class Simulator extends Template
     protected $currency;
 
     /**
+     * @var ExtraConfig
+     */
+    protected $extraConfig;
+
+    /**
+     * @var string|null $merchantId
+     */
+    protected $merchantId;
+
+    /**
+     * @var string|null $merchantKey
+     */
+    protected $merchantKey;
+
+    /**
      * Simulator constructor.
      *
      * @param Context      $context
      * @param Registry     $registry
+     * @param ExtraConfig  $extraConfig
      * @param Resolver     $store
      * @param StoreManager $storeManager
      * @param array        $data
@@ -75,6 +93,7 @@ class Simulator extends Template
     public function __construct(
         Context $context,
         Registry $registry,
+        ExtraConfig $extraConfig,
         Resolver $store,
         StoreManager $storeManager,
         array $data = []
@@ -84,8 +103,9 @@ class Simulator extends Template
         $this->store = $store;
         /** @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig */
         $scopeConfig = $this->_scopeConfig;
-        $config = $scopeConfig->getValue('payment/pagantis');
+        $config = $scopeConfig->getValue('payment/clearpay');
 
+        $this->extraConfig = $extraConfig->getExtraConfig();
         $this->product = $this->registry->registry('product');
         $this->enabled = $config['active'];
         $this->amount = number_format($this->product->getFinalPrice(), 2);
@@ -95,6 +115,8 @@ class Simulator extends Template
             $config['clearpay_min_amount'] : MerchantProperties::DEF_MIN_AMOUNT;
         $this->maxAmount = isset($config['clearpay_max_amount']) ?
             $config['clearpay_max_amount'] : MerchantProperties::DEF_MIN_AMOUNT;
+        $this->merchantId = isset($config['clearpay_merchant_id']) ? $config['clearpay_merchant_id'] : null;
+        $this->merchantKey = isset($config['clearpay_merchant_key']) ? $config['clearpay_merchant_key'] : null;
     }
 
     /**
@@ -102,7 +124,69 @@ class Simulator extends Template
      */
     public function isEnabled()
     {
-        return $this->getEnabled();
+        return ($this->getEnabled() && !empty($this->merchantId) && !empty($this->merchantKey));
+    }
+
+    /**
+     * @return bool
+     */
+    public function checkCategory()
+    {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $categoryHelper  = $objectManager->create(Category::class);
+
+        $checkProductCategories = $categoryHelper->allowedCategories(array($this->product));
+        if (!empty($checkProductCategories)) {
+            return implode(',', $checkProductCategories);
+        }
+
+        return true;
+    }
+
+    /**
+     * @return array|string
+     */
+    public function getProductType()
+    {
+        return $this->product->getTypeId();
+    }
+
+    public function isVariablePrice()
+    {
+        $fixPricesTypes = array('configurable'); //bundle
+
+        return (in_array($this->getProductType(), $fixPricesTypes));
+    }
+
+    public function isFixedPrice()
+    {
+        $fixPricesTypes = array('simple', 'virtual', 'downloadable');
+
+        return (in_array($this->getProductType(), $fixPricesTypes));
+    }
+
+    public function isRangePrice()
+    {
+        $fixPricesTypes = array('bundle');
+
+        return (in_array($this->getProductType(), $fixPricesTypes));
+    }
+
+    public function getMinimalPrice()
+    {
+        $minPrice = $this->product->getPriceInfo()->getPrice('final_price')->getMinimalPrice()->getValue();
+
+        return number_format($minPrice, 2);
+    }
+
+    public function getAmountSelector()
+    {
+        return $this->extraConfig['CLEARPAY_AMOUNT_SELECTOR'];
+    }
+
+    public function getOnclickSelector()
+    {
+        return$this->extraConfig['CLEARPAY_ONCLICK_SELECTOR'];
     }
 
     //GETTERS AND SETTERS

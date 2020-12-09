@@ -3,11 +3,11 @@
     <type name="Magento\Checkout\Model\CompositeConfigProvider">
         <arguments>
             <argument name="configProviders" xsi:type="array">
-                <item name="pagantis_config_provider" xsi:type="object">Pagantis\Pagantis\Model\Ui\ConfigProvider</item>
+                <item name="clearpay_config_provider" xsi:type="object">Clearpay\Clearpay\Model\Ui\ConfigProvider</item>
             </argument>
         </arguments>
     </type>
-    <type name="Pagantis\Pagantis\Block\Info">
+    <type name="Clearpay\Clearpay\Block\Info">
         <arguments>
             <argument name="data" xsi:type="array">
                 <item xsi:type="string" name="is_secure_mode">1</item>

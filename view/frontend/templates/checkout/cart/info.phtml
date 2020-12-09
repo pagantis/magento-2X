@@ -1,0 +1,44 @@
+<script src="https://js.sandbox.afterpay.com/afterpay-1.x.js"></script>
+<style>
+    .payment-method-note.clearpay-cart-note {
+        padding: 20px 0 10px 0;
+        text-align: left;
+    }
+    .payment-method-note.clearpay-cart-note.ps-1-6{
+        width: 280px;
+    }
+    .clearpay-cart-note span {
+        font-size: 0.85rem;
+    }
+    .clearpay-cart-note.ps-1-6 span {
+        font-size: 1.20rem;
+    }
+    .clearpay-price-text {
+        font-weight: bold;
+    }
+    .clearpay-more-info {
+        text-align: center;
+        font-size: 0.85rem;
+    }
+    .clearpay-cart-note.ps-1-6 .clearpay-more-info {
+        font-size: 1.20rem;
+    }
+</style>
+<?php
+/**
+ * @var \Clearpay\Clearpay\Block\Cart\CartInfo $block
+ */
+?>
+<div class="payment-method-note clearpay-cart-note ps-1-6" style="">
+    <span class="clearpay-price-text"><?php echo $block->getPriceText(); ?></span>
+    <br><br>
+    <span><?php echo $block->getDescription1(); ?></span>
+    <br><br>
+    <span><?php echo $block->getDescription2(); ?></span>
+    <br/>
+    <div class="clearpay-more-info">
+        <br/> <a href="javascript:void(0)" onclick="Afterpay.launchModal('<?php echo $block->getCountryCode(); ?>');">
+            <?php echo $block->getMoreInfo(); ?>
+        </a>
+    </div>
+</div>

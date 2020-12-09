@@ -38,15 +38,16 @@ docker-compose exec ${container} install-magento
 if [ $environment = "dev" ]
 then
     docker-compose exec -u www-data ${container} php /var/www/html/bin/magento \
-        module:enable Pagantis_Pagantis --clear-static-content
-    docker-compose exec -u www-data ${container} composer install -d /var/www/html/app/code/Pagantis/Pagantis
-    docker-compose exec -u www-data ${container} composer require "afterpay-global/afterpay-sdk-php": "dev-downgrade-to-api-v1"
+        module:enable Clearpay_Clearpay --clear-static-content
+    docker-compose exec -u www-data ${container} composer install -d /var/www/html/app/code/Clearpay/Clearpay
+    docker-compose exec -u www-data ${container} composer require "afterpay-global/afterpay-sdk-php":"dev-downgrade-to-api-v1"
+    docker-compose exec -u www-data ${container} composer require "pagantis/selenium-form-utils":"dev-clearpay"
 else
     package='dev-xxx'
     echo 'Package: '$package
     docker-compose exec -u www-data ${container} composer require pagantis/magento-2x:$package -d /var/www/html
     docker-compose exec -u www-data ${container} \
-        php /var/www/html/bin/magento module:enable Pagantis_Pagantis --clear-static-content
+        php /var/www/html/bin/magento module:enable Clearpay_Clearpay --clear-static-content
     docker-compose exec -u www-data ${container} \
         php /var/www/html/bin/magento setup:upgrade
     docker-compose exec -u www-data ${container} \

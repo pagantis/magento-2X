@@ -1,6 +1,6 @@
 <?php
 
-namespace Pagantis\Pagantis\Logger;
+namespace Clearpay\Clearpay\Logger;
 
 class Handler extends \Magento\Framework\Logger\Handler\Base
 {
@@ -13,5 +13,5 @@ class Handler extends \Magento\Framework\Logger\Handler\Base
      * File name
      * @var string
      */
-    protected $fileName = '/var/log/pagantis.log';
+    protected $fileName = '/var/log/clearpay.log';
 }

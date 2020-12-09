@@ -1,6 +1,6 @@
 <?php
 
-namespace Pagantis\Pagantis\Block\Payment;
+namespace Clearpay\Clearpay\Block\Payment;
 
 use Magento\Backend\Block\Template\Context;
 use Magento\Framework\View\Element\Template;

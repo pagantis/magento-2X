@@ -1,17 +1,17 @@
 <?php
 
-namespace Pagantis\Pagantis\Helper;
+namespace Clearpay\Clearpay\Helper;
 
 use Magento\Framework\App\ResourceConnection;
 
 /**
  * Class ExtraConfig
- * @package Pagantis\Pagantis\Helper
+ * @package Clearpay\Clearpay\Helper
  */
 class ExtraConfig
 {
     /** Config tablename */
-    const CONFIG_TABLE = 'Pagantis_config';
+    const CONFIG_TABLE = 'Clearpay_config';
 
     /** @var ResourceConnection $dbObject */
     protected $dbObject;

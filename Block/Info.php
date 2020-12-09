@@ -1,14 +1,14 @@
 <?php
 
-namespace Pagantis\Pagantis\Block;
+namespace Clearpay\Clearpay\Block;
 
 use Magento\Framework\Phrase;
 use Magento\Payment\Block\ConfigurableInfo;
-use Pagantis\Pagantis\Gateway\Response\FraudHandler;
+use Clearpay\Clearpay\Gateway\Response\FraudHandler;
 
 /**
  * Class Info
- * @package Pagantis\Pagantis\Block
+ * @package Clearpay\Clearpay\Block
  */
 class Info extends ConfigurableInfo
 {

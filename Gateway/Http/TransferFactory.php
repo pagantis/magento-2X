@@ -3,12 +3,12 @@
  * Copyright © 2016 Magento. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Pagantis\Pagantis\Gateway\Http;
+namespace Clearpay\Clearpay\Gateway\Http;
 
 use Magento\Payment\Gateway\Http\TransferBuilder;
 use Magento\Payment\Gateway\Http\TransferFactoryInterface;
 use Magento\Payment\Gateway\Http\TransferInterface;
-use Pagantis\Pagantis\Gateway\Request\MockDataRequest;
+use Clearpay\Clearpay\Gateway\Request\MockDataRequest;
 
 class TransferFactory implements TransferFactoryInterface
 {

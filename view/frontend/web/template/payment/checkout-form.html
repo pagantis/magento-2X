@@ -1,19 +1,119 @@
+<style>
+    p.payment_module.Clearpay.ps_version_1-7 {
+        margin-left: -5px;
+        margin-top: -15px;
+        margin-bottom: 0px;
+    }
+    p.payment_module a.clearpay-checkout.ps_version_1-7 {
+        background: none;
+    }
+
+    p.payment_module a.clearpay-checkout.ps_version_1-6 {
+        background-color: #fbfbfb;
+        max-height: 90px;
+    }
+    p.payment_module a.clearpay-checkout.ps_version_1-6:after {
+        display: block;
+        content: "\f054";
+        position: absolute;
+        right: 15px;
+        margin-top: -11px;
+        top: 50%;
+        font-family: "FontAwesome";
+        font-size: 25px;
+        height: 22px;
+        width: 14px;
+        color: #777;
+    }
+    p.payment_module a:hover {
+        background-color: #f6f6f6;
+    }
+    #clearpay-header {
+        color: #7a7a7a;
+        position: relative;
+        line-height: 40px;
+        text-align: right;
+        padding-right: 20px;
+        background-color: #b2fce4;
+        height: 65px;
+    }
+    #clearpay-header img {
+        height: 30px;
+        position: absolute;
+        top: 15px;
+        left: 20px;
+    }
+    .clearpay-more-info-text {
+        padding: 1em 3em;
+        text-align: center;
+    }
+    #clearpay-terms {
+        margin-top: 10px;
+        display: inline-block;
+    }
+    @media only screen and (max-width: 1200px) {
+        #clearpay-header {
+            text-align: center;
+            padding-top: 30px;
+            display: block;
+            height: 65px !important;
+        }
+    }
+    @media only screen and (max-width: 1200px) and (min-width: 990px)  {
+        #clearpay-header img {
+            left:35%;
+        }
+    }
+    @media only screen and (max-width: 989px) and (min-width: 768px)  {
+        #clearpay-header img {
+            left:30%;
+        }
+        #clearpay-header {
+            height: 100px !important;
+        }
+    }
+    @media only screen and (max-width: 767px) and (min-width: 575px)  {
+        #clearpay-header img {
+            left:35%;
+        }
+        #clearpay-header {
+            height: 65px !important;
+        }
+    }
+    @media only screen and (max-width: 575px) {
+        #clearpay-header img {
+            left:28%;
+        }
+        #clearpay-header {
+            height: 100px !important;
+        }
+    }
+</style>
 <div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
     <div class="payment-method-title field choice">
         <input type="radio"
                name="payment[method]"
                class="radio"
                data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
-        <label data-bind="attr: {'for': getCode()}" class="label pagantis_title">
+        <label data-bind="attr: {'for': getCode()}" class="label clearpay_title">
             <span data-bind="text: getTitle()"></span>
-            <img src='' data-bind="attr: {'src': getImage()}" /></label>
+            <img src='' style="vertical-align: middle" data-bind="attr: {'src': getImage()}" /></label>
     </div>
     <div class="payment-method-content">
-        <p class="js-pagantis-payment-type"  data-bind="text: getSubtitle()"></p>
-        <br/>
-        <span class="js-pmt-payment-type"></span>
-        <div class="pagantisSimulator"
-             data-bind="attr: {'data-trash': loadSimulator() }">
+        <div class="clearpaySimulator" style="text-align: center;border: black 2px solid;margin-bottom: 10px">
+            <div id="clearpay-header">
+                <img src='' data-bind="attr: {'src': getHeaderImage()}" />
+                <span id='clearpay-header-span' style="vertical-align: text-top;" data-bind="attr: {'random':getTitleExtra()}"></span>
+            </div>
+            <div class="clearpay-more-info-text">
+                <div id="clearpay-more-info" data-bind="attr: {'random':getMoreInfoText()}"></div>
+                <afterpay-price-table data-bind="attr: {'data-amount':getTotalAmount(), 'data-currency':getCurrency(), 'data-locale':getLocale()}";
+                                      data-type="price-table"
+                                      data-price-table-theme="white">
+                </afterpay-price-table>
+                <a id="clearpay-terms" href="" data-bind="attr: {'href': getTCLink(), 'random':getTCText()}" TARGET="_blank">
+                </a>
+            </div>
         </div>
         <!-- ko foreach: getRegion('messages') -->
         <!-- ko template: getTemplate() --><!-- /ko -->

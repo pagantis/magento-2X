@@ -1,12 +1,12 @@
 <?php
 
-namespace Pagantis\Pagantis\Model\Adminhtml\Source;
+namespace Clearpay\Clearpay\Model\Adminhtml\Source;
 
 use Magento\Framework\Option\ArrayInterface;
 
 /**
  * Class SandboxType
- * @package Pagantis\Pagantis\Model\Adminhtml\Source
+ * @package Clearpay\Clearpay\Model\Adminhtml\Source
  */
 class SandboxType implements ArrayInterface
 {

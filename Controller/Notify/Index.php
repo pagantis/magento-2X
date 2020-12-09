@@ -1,6 +1,6 @@
 <?php
 
-namespace Pagantis\Pagantis\Controller\Notify;
+namespace Clearpay\Clearpay\Controller\Notify;
 
 use Magento\Quote\Model\QuoteManagement;
 use Magento\Quote\Api\Data\PaymentInterface;
@@ -10,33 +10,19 @@ use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\QuoteRepository;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\Action;
-use Pagantis\ModuleUtils\Exception\MerchantOrderNotFoundException;
-use Pagantis\OrdersApiClient\Client;
-use Pagantis\Pagantis\Helper\Config;
-use Pagantis\Pagantis\Helper\ExtraConfig;
+use Clearpay\Clearpay\Helper\Config;
+use Clearpay\Clearpay\Helper\ExtraConfig;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Checkout\Model\Session;
-use Magento\Framework\DB\Ddl\Table;
-use Pagantis\ModuleUtils\Exception\AmountMismatchException;
-use Pagantis\ModuleUtils\Exception\ConcurrencyException;
-use Pagantis\ModuleUtils\Exception\NoIdentificationException;
-use Pagantis\ModuleUtils\Exception\OrderNotFoundException;
-use Pagantis\ModuleUtils\Exception\QuoteNotFoundException;
-use Pagantis\ModuleUtils\Exception\UnknownException;
-use Pagantis\ModuleUtils\Exception\WrongStatusException;
-use Pagantis\ModuleUtils\Model\Response\JsonSuccessResponse;
-use Pagantis\ModuleUtils\Model\Response\JsonExceptionResponse;
-use Pagantis\ModuleUtils\Exception\AlreadyProcessedException;
-use Pagantis\ModuleUtils\Model\Log\LogEntry;
 use Magento\Framework\App\RequestInterface;
-use Pagantis\Pagantis\Model\Ui\ConfigProvider;
 use Afterpay\SDK\HTTP\Request as ClearpayRequest;
 use Afterpay\SDK\HTTP\Request\ImmediatePaymentCapture as ClearpayImmediatePaymentCaptureRequest;
 use Afterpay\SDK\MerchantAccount as ClearpayMerchant;
+use Clearpay\Clearpay\Logger\Logger;
 
 /**
  * Class Index
- * @package Pagantis\Pagantis\Controller\Notify
+ * @package Clearpay\Clearpay\Controller\Notify
  */
 class Index extends Action
 {
@@ -44,22 +30,10 @@ class Index extends Action
     const ORDERS_TABLE = 'cart_process';
 
     /** Concurrency tablename */
-    const CONCURRENCY_TABLE = 'Pagantis_orders';
-
-    /** Concurrency tablename */
-    const LOGS_TABLE = 'Pagantis_logs';
-
-    /** Seconds to expire a locked request */
-    const CONCURRENCY_TIMEOUT = 10;
+    const CONCURRENCY_TABLE = 'Clearpay_orders';
 
     /** Payment method */
-    const PAYMENT_METHOD = 'pagantis';
-
-    /**
-     * EXCEPTION RESPONSES
-     */
-    const CPO_ERR_MSG = 'Order not confirmed';
-    const CPO_OK_MSG = 'Order confirmed';
+    const PAYMENT_METHOD = 'clearpay';
 
     /** @var QuoteManagement */
     protected $quoteManagement;
@@ -82,14 +56,8 @@ class Index extends Action
     /** @var mixed $quoteId */
     protected $quoteId;
 
-    /** @var array $notifyResult */
-    protected $notifyResult;
-
     /** @var mixed $magentoOrderId */
     protected $magentoOrderId;
-
-    /** @var mixed $pagantisOrder */
-    protected $pagantisOrder;
 
     /** @var ResourceConnection $dbObject */
     protected $dbObject;
@@ -97,11 +65,8 @@ class Index extends Action
     /** @var Session $checkoutSession */
     protected $checkoutSession;
 
-    /** @var Client $orderClient */
-    protected $orderClient;
-
-    /** @var mixed $pagantisOrderId */
-    protected $pagantisOrderId;
+    /** @var mixed $clearpayOrderId */
+    protected $clearpayOrderId;
 
     /** @var  OrderInterface $magentoOrder */
     protected $magentoOrder;
@@ -127,6 +92,12 @@ class Index extends Action
     /** @var string $clearpayCapturedPaymentId */
     protected $clearpayCapturedPaymentId;
 
+    /** @var Logger $logger */
+    protected $logger;
+
+    /** @var string $checkoutError */
+    protected $checkoutError;
+
     /**
      * Index constructor.
      *
@@ -141,8 +112,8 @@ class Index extends Action
      * @param Session                  $checkoutSession
      * @param ExtraConfig              $extraConfig
      * @param RequestInterface         $request
+     * @param Logger                   $logger
      *
-     * @throws QuoteNotFoundException
      * @throws \Afterpay\SDK\Exception\InvalidArgumentException
      */
     public function __construct(
@@ -156,28 +127,31 @@ class Index extends Action
         ResourceConnection $dbObject,
         Session $checkoutSession,
         ExtraConfig $extraConfig,
-        RequestInterface $request
+        RequestInterface $request,
+        Logger $logger
     ) {
         parent::__construct($context);
         $this->quote = $quote;
         $this->quoteManagement = $quoteManagement;
         $this->paymentInterface = $paymentInterface;
         $this->extraConfig = $extraConfig->getExtraConfig();
-        $this->config = $config->getConfig();
+        $this->config = $config;
         $this->quoteRepository = $quoteRepository;
         $this->orderRepositoryInterface = $orderRepositoryInterface;
         $this->dbObject = $dbObject;
         $this->checkoutSession = $checkoutSession;
         $this->_request = $request;
+        $this->logger = $logger;
         $this->token = $this->_request->getParam('token');
-        $this->clearpayMerchantAccount = new ClearpayMerchant();
-        $this->clearpayMerchantAccount
-            ->setMerchantId($this->config['clearpay_merchant_id'])
-            ->setSecretKey($this->config['clearpay_merchant_key'])
-            ->setApiEnvironment($this->config['clearpay_api_environment'])
-        ;
         $this->getQuoteId();
+
+        $this->clearpayMerchantAccount = new ClearpayMerchant();
         $this->countryCode = $this->getClearpayOrderCountryCode();
+        $this->clearpayMerchantAccount
+            ->setMerchantId($this->config->getMerchantId())
+            ->setSecretKey($this->config->getSecretKey())
+            ->setApiEnvironment($this->config->getApiEnvironment())
+        ;
         if (!is_null($this->countryCode)) {
             $this->clearpayMerchantAccount->setCountryCode($this->countryCode);
         }
@@ -185,69 +159,57 @@ class Index extends Action
 
     /**
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
-     * @throws UnknownException
+     * @throws \Exception
      */
     public function execute()
     {
         $thrownException = false;
         try {
-            $this->checkConcurrency();
             $this->getMerchantOrder();
-            $this->getPagantisOrderId();
-            $this->getPagantisOrder();
+            $this->getClearpayOrderId();
+            $this->getClearpayOrder();
             $this->checkMerchantOrderStatus();
             $this->validateAmount();
-            $this->processMerchantOrder();
         } catch (\Exception $exception) {
             $thrownException = true;
-            $jsonResponse = new JsonExceptionResponse();
-            $jsonResponse->setMerchantOrderId($this->magentoOrderId);
-            $jsonResponse->setpagantisOrderId($this->pagantisOrderId);
-            $jsonResponse->setException($exception);
-            $this->insertLog($exception);
+            $this->logger->info($exception->getMessage());
         }
 
         try {
             if (!$thrownException) {
-                $this->confirmpagantisOrder();
-                $jsonResponse = new JsonSuccessResponse();
-                $jsonResponse->setMerchantOrderId($this->magentoOrderId);
-                $jsonResponse->setpagantisOrderId($this->pagantisOrderId);
+                $this->captureClearpayOrder();
+            }
+        } catch (\Exception $exception) {
+            $thrownException = true;
+            $this->logger->info($exception->getMessage());
+        }
+
+        try {
+            if (!$thrownException) {
+                $this->processMerchantOrder();
             }
         } catch (\Exception $exception) {
             $this->rollbackMerchantOrder();
-            $jsonResponse = new JsonExceptionResponse();
-            $jsonResponse->setMerchantOrderId($this->magentoOrderId);
-            $jsonResponse->setpagantisOrderId($this->pagantisOrderId);
-            $jsonResponse->setException($exception);
-            $jsonResponse->toJson();
-            $this->insertLog($exception);
+            $this->logger->info($exception->getMessage());
         }
 
-        $this->unblockConcurrency(true);
-
-        if (true) {
-            $returnMessage = sprintf(
-                "[quoteId=%s][magentoOrderId=%s][pagantisOrderId=%s][message=%s]",
-                $this->quoteId,
-                $this->magentoOrderId,
-                $this->pagantisOrderId,
-                $jsonResponse->getResult()
-            );
-            $this->insertLog(null, $returnMessage);
-            $jsonResponse->printResponse();
-        } else {
-            $returnUrl = $this->getRedirectUrl();
-            $returnMessage = sprintf(
-                "[quoteId=%s][magentoOrderId=%s][pagantisOrderId=%s][returnUrl=%s]",
-                $this->quoteId,
-                $this->magentoOrderId,
-                $this->pagantisOrderId,
-                $returnUrl
-            );
-            $this->insertLog(null, $returnMessage);
-            $this->_redirect($returnUrl);
+        $returnUrl = $this->getRedirectUrl();
+        $returnMessage = sprintf(
+            "[quoteId=%s][magentoOrderId=%s][clearpayOrderId=%s][returnUrl=%s][captureId=%s][token=%s]",
+            $this->quoteId,
+            $this->magentoOrderId,
+            $this->clearpayOrderId,
+            $returnUrl,
+            $this->clearpayCapturedPaymentId,
+            $this->token
+        );
+        $this->logger->info($returnMessage);
+        if (!empty($this->checkoutError)) {
+            $messageManager = $this->_objectManager->get('\Magento\Framework\Message\ManagerInterface');
+            $messageManager->addErrorMessage($this->checkoutError);
+            $this->checkoutSession->setErrorMessage($this->checkoutError);
         }
+        $this->_redirect($returnUrl);
     }
 
     /**
@@ -255,18 +217,7 @@ class Index extends Action
      */
 
     /**
-     * @throws ConcurrencyException
-     * @throws QuoteNotFoundException
-     * @throws UnknownException
-     */
-    private function checkConcurrency()
-    {
-        $this->unblockConcurrency();
-        $this->blockConcurrency();
-    }
-
-    /**
-     * @throws MerchantOrderNotFoundException
+     * @throws \Exception
      */
     private function getMerchantOrder()
     {
@@ -274,14 +225,14 @@ class Index extends Action
             /** @var Quote quote */
             $this->quote = $this->quoteRepository->get($this->quoteId);
         } catch (\Exception $e) {
-            throw new MerchantOrderNotFoundException();
+            throw new \Exception('Merchant Order Not Found');
         }
     }
 
     /**
-     * @throws UnknownException
+     * @throws \Exception
      */
-    private function getPagantisOrderId()
+    private function getClearpayOrderId()
     {
         try {
             /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
@@ -289,63 +240,68 @@ class Index extends Action
             $tableName        = $this->dbObject->getTableName(self::ORDERS_TABLE);
             $query            = "select order_id from $tableName where id='$this->quoteId' and token='$this->token'";
             $queryResult      = $dbConnection->fetchRow($query);
-            $this->pagantisOrderId = $queryResult['order_id'];
-            if ($this->pagantisOrderId == '') {
-                throw new NoIdentificationException();
+            $this->clearpayOrderId = $queryResult['order_id'];
+            if ($this->clearpayOrderId == '') {
+                throw new \Exception('NoIdentificationException');
             }
         } catch (\Exception $e) {
-            throw new UnknownException($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
     }
 
     /**
-     * @throws OrderNotFoundException
+     * @throws \Exception
      */
-    private function getPagantisOrder()
+    private function getClearpayOrder()
     {
         try {
             $getOrderRequest = new ClearpayRequest();
             $getOrderRequest
                 ->setMerchantAccount($this->clearpayMerchantAccount)
-                ->setUri("/v1/orders/" . $this->pagantisOrderId)
+                ->setUri("/v1/orders/" . $this->clearpayOrderId)
             ;
             $getOrderRequest->send();
 
             if ($getOrderRequest->getResponse()->getHttpStatusCode() >= 400) {
-                throw new UnknownException("Unable to retrieve order from Clearpay=$this->clearpayOrderId");
+                throw new \Exception("Unable to retrieve order from Clearpay=$this->clearpayOrderId");
             }
 
             $this->clearpayOrder = $getOrderRequest->getResponse()->getParsedBody();
         } catch (\Exception $e) {
-            throw new OrderNotFoundException();
+            throw new \Exception('Order not found');
         }
     }
 
     /**
-     * @throws AlreadyProcessedException
+     * @throws \Exception
      */
     private function checkMerchantOrderStatus()
     {
         if ($this->quote->getIsActive()=='0') {
             $this->getMagentoOrderId();
-            throw new AlreadyProcessedException();
+            throw new \Exception('Already processed');
         }
     }
 
     /**
-     * @throws AmountMismatchException
+     * @throws \Exception
      */
     private function validateAmount()
     {
-        $pagantisAmount = $this->clearpayOrder->totalAmount->amount;
+        $clearpayAmount = $this->clearpayOrder->totalAmount->amount;
         $merchantAmount = $this->quote->getGrandTotal();
-        if ($pagantisAmount != $merchantAmount) {
-            throw new AmountMismatchException($pagantisAmount, $merchantAmount);
+        if ($clearpayAmount != $merchantAmount) {
+            $this->checkoutError =
+            __('We are sorry to inform you that an error ocurred while processing your payment.') .
+            __('Thanks for confirming your payment, however as your cart has changed we need a new confirmation') .
+            __('Please proceed to Clearpay and retry again in a few minutes.') .
+            __('For more information, please contact the Clearpay Customer Service Team: https://clearpay-europe.readme.io/docs/customer-support');
+            throw new \Exception("Amount mismatch CP=$clearpayAmount MA=$merchantAmount");
         }
     }
 
     /**
-     * @throws UnknownException
+     * @throws \Exception
      */
     private function processMerchantOrder()
     {
@@ -353,51 +309,52 @@ class Index extends Action
             $this->saveOrder();
             $this->updateBdInfo();
         } catch (\Exception $e) {
-            throw new UnknownException($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
     }
 
     /**
-     * @return false|string
-     * @throws UnknownException
+     * @throws \Exception
      */
-    private function confirmpagantisOrder()
+    private function captureClearpayOrder()
     {
         try {
             $immediatePaymentCaptureRequest = new ClearpayImmediatePaymentCaptureRequest(array(
-                'token' => $this->pagantisOrderId
+                'token' => $this->clearpayOrderId
             ));
             $immediatePaymentCaptureRequest->setMerchantAccount($this->clearpayMerchantAccount);
             $immediatePaymentCaptureRequest->send();
             if ($immediatePaymentCaptureRequest->getResponse()->getHttpStatusCode() >= 400) {
+                $this->checkoutError =
+                    __('We are sorry to inform you that your payment has been declined by Clearpay.').
+                    __('For more information, please contact the Clearpay Customer Service Team: https://clearpay-europe.readme.io/docs/customer-support');
+                    __('For reference, the Order ID for this transaction is:') .
+                    $this->clearpayCapturedPaymentId;
                 $exception = sprintf(
-                    "CleClearpay capture payment error, order token:%s ||Error code:%s",
-                    $this->pagantisOrderId,
-                    $immediatePaymentCaptureRequest->getResponse()->getParsedBody()->errorCode
+                    "Clearpay capture payment error, order token:%s ||Error code:%s",
+                    $this->clearpayOrderId,
+                    $immediatePaymentCaptureRequest->getResponse()->getHttpStatusCode()
                 );
-                throw new UnknownException($exception);
+                throw new \Exception($exception);
             }
+
+            $this->clearpayCapturedPaymentId = $immediatePaymentCaptureRequest->getResponse()->getParsedBody()->id;
             if (!$immediatePaymentCaptureRequest->getResponse()->isApproved()) {
+                $this->checkoutError =
+                    __('We are sorry to inform you that your payment has been declined by Clearpay.').
+                    __('For more information, please contact the Clearpay Customer Service Team: https://clearpay-europe.readme.io/docs/customer-support');
+                    __('For reference, the Order ID for this transaction is:') .
+                    $this->clearpayCapturedPaymentId;
                 $exception = sprintf(
                     "Clearpay capture payment error, payment was not proccesed token:%s ||Error code:%s",
-                    $this->pagantisOrderId,
+                    $this->clearpayOrderId,
                     $immediatePaymentCaptureRequest->getResponse()->getParsedBody()->errorCode
                 );
-                throw new UnknownException($exception);
+                throw new \Exception($exception);
             }
-            $this->clearpayCapturedPaymentId = $immediatePaymentCaptureRequest->getResponse()->getParsedBody()->id;
 
-            $comment = sprintf(
-                "Token = %s || Capture Payment Id=%s",
-                $this->clearpayOrder->token,
-                $this->clearpayCapturedPaymentId
-            );
-            $this->magentoOrder->addStatusHistoryComment($comment)
-                               ->setIsCustomerNotified(false)
-                               ->setEntityName('order')
-                               ->save();
         } catch (\Exception $e) {
-            throw new UnknownException(sprintf("%s", $e->getMessage()));
+            throw new \Exception($e->getMessage());
         }
     }
 
@@ -405,105 +362,21 @@ class Index extends Action
      * UTILS FUNCTIONS
      */
 
-    /** STEP 1 CC - Check concurrency
-     * @throws QuoteNotFoundException
+    /**
+     * @throws \Exception
      */
     private function getQuoteId()
     {
         $this->quoteId = $this->getRequest()->getParam('quoteId');
         if ($this->quoteId == '') {
-            throw new QuoteNotFoundException();
-        }
-    }
-
-    /**
-     * @param bool $mode
-     *
-     * @throws \Exception
-     */
-    private function unblockConcurrency($mode = false)
-    {
-        try {
-            /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
-            $dbConnection = $this->dbObject->getConnection();
-            $tableName    = $this->dbObject->getTableName(self::CONCURRENCY_TABLE);
-            if ($mode == false) {
-                $dbConnection->delete($tableName, "timestamp<".(time() - 5));
-            } elseif ($this->quoteId!='') {
-                $dbConnection->delete($tableName, "id=".$this->quoteId);
-            }
-        } catch (Exception $exception) {
-            throw new ConcurrencyException();
-        }
-    }
-
-    /**
-     * @throws ConcurrencyException
-     * @throws UnknownException
-     */
-    private function blockConcurrency()
-    {
-        /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
-        $dbConnection = $this->dbObject->getConnection();
-        $tableName    = $this->dbObject->getTableName(self::CONCURRENCY_TABLE);
-        $query = "SELECT timestamp FROM $tableName where id='$this->quoteId'";
-        $resultsSelect = $dbConnection->fetchRow($query);
-        if (isset($resultsSelect['timestamp'])) {
-            if ($this->isNotification()) {
-                throw new ConcurrencyException();
-            } else {
-                $query = sprintf(
-                    "SELECT timestamp - %s as rest FROM %s %s",
-                    (time() - self::CONCURRENCY_TIMEOUT),
-                    $tableName,
-                    "WHERE id='".$this->quoteId."'"
-                );
-                $resultsSelect = $dbConnection->fetchRow($query);
-                $restSeconds   = isset($resultsSelect['rest']) ? ($resultsSelect['rest']) : 0;
-                $expirationSec = ($restSeconds > self::CONCURRENCY_TIMEOUT) ? self::CONCURRENCY_TIMEOUT : $restSeconds;
-                if ($expirationSec > 0) {
-                    sleep($expirationSec + 1);
-                }
-
-                $this->getPagantisOrderId();
-                $this->getMagentoOrderId();
-
-                $logMessage  = sprintf(
-                    "User waiting %s seconds, default seconds %s, bd time to expire %s seconds[quoteId=%s]",
-                    $expirationSec,
-                    self::CONCURRENCY_TIMEOUT,
-                    $restSeconds,
-                    $this->quoteId
-                );
-                throw new UnknownException($logMessage);
-            }
-        } else {
-            $dbConnection->insert($tableName, array('id'=>$this->quoteId, 'timestamp'=>time()));
+            throw new \Exception('Quote not found');
         }
     }
 
     /** STEP 2 GMO - Get Merchant Order */
-    /** STEP 3 GPOI - Get Pagantis OrderId */
-    /** STEP 4 GPO - Get Pagantis Order */
+    /** STEP 3 GPOI - Get Clearpay OrderId */
+    /** STEP 4 GPO - Get Clearpay Order */
     /** STEP 5 COS - Check Order Status */
-    /**
-     * @param $statusArray
-     *
-     * @throws \Exception
-     */
-    private function checkPagantisStatus($statusArray)
-    {
-        $pagantisStatus = array();
-        foreach ($statusArray as $status) {
-            $pagantisStatus[] = constant("\Pagantis\OrdersApiClient\Model\Order::STATUS_$status");
-        }
-
-        $payed = in_array($this->pagantisOrder->getStatus(), $pagantisStatus);
-        if (!$payed) {
-            throw new WrongStatusException($this->pagantisOrder->getStatus());
-        }
-    }
-
     /** STEP 6 CMOS - Check Merchant Order Status */
     /**
      * @throws \Exception
@@ -515,29 +388,27 @@ class Index extends Action
             $dbConnection = $this->dbObject->getConnection();
             $tableName    = $this->dbObject->getTableName(self::ORDERS_TABLE);
 
-            if ($this->pagantisOrderId == '') {
-                $this->getPagantisOrderId();
+            if ($this->clearpayOrderId == '') {
+                $this->getClearpayOrderId();
             }
-            $pagantisOrderId   = $this->pagantisOrderId;
+            $clearpayOrderId   = $this->clearpayOrderId;
 
             $query = sprintf(
                 "select mg_order_id from %s where id='%s' and order_id='%s' and token='%s'",
                 $tableName,
                 $this->quoteId,
-                $pagantisOrderId,
+                $clearpayOrderId,
                 $this->token
             );
             $queryResult  = $dbConnection->fetchRow($query);
             $this->magentoOrderId = $queryResult['mg_order_id'];
         } catch (\Exception $e) {
-            throw new UnknownException($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
     }
 
-    /** STEP 7 VA - Validate Amount */
-    /** STEP 8 PMO - Process Merchant Order */
     /**
-     * @throws UnknownException
+     * @throws \Exception
      */
     private function saveOrder()
     {
@@ -548,22 +419,26 @@ class Index extends Action
             /** @var OrderRepositoryInterface magentoOrder */
             $this->magentoOrder = $this->orderRepositoryInterface->get($this->magentoOrderId);
 
-            /*$this->magentoOrder->setIsCustomerNotified(false)
+            $comment = sprintf(
+                "Token = %s || Capture Payment Id=%s",
+                $this->clearpayOrder->token,
+                $this->clearpayCapturedPaymentId
+            );
+            $this->magentoOrder->addStatusHistoryComment($comment)
+                               ->setIsCustomerNotified(false)
                                ->setEntityName('order')
-                               ->setTitle(self::PAYMENT_METHOD)
-                               ->setPayment(self::PAYMENT_METHOD)
-                               ->save();*/
+                               ->save();
 
             if ($this->magentoOrderId == '') {
-                throw new UnknownException('Order can not be saved');
+                throw new \Exception('Order can not be saved');
             }
         } catch (\Exception $e) {
-            throw new UnknownException('saveOrder'.$e->getMessage());
+            throw new \Exception('saveOrder'.$e->getMessage());
         }
     }
 
     /**
-     * @throws UnknownException
+     * @throws \Exception
      */
     private function updateBdInfo()
     {
@@ -571,20 +446,18 @@ class Index extends Action
             /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
             $dbConnection = $this->dbObject->getConnection();
             $tableName    = $this->dbObject->getTableName(self::ORDERS_TABLE);
-            $pagantisOrderId   = $this->clearpayOrder->token;
             $dbConnection->update(
                 $tableName,
                 array('mg_order_id' => $this->magentoOrderId),
                 "order_id='".$this->clearpayOrder->token."' and id='$this->quoteId'"
             );
         } catch (\Exception $e) {
-            throw new UnknownException($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
     }
 
-    /** STEP 9 CPO - Confirmation Pagantis Order */
     /**
-     * @throws UnknownException
+     * @throws \Exception
      */
     private function rollbackMerchantOrder()
     {
@@ -593,39 +466,34 @@ class Index extends Action
             $this->magentoOrder->setStatus(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
             $this->magentoOrder->save();
         } catch (\Exception $e) {
-            throw new UnknownException($e->getMessage());
+            throw new \Exception($e->getMessage());
         }
     }
 
     /**
      * @return string
-     * @throws UnknownException
+     * @throws \Exception
      */
     private function getRedirectUrl()
     {
-        //$returnUrl = 'checkout/#payment';
-        $returnUrl = $this->_url->getUrl('checkout', ['_fragment' => 'payment']);
+        $returnUrl = $this->_url->getUrl('checkout/cart');
 
-        if ($this->pagantisOrderId == '') {
-            $this->getPagantisOrderId();
-        }
+        try {
+            if ($this->clearpayOrderId == '') {
+                $this->getClearpayOrderId();
+            }
 
-        if ($this->magentoOrderId == '') {
-            $this->getMagentoOrderId();
+            if ($this->magentoOrderId == '') {
+                $this->getMagentoOrderId();
+            }
+        } catch (\Exception $e) {
+            $this->logger->info($e->getMessage());
         }
 
         if ($this->magentoOrderId!='') {
             /** @var Order $this->magentoOrder */
             $this->magentoOrder = $this->orderRepositoryInterface->get($this->magentoOrderId);
             if (!$this->_objectManager->get(\Magento\Checkout\Model\Session\SuccessValidator::class)->isValid()) {
-                $checkoutMessage = sprintf(
-                    "[quoteId=%s][magentoOrderId=%s][pagantisOrderId=%s]Setting checkout session",
-                    $this->quoteId,
-                    $this->magentoOrderId,
-                    $this->pagantisOrderId
-                );
-                $this->insertLog(null, $checkoutMessage);
-
                 $this->checkoutSession
                     ->setLastOrderId($this->magentoOrderId)
                     ->setLastRealOrderId($this->magentoOrder->getIncrementId())
@@ -639,66 +507,21 @@ class Index extends Action
             $orderStatus    = strtolower($this->magentoOrder->getStatus());
             $acceptedStatus = array('processing', 'completed');
             if (in_array($orderStatus, $acceptedStatus)) {
-                if (isset($this->extraConfig['PAGANTIS_OK_URL']) &&  $this->extraConfig['PAGANTIS_OK_URL']!= '') {
-                    $returnUrl = $this->extraConfig['PAGANTIS_OK_URL'];
+                if (isset($this->extraConfig['CLEARPAY_OK_URL']) &&  $this->extraConfig['CLEARPAY_OK_URL']!= '') {
+                    $returnUrl = $this->extraConfig['CLEARPAY_OK_URL'];
                 } else {
                     $returnUrl = 'checkout/onepage/success';
                 }
             } else {
-                if (isset($this->extraConfig['PAGANTIS_KO_URL']) && $this->extraConfig['PAGANTIS_KO_URL'] != '') {
-                    $returnUrl = $this->extraConfig['PAGANTIS_KO_URL'];
+                if (isset($this->extraConfig['CLEARPAY_KO_URL']) && $this->extraConfig['CLEARPAY_KO_URL'] != '') {
+                    $returnUrl = $this->extraConfig['CLEARPAY_KO_URL'];
                 } else {
-                    //$returnUrl = 'checkout/#payment';
-                    $returnUrl = $this->_url->getUrl('checkout', ['_fragment' => 'payment']);
+                    $returnUrl = $this->_url->getUrl('checkout/cart');
                 }
             }
         }
+
         return $returnUrl;
-    }
-
-    /**
-     * @param null $exceptionMessage
-     * @param null $logMessage
-     *
-     * @throws UnknownException
-     */
-    private function insertLog($exceptionMessage = null, $logMessage = null)
-    { return true;
-        try {
-            $logEntryJson = '';
-            if ($exceptionMessage instanceof \Exception) {
-                $logEntry     = new LogEntry();
-                $logEntryJson = $logEntry->error($exceptionMessage)->toJson();
-            } elseif ($logMessage != null) {
-                $logEntry     = new LogEntry();
-                $logEntryJson = $logEntry->info($logMessage)->toJson();
-            }
-
-            if ($logEntryJson != '') {
-                /** @var \Magento\Framework\DB\Adapter\AdapterInterface $dbConnection */
-                $dbConnection = $this->dbObject->getConnection();
-                $tableName    = $this->dbObject->getTableName(self::LOGS_TABLE);
-                $dbConnection->insert($tableName, array('log' => $logEntryJson));
-            }
-        } catch (\Exception $e) {
-            throw new UnknownException($e->getMessage());
-        }
-    }
-
-    /**
-     * @return bool
-     */
-    private function isNotification()
-    {
-        return true;
-    }
-
-    /**
-     * @return bool
-     */
-    private function isRedirect()
-    {
-        return false;
     }
 
     /**
