@@ -32,7 +32,7 @@
     }
   ],
   "require": {
-      "afterpay-global/afterpay-sdk-php": "dev-downgrade-to-api-v1"
+      "afterpay-global/afterpay-sdk-php": "dev-final_urls"
   },
   "require-dev": {
       "pagantis/selenium-form-utils":"dev-clearpay",
