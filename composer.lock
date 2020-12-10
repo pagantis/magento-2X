@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d2ee98d98e01aec20572d41703c30f0f",
+    "content-hash": "cc7460ae0f836ae0cc72123ff25c2c09",
     "packages": [],
     "packages-dev": [
         {
@@ -5157,16 +5157,16 @@
         },
         {
             "name": "pagantis/selenium-form-utils",
-            "version": "v3.0.3",
+            "version": "dev-clearpay",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pagantis/selenium-form-utils.git",
-                "reference": "d549b0a1ac18c4069c7e4aa6492b12ad68cb8a01"
+                "reference": "9c884303b6934d8901c41418a212b52ce01fec3c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pagantis/selenium-form-utils/zipball/d549b0a1ac18c4069c7e4aa6492b12ad68cb8a01",
-                "reference": "d549b0a1ac18c4069c7e4aa6492b12ad68cb8a01",
+                "url": "https://api.github.com/repos/pagantis/selenium-form-utils/zipball/9c884303b6934d8901c41418a212b52ce01fec3c",
+                "reference": "9c884303b6934d8901c41418a212b52ce01fec3c",
                 "shasum": ""
             },
             "require": {
@@ -5196,9 +5196,9 @@
             "description": "Pagantis PHP Library. Selenium helper to end a test purchase. Helper to test the payment validation and redirection",
             "support": {
                 "issues": "https://github.com/pagantis/selenium-form-utils/issues",
-                "source": "https://github.com/pagantis/selenium-form-utils/tree/master"
+                "source": "https://github.com/pagantis/selenium-form-utils/tree/clearpay"
             },
-            "time": "2020-03-16T12:19:59+00:00"
+            "time": "2020-12-09T13:11:53+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -7825,7 +7825,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "pagantis/selenium-form-utils": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": [],
