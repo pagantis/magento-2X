@@ -43,6 +43,7 @@
   "archive": {
     "exclude": ["Test", "/Test"]
   },
+  "composer-runtime-api": "^2.0",
   "minimum-stability": "dev",
   "prefer-stable": true
 }
