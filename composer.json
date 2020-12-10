@@ -35,7 +35,6 @@
       "afterpay-global/afterpay-sdk-php": "dev-final_urls"
   },
   "require-dev": {
-      "pagantis/selenium-form-utils":"dev-clearpay",
       "magento/module-sales": "102.0.*",
       "magento/module-checkout": "100.3.*",
       "magento/module-payment": "100.3.*",
