@@ -5161,12 +5161,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pagantis/selenium-form-utils.git",
-                "reference": "1fa1eee3d5d4b8b81c711f1f946771b55fc19fb5"
+                "reference": "bfd3aba959937c5c28693128933d1b3cf92a9e8f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pagantis/selenium-form-utils/zipball/1fa1eee3d5d4b8b81c711f1f946771b55fc19fb5",
-                "reference": "1fa1eee3d5d4b8b81c711f1f946771b55fc19fb5",
+                "url": "https://api.github.com/repos/pagantis/selenium-form-utils/zipball/bfd3aba959937c5c28693128933d1b3cf92a9e8f",
+                "reference": "bfd3aba959937c5c28693128933d1b3cf92a9e8f",
                 "shasum": ""
             },
             "require": {
@@ -5198,7 +5198,7 @@
                 "issues": "https://github.com/pagantis/selenium-form-utils/issues",
                 "source": "https://github.com/pagantis/selenium-form-utils/tree/clearpay"
             },
-            "time": "2020-12-10T23:24:33+00:00"
+            "time": "2020-12-10T23:51:06+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
