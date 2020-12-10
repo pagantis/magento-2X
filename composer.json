@@ -31,9 +31,6 @@
       "url": "https://repo.magento.com/"
     }
   ],
-  "require": {
-      "afterpay-global/afterpay-sdk-php":"dev-downgrade-to-api-v1"
-  },
   "autoload": {
     "files": [ "registration.php" ],
     "psr-4": {
