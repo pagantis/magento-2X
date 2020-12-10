@@ -45,7 +45,7 @@ commands:
             export DOCKERHOST=$(ifconfig | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1)
             package='dev-'${CIRCLE_BRANCH}
             echo $package
-            docker-compose exec -u www-data magento${VERSION}-test composer require pagantis/magento-2x:$package -d /var/www/html
+            docker-compose exec -u www-data magento${VERSION}-test composer require pagantis/magento-2x:$package -d /var/www/html -v
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento module:enable Clearpay_Clearpay --clear-static-content
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento setup:upgrade
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento setup:di:compile
