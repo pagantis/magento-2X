@@ -32,7 +32,7 @@
     }
   ],
   "require": {
-      "afterpay-global/afterpay-sdk-php": "dev-downgrade-to-api-v1"
+      "afterpay-global/afterpay-sdk-php":"dev-downgrade-to-api-v1"
   },
   "require-dev": {
       "magento/module-sales": "102.0.*",

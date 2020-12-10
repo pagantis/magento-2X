@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/afterpay/sdk-php.git",
-                "reference": "58286296fc2f70d804962c60667d3a0cdd8d6df0"
+                "reference": "c69b1108fa368151d64b83101021094580368b1b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/afterpay/sdk-php/zipball/58286296fc2f70d804962c60667d3a0cdd8d6df0",
-                "reference": "58286296fc2f70d804962c60667d3a0cdd8d6df0",
+                "url": "https://api.github.com/repos/afterpay/sdk-php/zipball/c69b1108fa368151d64b83101021094580368b1b",
+                "reference": "c69b1108fa368151d64b83101021094580368b1b",
                 "shasum": ""
             },
             "require-dev": {
@@ -46,7 +46,7 @@
                 "issues": "https://github.com/afterpay/sdk-php/issues",
                 "source": "https://github.com/afterpay/sdk-php/tree/downgrade-to-api-v1"
             },
-            "time": "2020-11-18T22:50:39+00:00"
+            "time": "2020-12-10T08:40:01+00:00"
         }
     ],
     "packages-dev": [
