@@ -114,7 +114,7 @@ class Index extends Action
      * @param RequestInterface         $request
      * @param Logger                   $logger
      *
-     * @throws \Afterpay\SDK\Exception\InvalidArgumentException
+     * @throws \Exception
      */
     public function __construct(
         Context $context,
@@ -324,10 +324,15 @@ class Index extends Action
             ));
             $immediatePaymentCaptureRequest->setMerchantAccount($this->clearpayMerchantAccount);
             $immediatePaymentCaptureRequest->send();
+
+            $this->clearpayCapturedPaymentId =
+                isset($immediatePaymentCaptureRequest->getResponse()->getParsedBody()->id) ?
+                    $immediatePaymentCaptureRequest->getResponse()->getParsedBody()->id :null;
+
             if ($immediatePaymentCaptureRequest->getResponse()->getHttpStatusCode() >= 400) {
                 $this->checkoutError =
                     __('We are sorry to inform you that your payment has been declined by Clearpay.').
-                    __('For more information, please contact the Clearpay Customer Service Team: https://clearpay-europe.readme.io/docs/customer-support');
+                    __('For more information, please contact the Clearpay Customer Service Team: https://clearpay-europe.readme.io/docs/customer-support').
                     __('For reference, the Order ID for this transaction is:') .
                     $this->clearpayCapturedPaymentId;
                 $exception = sprintf(
@@ -338,11 +343,10 @@ class Index extends Action
                 throw new \Exception($exception);
             }
 
-            $this->clearpayCapturedPaymentId = $immediatePaymentCaptureRequest->getResponse()->getParsedBody()->id;
             if (!$immediatePaymentCaptureRequest->getResponse()->isApproved()) {
                 $this->checkoutError =
                     __('We are sorry to inform you that your payment has been declined by Clearpay.').
-                    __('For more information, please contact the Clearpay Customer Service Team: https://clearpay-europe.readme.io/docs/customer-support');
+                    __('For more information, please contact the Clearpay Customer Service Team: https ://clearpay-europe.readme.io/docs/customer-support').
                     __('For reference, the Order ID for this transaction is:') .
                     $this->clearpayCapturedPaymentId;
                 $exception = sprintf(

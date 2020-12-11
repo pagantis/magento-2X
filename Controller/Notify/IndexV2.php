@@ -334,11 +334,16 @@ class IndexV2 extends Action
             ));
             $immediatePaymentCaptureRequest->setMerchantAccount($this->clearpayMerchantAccount);
             $immediatePaymentCaptureRequest->send();
+
+            $this->clearpayCapturedPaymentId =
+                isset($immediatePaymentCaptureRequest->getResponse()->getParsedBody()->id) ?
+                $immediatePaymentCaptureRequest->getResponse()->getParsedBody()->id :null;
+
             if ($immediatePaymentCaptureRequest->getResponse()->getHttpStatusCode() >= 400) {
                 $this->checkoutError =
                     __('We are sorry to inform you that your payment has been declined by Clearpay.').
-                    __('For more information, please contact the Clearpay Customer Service Team: https://clearpay-europe.readme.io/docs/customer-support');
-                    __('For reference, the Order ID for this transaction is:') .
+                    __('For more information, please contact the Clearpay Customer Service Team: https://clearpay-europe.readme.io/docs/customer-support').
+                    __('For reference, the Order ID for this transaction is:').
                     $this->clearpayCapturedPaymentId;
                 $exception = sprintf(
                     "Clearpay capture payment error, order token:%s ||Error code:%s",
@@ -348,12 +353,11 @@ class IndexV2 extends Action
                 throw new \Exception($exception);
             }
 
-            $this->clearpayCapturedPaymentId = $immediatePaymentCaptureRequest->getResponse()->getParsedBody()->id;
             if (!$immediatePaymentCaptureRequest->getResponse()->isApproved()) {
                 $this->checkoutError =
                     __('We are sorry to inform you that your payment has been declined by Clearpay.').
-                    __('For more information, please contact the Clearpay Customer Service Team: https://clearpay-europe.readme.io/docs/customer-support');
-                    __('For reference, the Order ID for this transaction is:') .
+                    __('For more information, please contact the Clearpay Customer Service Team: https://clearpay-europe.readme.io/docs/customer-support').
+                    __('For reference, the Order ID for this transaction is:').
                     $this->clearpayCapturedPaymentId;
                 $exception = sprintf(
                     "Clearpay capture payment error, payment was not proccesed token:%s ||Error code:%s",
