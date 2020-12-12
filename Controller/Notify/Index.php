@@ -346,7 +346,7 @@ class Index extends Action
             if (!$immediatePaymentCaptureRequest->getResponse()->isApproved()) {
                 $this->checkoutError =
                     __('We are sorry to inform you that your payment has been declined by Clearpay.').
-                    __('For more information, please contact the Clearpay Customer Service Team: https ://clearpay-europe.readme.io/docs/customer-support').
+                    __('For more information, please contact the Clearpay Customer Service Team: https://clearpay-europe.readme.io/docs/customer-support').
                     __('For reference, the Order ID for this transaction is:') .
                     $this->clearpayCapturedPaymentId;
                 $exception = sprintf(
