@@ -99,7 +99,7 @@ class IndexV2 extends Action
     protected $checkoutError;
 
     /**
-     * Index constructor.
+     * IndexV2 constructor.
      *
      * @param Context                  $context
      * @param Quote                    $quote
@@ -114,7 +114,7 @@ class IndexV2 extends Action
      * @param RequestInterface         $request
      * @param Logger                   $logger
      *
-     * @throws \Afterpay\SDK\Exception\InvalidArgumentException
+     * @throws \Exception
      */
     public function __construct(
         Context $context,
@@ -429,6 +429,7 @@ class IndexV2 extends Action
         try {
             $this->paymentInterface->setMethod(self::PAYMENT_METHOD);
             $this->magentoOrderId = $this->quoteManagement->placeOrder($this->quoteId, $this->paymentInterface);
+            $this->updateClearpayOrder();
 
             /** @var OrderRepositoryInterface magentoOrder */
             $this->magentoOrder = $this->orderRepositoryInterface->get($this->magentoOrderId);
@@ -448,6 +449,33 @@ class IndexV2 extends Action
             }
         } catch (\Exception $e) {
             throw new \Exception('saveOrder'.$e->getMessage());
+        }
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function updateClearpayOrder()
+    {
+        try {
+            if ($this->config->getApiRegion() === 'ES') { //ONLY AVAILABLE FOR EUROPE
+                $getOrderRequest = new ClearpayRequest();
+                $getOrderRequest
+                    ->setMerchantAccount($this->clearpayMerchantAccount)
+                    ->setUri("/v1/payments/".$this->clearpayCapturedPaymentId)
+                    ->setHttpMethod('PUT')
+                    ->setRequestBody(json_encode(array("merchantReference" => $this->magentoOrderId)));
+                $getOrderRequest->send();
+
+                if ($getOrderRequest->getResponse()->getHttpStatusCode() >= 400) {
+                    throw new \Exception("Unable to retrieve order from Clearpay=$this->clearpayOrderId");
+                }
+
+                $this->clearpayOrder = $getOrderRequest->getResponse()->getParsedBody();
+            }
+        } catch (\Exception $e) {
+            die($e->getMessage());
+            throw new \Exception('Order not found');
         }
     }
 
