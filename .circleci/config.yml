@@ -46,6 +46,7 @@ commands:
             package='dev-'${CIRCLE_BRANCH}
             echo $package
             docker-compose exec -u www-data magento${VERSION}-test composer require pagantis/magento-2x:$package -d /var/www/html
+            docker-compose exec -u www-data magento${VERSION}-test composer require afterpay-global/afterpay-sdk-php:dev-downgrade-to-api-v1 -d /var/www/html
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento module:enable Clearpay_Clearpay --clear-static-content
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento setup:upgrade
             docker-compose exec -u www-data magento${VERSION}-test php /var/www/html/bin/magento setup:di:compile
