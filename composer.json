@@ -33,10 +33,10 @@
   ],
   "require-dev": {
     "pagantis/selenium-form-utils":"dev-clearpay",
-    "magento/module-catalog-sample-data": "^100.3",
-    "magento/module-configurable-sample-data": "^100.3",
-    "magento/module-cms-sample-data": "^100.3",
-    "magento/module-sales-sample-data": "^100.3"
+    "magento/module-sales": "102.0.*",
+    "magento/module-checkout": "100.3.*",
+    "magento/module-payment": "100.3.*",
+    "magento/framework": "102.0.*"
   },
   "autoload": {
     "files": [ "registration.php" ],
@@ -48,6 +48,5 @@
     "exclude": ["Test", "/Test"]
   },
   "composer-runtime-api": "^2.0",
-  "minimum-stability": "dev",
-  "prefer-stable": true
+  "minimum-stability": "dev"
 }
