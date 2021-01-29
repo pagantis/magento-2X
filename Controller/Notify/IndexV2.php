@@ -474,7 +474,6 @@ class IndexV2 extends Action
                 $this->clearpayOrder = $getOrderRequest->getResponse()->getParsedBody();
             }
         } catch (\Exception $e) {
-            die($e->getMessage());
             throw new \Exception('Order not found');
         }
     }
