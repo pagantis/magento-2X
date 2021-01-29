@@ -168,7 +168,7 @@ class Index extends Action
                 $this->quote->getBillingAddress()->setEmail($this->session->getEmail());
                 $email = $this->session->getEmail();
             }
-$this->logger->info('tessst');
+
             /** @var Quote $currentQuote */
             $currentQuote = $this->quoteRepository->get($this->quote->getId());
             $currentQuote->setCustomerEmail($email);
@@ -298,7 +298,6 @@ $this->logger->info('tessst');
             exit;
         } catch (\Exception $exception) {
             $this->logger->error($exception->getMessage());
-            die($exception->getMessage());
             echo $cancelUrl;
             exit;
         }
